@@ -7,8 +7,10 @@ import { utils } from './allowanceUtils.js';
 // import { useRouter } from 'vue-router';
 import AddButton from '@/components/reuseables/AddButton.vue';
 import { useConfirmDialog } from '@/components/reuseables/useConfirmDialog.js';
-import { baseURL } from '../../reuseables/FetchPostData';
-import CreateAllowance from '@/components/payroll/allowances/Index.vue';
+import { baseURL, postData } from '../../reuseables/FetchPostData';
+import { useToastPopup } from '@/components/reuseables/useToast.js';
+
+const { showError, showSuccess } = useToastPopup();
 
 const { confirmDelete } = useConfirmDialog();
 // const router = useRouter();
@@ -110,8 +112,54 @@ const add = () => {
     addModalVisibility.value = true;
 };
 
-const refresh = async () => {
-    await getAllowances(allowances, loading);
+// const refresh = async () => {
+//     await getAllowances(allowances, loading);
+// };
+const serverError = ref('');
+const loadingAdd = ref(false)
+const submitForm = async () => {
+    serverError.value = '';
+    loadingAdd.value = true;
+    let url = `${baseURL}/allowance/create`;
+    const emitedAllowance = { ...allowanceDataToUpdate.value };
+    if (emitedAllowance?.allowanceType === 'OVERTIME') {
+        url = `${baseURL}/allowance/create/Overtime`;
+    } else if (emitedAllowance?.allowanceType === 'TRANSFER') {
+        url = `${baseURL}/allowance/create/Transfer`;
+    } else if (emitedAllowance?.allowanceType === 'TRAVEL_OUTSIDE') {
+        url = `${baseURL}/allowance/create/TravelOutside`;
+    } else {
+        url = `${baseURL}/allowance/create`;
+    }
+
+    try {
+        // const payload = {
+        //     ...allowanceData.value
+        // };
+        console.log('submit', emitedAllowance);
+        console.log('url', url);
+        const data = await postData(url, emitedAllowance);
+        if (data?.status === 200 || data?.status === 201) {
+            // success.value = true;
+            showSuccess();
+            successMessage.value = data?.message;
+
+            loadingAdd.value = false;
+
+            await getAllowances(allowances, loadingAdd);
+        } else {
+            showError();
+            serverError.value = data?.error || data?.message;
+            loadingAdd.value = false;
+        }
+    } catch (error) {
+        showError();
+
+        serverError.value = error?.message || error?.message;
+
+        loadingAdd.value = false;
+        console.log(error?.error);
+    }
 };
 </script>
 
@@ -132,6 +180,7 @@ const refresh = async () => {
                 :type="allowanceData?.allowanceType"
                 :allowance="allowanceData"
                 :days="allowanceData?.workingDays"
+                :transport="allowanceData?.transportAllowance"
             />
 
             <div class="flex justify-content-end gap-2">
@@ -141,8 +190,15 @@ const refresh = async () => {
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
         </Dialog>
-        <Dialog v-model:visible="addModalVisibility" header="Add">
-            <CreateAllowance @refresh="refresh" />
+        <Dialog v-model:visible="addModalVisibility" header="Create Allowance" :style="{ width: '50%' }">
+            <!-- <CreateAllowance @refresh="refresh" /> -->
+            <UpdateAllowance @handleAddAllowance="handleAddAllowance" />
+            <div class="flex justify-content-end gap-2">
+                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                <Button v-if="!loadingAdd" type="button" label="Submit" @click="submitForm"></Button>
+
+                <SpinnerVue :loading="loadingAdd" size="3rem" />
+            </div>
         </Dialog>
     </div>
     <div class="card">

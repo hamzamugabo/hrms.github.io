@@ -1,13 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 import { useEmployeeStore } from '@/piniaStore/employeeData.js';
 import changeDateFormat from '@/components/reuseables/changeDateFormat.js';
 // import QualificationsForm from './QualificationFormTemplate.vue';
 // import countryList from 'country-list';
 import { fetchData, postData } from '@/components/reuseables/FetchPostData.js';
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
-import { employeeLevelsEnum, idTypeOptionsEnum} from '@/components/reuseables/enums.js';
+import { employeeLevelsEnum, idTypeOptionsEnum } from '@/components/reuseables/enums.js';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
 const { showError, showSuccess } = useToastPopup();
@@ -52,7 +52,7 @@ const gender = ref({ name: '', code: '' });
 const dob = ref('');
 const maritalStatus = ref({ name: '', code: '' });
 const nationality = ref([]);
-const idType = ref({name:"",code:""});
+const idType = ref({ name: '', code: '' });
 const idNumber = ref('');
 const phoneNumber = ref('');
 const otherPhoneNumber = ref('');
@@ -80,7 +80,6 @@ const employeeLevel = ref({ name: '', code: '' });
 const otherEmail = ref('');
 const postalAddress = ref('');
 const others = ref('');
-
 
 // const autoFilteredDesignations = ref([]);
 const allNationlalities = ref([]);
@@ -238,11 +237,12 @@ const getQualifications = async () => {
 //         });
 //     }
 // };
-const getEmployee = async () => {
-    const url = `${baseURL}/employees/by-id/${storedEmployeeData?.id}`;
+const getEmployee = async (employee) => {
+    const employeeId = storedEmployeeData?.id || employee?.id;
+    const url = `${baseURL}/employees/by-id/${employeeId}`;
 
     try {
-        if (url && storedEmployeeData?.id) {
+        if (url && employeeId) {
             const { data } = await fetchData(url, loading);
             console.log('employee to edit data', data);
             firstName.value = data?.firstName;
@@ -252,7 +252,7 @@ const getEmployee = async () => {
             dob.value = data?.dob;
             maritalStatus.value = { name: data?.maritalStatus, code: data?.maritalStatus };
             nationality.value = [];
-            idType.value = {name:data?.idType, code:data?.idType};
+            idType.value = { name: data?.idType, code: data?.idType };
             idNumber.value = data?.idNumber;
             phoneNumber.value = data?.phoneNumber;
             otherPhoneNumber.value = data?.otherPhoneNumber;
@@ -277,7 +277,6 @@ const getEmployee = async () => {
             otherEmail.value = data?.otherEmailAddress;
             employeeLevel.value = { name: data?.employeeLevel, code: data?.employeeLevel };
             others.value = data?.customIdType;
-          
 
             // console.log('employee===>', data);
             // employees.value = data;
@@ -353,23 +352,25 @@ const submitForm = async () => {
             employeeStore.setEmployeeData(formData);
             loading.value = false;
 
-            resetForm();
+            // resetForm();
             success.value = true;
             loading.value = false;
             showSuccess(data?.message);
-            useRouter().back();
+            getEmployee(data?.data?.id);
+            // useRouter().back();
         } else {
-            showError( data?.message ? data?.message : data?.error);
+            showError(data?.message ? data?.message : data?.error);
             updateEmployeeError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-        showError()
+        showError();
         loading.value = false;
 
         console.error('Login error:', error);
     }
 };
 
+// eslint-disable-next-line no-unused-vars
 const resetForm = () => {
     // Reset all form fields to initial state
     firstName.value = '';
@@ -408,7 +409,6 @@ onMounted(() => {
         console.log('not updated the fields');
     }
 });
-
 </script>
 
 <template>
@@ -437,15 +437,15 @@ onMounted(() => {
                             <label for="gender">Gender</label>
                             <Dropdown id="state" v-model="gender" :options="genderOptions" optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
-                         <div class="field col-12 md:col-4">
-                                        <label for="dob">Date of Birth</label>
-                                        <Calendar :showIcon="true" :showButtonBar="true" v-model="dob" :maxDate="maxDate" @change="validateDOB"></Calendar>
-                                        <small v-if="dobError" class="p-error">{{ dobError }}</small>
-                                    </div>
-                                    <div class="field col-12 md:col-4">
-                                        <label for="dob">Date of Joining</label>
-                                        <Calendar :showIcon="true" :showButtonBar="true" v-model="dateOfJoining" :maxDate="maxJoiningDate"></Calendar>
-                                    </div>
+                        <div class="field col-12 md:col-4">
+                            <label for="dob">Date of Birth</label>
+                            <Calendar :showIcon="true" :showButtonBar="true" v-model="dob" :maxDate="maxDate" @change="validateDOB"></Calendar>
+                            <small v-if="dobError" class="p-error">{{ dobError }}</small>
+                        </div>
+                        <div class="field col-12 md:col-4">
+                            <label for="dob">Date of Joining</label>
+                            <Calendar :showIcon="true" :showButtonBar="true" v-model="dateOfJoining" :maxDate="maxJoiningDate"></Calendar>
+                        </div>
                         <div class="field col-12 md:col-4">
                             <label for="maritalstatus">Marital Status</label>
                             <Dropdown id="state" v-model="maritalStatus" :options="maritalStatusOptions" optionLabel="name" placeholder="Select One"></Dropdown>
@@ -456,7 +456,6 @@ onMounted(() => {
                             <InputText id="email" type="text" v-model="email" />
                         </div>
 
-                       
                         <div class="field col-12 md:col-4">
                             <label for="postalAddress">Postal Address</label>
                             <InputText required id="postalAddress" type="text" v-model="postalAddress" />
@@ -478,10 +477,10 @@ onMounted(() => {
                             <label for="idtype">ID Type</label>
                             <Dropdown id="state" v-model="idType" :options="idTypeOptionsEnum" optionLabel="name" placeholder="Select One"></Dropdown>
                         </div>
-                         <div v-if="idType && idType.name === 'OTHERS'" class="field col-12 md:col-6">
-                                        <label for="others">Enter ID Type</label>
-                                        <InputText required id="others" type="text" v-model="others" />
-                                    </div>
+                        <div v-if="idType && idType.name === 'OTHERS'" class="field col-12 md:col-6">
+                            <label for="others">Enter ID Type</label>
+                            <InputText required id="others" type="text" v-model="others" />
+                        </div>
 
                         <div class="field col-12 md:col-6">
                             <label for="idnumber">ID Number</label>

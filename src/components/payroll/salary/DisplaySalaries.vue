@@ -6,7 +6,7 @@ import { baseURL, fetchData, postData } from '@/components/reuseables/FetchPostD
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
 import changeDateFormat from '@/components/reuseables/changeDateFormat';
 import { AllowanceType } from '@/components/reuseables/enums';
-import CreateSalary from '@/components/payroll/salary/Index.vue';
+import CreateSalary from '@/components/payroll/salary/CreateComponent.vue';
 import AddButton from '@/components/reuseables/AddButton.vue';
 import { useConfirmDialog } from '@/components/reuseables/useConfirmDialog.js';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
@@ -230,9 +230,41 @@ const addModalVisibility = ref(false);
 const add = () => {
     addModalVisibility.value = true;
 };
-const refresh = async() =>{
-     await getSalaries();
-}
+const salaryData = ref({});
+const handleAddSalary = (data) => {
+    salaryData.value = data;
+};
+const serverError = ref('');
+const loadingAdd = ref(false);
+const submitForm = async () => {
+    serverError.value = '';
+    loadingAdd.value = true;
+    const url = `${baseURL}/salary/create`;
+
+    try {
+        const payload = { ...salaryData?.value };
+        // console.log('submit', payload);
+        const data = await postData(url, payload);
+        if (data?.status === 200 || data?.status === 201) {
+            // success.value = true;
+            successMessage.value = data?.message;
+            showSuccess(data?.message);
+            loadingAdd.value = false;
+
+            await getSalaries();
+        } else {
+            showError();
+            serverError.value = data?.error || data?.message;
+            loadingAdd.value = false;
+        }
+    } catch (error) {
+        showError();
+        serverError.value = error?.message || error?.message;
+
+        loadingAdd.value = false;
+        console.log(error?.error);
+    }
+};
 </script>
 
 <template>
@@ -262,8 +294,14 @@ const refresh = async() =>{
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
         </Dialog>
-        <Dialog v-model:visible="addModalVisibility" header="Add">
-            <CreateSalary @refresh="refresh" />
+        <Dialog v-model:visible="addModalVisibility" header="Add Salary" :style="{ width: '50%' }">
+            <CreateSalary @handleAddSalary="handleAddSalary" />
+            <div class="flex justify-content-end gap-2">
+                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                <Button v-if="!loadingAdd" type="button" label="Submit" @click="submitForm"></Button>
+
+                <SpinnerVue :loading="loadingAdd" size="3rem" />
+            </div>
         </Dialog>
     </div>
     <div class="card">

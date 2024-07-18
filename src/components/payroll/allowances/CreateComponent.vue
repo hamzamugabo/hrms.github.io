@@ -8,7 +8,7 @@ import { useToastPopup } from '@/components/reuseables/useToast.js';
 
 const { showError } = useToastPopup();
 const emit = defineEmits(['handleAddAllowance']);
-const props = defineProps(['employee', 'salary', 'start', 'end', 'fee', 'type', 'allowance', 'days']);
+const props = defineProps(['employee', 'salary', 'start', 'end', 'fee', 'type', 'allowance', 'days', 'transport']);
 console.log('allowance data', props?.allowance);
 const startDate = ref(props?.start || '');
 const endDate = ref(props?.end || '');
@@ -23,6 +23,7 @@ const allowanceSubType = ref({ name: props.allowance?.allowanceSubType || '', co
 const showAmountInputField = ref(false);
 const autoFilteredEmployees = ref([]);
 const workingDays = ref(props?.days || 0);
+const transportAllowance = ref(props?.transport || 0);
 const gazettedDays = ref([]);
 const { getEmployees } = utils();
 
@@ -115,12 +116,14 @@ const submitForm = () => {
     } else if (allowanceType?.value?.name === 'TRANSFER') {
         formData = {
             ...commonData,
-            transferType: transferType?.value?.name
+            transferType: transferType?.value?.name,
+            transportAllowance: transportAllowance.value
         };
     } else if (allowanceType?.value?.name === 'TRAVEL_OUTSIDE') {
         formData = {
             ...commonData,
-            allowanceSubType: allowanceSubType?.value?.name
+            allowanceSubType: allowanceSubType?.value?.name,
+            transportAllowance: transportAllowance.value
         };
     } else {
         formData = {
@@ -182,6 +185,10 @@ watch([amount, endDate, startDate, employeeId, allowanceType, workingDays, gazet
         <div class="field col-12 md:col-12" v-if="showAmountInputField">
             <label for="amount">Amount</label>
             <InputNumber v-model="amount" inputId="integeronly" />
+        </div>
+        <div class="field col-12 md:col-12" v-if="allowanceType.name === 'TRANSFER' || allowanceType.name === 'TRAVEL_OUTSIDE'">
+            <label for="transportAllowance">Transport Allowance</label>
+            <InputNumber v-model="transportAllowance" inputId="integeronly" />
         </div>
         <div class="field col-12 md:col-12">
             <label for="startDate">Start Date</label>

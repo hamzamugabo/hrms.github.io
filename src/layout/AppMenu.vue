@@ -558,6 +558,15 @@ const model = ref([
                     { label: 'Job Descriptions', icon: 'pi pi-fw pi-bars', to: '/job-description' }
                     // { label: 'Nationalities', icon: 'pi pi-fw pi-briefcase', to: '/nationality/show-nationalities' }
                 ]
+            },
+            {
+                label: 'Salary Configuration',
+                 icon: 'pi pi-fw pi-dollar',
+                items: [
+                    // { label: 'Create Job Description', icon: 'pi pi-fw pi-plus-circle', to: '/job-description/create' },
+                    { label: 'Configurations', icon: 'pi pi-fw pi-bars', to: '/salary/configuration' }
+                    // { label: 'Nationalities', icon: 'pi pi-fw pi-briefcase', to: '/nationality/show-nationalities' }
+                ]
             }
         ]
     }

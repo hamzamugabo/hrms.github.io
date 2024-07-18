@@ -124,9 +124,9 @@ const refresh = async () => {
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
         </Dialog>
-        <Dialog v-model:visible="addModalVisibility" header="Department">
+        <!-- <Dialog v-model:visible="addModalVisibility" header="Department">
             <CreateDepartment @refresh="refresh" />
-        </Dialog>
+        </Dialog> -->
     </div>
     <div class="card">
         <div class="grid">

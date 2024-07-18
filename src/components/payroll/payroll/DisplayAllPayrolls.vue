@@ -7,7 +7,7 @@ import SpinnerVue from '@/components/reuseables/Spinner.vue';
 // import changeDateFormat from '@/components/reuseables/changeDateFormat';
 import UpdatePayroll from './CreatePayroll.vue';
 import { utils } from './payrollUtils.js';
-import CreatePayroll from '@/components/payroll/payroll/Index.vue';
+import CreatePayroll from '@/components/payroll/payroll/CreatePayroll.vue';
 import AddButton from '@/components/reuseables/AddButton.vue';
 import { useConfirmDialog } from '@/components/reuseables/useConfirmDialog.js';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
@@ -68,6 +68,7 @@ const updatePayroll = async () => {
 
             // success.value = true;
             showSuccess();
+            allowanceDataToUpdate.value = {};
             loading.value = false;
             await getAllPayrolls(payrolls, loading);
         } else {
@@ -86,7 +87,7 @@ const openModal = (allowance) => {
     allowanceData.value = allowance;
     paymentFrequency.value = allowance?.paymentFrequency;
     basicSalary.value = allowance?.basicSalary;
-
+addModalVisibility.value = false
     visible.value = true;
 };
 
@@ -122,7 +123,7 @@ watch([startDateSearch, endDateSearch], async () => {
 });
 
 const handleAddAllowance = (data) => {
-    // console.log('allowance data', data)
+    console.log('allowance data', data);
     allowanceDataToUpdate.value = data;
 };
 const searchEmployee = (event) => {
@@ -150,14 +151,56 @@ const deletePayroll = async (data) => {
 };
 const addModalVisibility = ref(false);
 const add = () => {
+    visible.value = false;
+
     addModalVisibility.value = true;
+};
+const serverError = ref('');
+const loaddingAdd = ref(false);
+const submitForm = async () => {
+    serverError.value = '';
+    loaddingAdd.value = true;
+    const url = `${baseURL}/payrolls/create`;
+
+    try {
+        const payload = {
+            ...payrollData.value
+        };
+        console.log('submit', payload);
+        const data = await postData(url, payload);
+        if (data?.status === 200 || data?.status === 201) {
+            // success.value = true;
+            // showSuccess();
+            successMessage.value = data?.message;
+
+            loaddingAdd.value = false;
+            showSuccess(data?.message);
+            payrollData.value = {};
+              await getAllPayrolls(payrolls, loading);
+        } else {
+            showError();
+            serverError.value = data?.error || data?.message;
+            loaddingAdd.value = false;
+        }
+    } catch (error) {
+        showError();
+
+        serverError.value = error?.message || error?.message;
+
+        loaddingAdd.value = false;
+        console.log(error?.error);
+    }
+};
+const payrollData = ref({});
+const handleCreateEmployeePayroll = (data) => {
+    payrollData.value = data;
 };
 </script>
 
 <template>
-    <div class=" flex justify-content-center">
+    <div class="flex justify-content-center">
         <!-- <Button label="Show" @click="visible = true" /> -->
-        <Dialog v-model:visible="visible" header="Edit Payroll" :style="{ width: '50%' }">
+        <Dialog v-model:visible="visible" header="Edit Payroll" :style="{ width: '30rem' }">
             <Message v-if="success" severity="success">{{ successMessage }}</Message>
 
             <Message v-if="updateError" severity="error">{{ updateError }}</Message>
@@ -172,6 +215,7 @@ const add = () => {
                 :type="allowanceData?.allowanceType"
                 :allowance="allowanceData"
                 :update="'update'"
+                :payDate="allowanceData?.paymentDate"
             />
 
             <div class="flex justify-content-end gap-2">
@@ -181,22 +225,27 @@ const add = () => {
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
         </Dialog>
-         <Dialog v-model:visible="addModalVisibility" header="Add">
-            <CreatePayroll />
+        <Dialog v-model:visible="addModalVisibility" header="Create Payroll" :style="{ width: '30rem' }">
+            <CreatePayroll @handleCreateEmployeePayroll="handleCreateEmployeePayroll" />
+            <div class="flex justify-content-end gap-2">
+                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                <Button v-if="!loaddingAdd" type="button" label="Submit" @click="submitForm"></Button>
+
+                <SpinnerVue :loading="loaddingAdd" size="3rem" />
+            </div>
         </Dialog>
     </div>
-    
+
     <div class="card">
         <Message v-if="generalError" severity="error">{{ generalError }}</Message>
-<div class="p-fluid formgrid grid flex-grow">
-                    <div class="field col-12 md:col-12">
-                        <AddButton :label="'Payroll'" @handleAdd="add" />
-                        <!-- <Button type="button" icon="pi pi-plus" class="ml-4 mb-2" label="Add objective" outlined @click="addObjective()" style="float: right; width: 10rem" /> -->
-                    </div>
-                </div>
+        <div class="p-fluid formgrid grid flex-grow">
+            <div class="field col-12 md:col-12">
+                <AddButton :label="'Payroll'" @handleAdd="add" />
+                <!-- <Button type="button" icon="pi pi-plus" class="ml-4 mb-2" label="Add objective" outlined @click="addObjective()" style="float: right; width: 10rem" /> -->
+            </div>
+        </div>
         <DataTable v-model:filters="filters" :value="payrolls" paginator showGridlines :rows="10" dataKey="id" filterDisplay="menu" :loading="loading" :globalFilterFields="['leaveStatus']">
             <template #header>
-               
                 <div class="p-fluid formgrid grid flex-grow">
                     <div class="field col-12 md:col-12">
                         <Button type="button" icon="pi pi-filter-slash" class="ml-4 mb-2" label="Clear" outlined @click="clearFilter()" style="float: right; width: 100px" />

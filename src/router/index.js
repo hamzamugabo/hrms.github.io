@@ -58,6 +58,7 @@ import Attendance from '@/components/attendance/attendance/DisplayAll.vue';
 import AttendanceView from '@/components/attendance/attendance/DisplayOne.vue';
 import CreateSalary from '@/components/payroll/salary/Index.vue';
 import Salaries from '@/components/payroll/salary/DisplaySalaries.vue';
+import SalaryConfiguration from '@/components/payroll/salaryConfig/ShowConfigs.vue';
 import CreateAllowance from '@/components/payroll/allowances/Index.vue';
 import Allowances from '@/components/payroll/allowances/DisplayAllowances.vue';
 import CreateDeduction from '@/components/payroll/deductions/Create.vue';
@@ -484,6 +485,12 @@ const router = createRouter({
                     path: '/payroll',
                     name: 'Payrolls',
                     component: Payrolls,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/salary/configuration',
+                    name: 'SalaryConfiguration',
+                    component: SalaryConfiguration,
                     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
                 },
 

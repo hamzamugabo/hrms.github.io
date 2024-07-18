@@ -5,9 +5,10 @@ import { PaymentMethod as method } from '@/components/reuseables/enums';
 import { baseURL, fetchData } from '@/components/reuseables/FetchPostData';
 
 const emit = defineEmits(['handleCreateEmployeePayroll']);
-const props = defineProps(['employee', 'salary', 'start', 'end', 'fee', 'type', 'allowance', 'update']);
+const props = defineProps(['employee', 'salary', 'start', 'end', 'fee', 'type', 'allowance', 'update', 'payDate']);
 
 const startDate = ref(props?.start || '');
+const paymentDate = ref(props?.payDate || '');
 const endDate = ref(props?.end || '');
 const paymentMethod = ref(props?.type || '');
 const amount = ref(parseInt(props?.fee) || 0);
@@ -67,20 +68,21 @@ const updateEndDateConstraints = () => {
 };
 
 const submitForm = () => {
-    const payDate = new Date();
+    // const payDate = new Date();
     const formData = {
-        employeeId: props?.employee?.id,
+        employeeId: props?.employee?.id || employeeId?.value?.id,
         payPeriodEndDate: changeDateFormat(endDate.value),
         payPeriodStartDate: changeDateFormat(startDate.value),
-        paymentDate: changeDateFormat(payDate),
+        paymentDate: changeDateFormat(paymentDate.value),
         paymentMethod: paymentMethod.value?.name,
         salaryId: salaryId.value,
         // totalAmountPaid: parseInt(amount.value)
     };
+    // console.log('formdata', formData)
     emit('handleCreateEmployeePayroll', formData);
 };
 
-watch([amount, endDate, startDate, employeeId, paymentMethod, () => props?.employee], () => {
+watch([amount, endDate, startDate, employeeId, paymentMethod, paymentDate, () => props?.employee], () => {
     submitForm();
     updateEndDateConstraints();
     if (props?.employee?.id || employeeId.value) {
@@ -102,7 +104,7 @@ const searchEmployee = (event) => {
 
 <template>
     <div class="p-fluid formgrid grid">
-         <div v-if="update" class="field col-12 md:col-12">
+         <div v-if="update !== 'update'" class="field col-12 md:col-12">
             <label for="employee">Select Employee </label>
             <AutoComplete placeholder="Search employee" id="employee" optionLabel="lastName" :dropdown="true" :multiple="false" v-model="employeeId" :suggestions="autoFilteredEmployees" @complete="searchEmployee($event)" field="firstName">
                 <template #option="slotProps">
@@ -124,6 +126,10 @@ const searchEmployee = (event) => {
             <label for="salary">Amount </label>
             <InputNumber disabled v-model="amount" inputId="integeronly" />
         </div> -->
+<div class="field col-12 md:col-12">
+            <label for="startDate">Payment Date</label>
+            <Calendar :maxDate="startMaxDate" id="calendar-12h" v-model="paymentDate"  />
+        </div>
 
         <div class="field col-12 md:col-12">
             <label for="startDate">Start Date</label>

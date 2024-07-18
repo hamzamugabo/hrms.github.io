@@ -76,9 +76,9 @@ watch([basicSalary, paymentFrequency, employeeId], () => {
 
             <!-- <InputText id="paymentFrequency" type="text" v-model="paymentFrequency" /> -->
         </div>
-        <div class="field col-12 md:col-12">
+        <!-- <div class="field col-12 md:col-12">
             <label for="basicSalary">Basic Salary</label>
             <InputNumber v-model="basicSalary" inputId="integeronly" />
-        </div>
+        </div> -->
     </div>
 </template>

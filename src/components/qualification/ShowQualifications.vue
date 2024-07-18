@@ -13,7 +13,7 @@ const { confirmDelete } = useConfirmDialog();
 
 const qualifications = ref([]);
 const filters = ref(null);
-const loading = ref(true);
+const loading = ref(false);
 const visible = ref(false);
 const qualificationData = ref('');
 // const departmentUpdatedName = ref('');
