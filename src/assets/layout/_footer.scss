@@ -1,0 +1,17 @@
+.layout-footer {
+    transition: margin-left $transitionDuration;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    padding: 0 1rem;
+    padding-right: 1rem;
+    border-top: 1px solid var(--surface-border);
+    background-color: #fff;
+    // background-color: #db0000;
+    height: 60px; /* Specify the height you want */
+}
+
+.font-medium {
+    font-weight: 500; /* Adjust font weight as needed */
+}

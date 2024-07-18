@@ -1,0 +1,65 @@
+name: HR Portal (Develop)
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      portal: 
+        required: false
+        type: string
+        default: 'public-portal'
+      tag: 
+        required: false
+        type: string
+        default: 'develop'
+      environment:
+        required: true
+        type: string
+        default: "develop"
+      node-version:
+        required: false
+        type: string
+        default: ${{ vars.NODE_VERSION || 'v16.3.0' }}
+jobs:
+  build:
+    permissions:
+      id-token: write
+      contents: read
+    uses: govnet-hr/devops/.github/workflows/vite-build.yaml@v1
+    with:
+      portal: ${{ inputs.portal || vars.PORTAL }}
+      environment: ${{ inputs.environment || vars.ENV }}
+      node-version: ${{ inputs.node-version }}
+  package:
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+    uses: govnet-hr/devops/.github/workflows/vite-package.yaml@v1
+    with:
+      portal: ${{ inputs.portal || vars.PORTAL }}
+      environment: ${{ inputs.environment || vars.ENV }}
+      dockerhub-repo: 'eposta-hr-public-portal'
+      node-version: ${{ inputs.node-version }}
+      tag: ${{ inputs.tag || 'develop' }}
+    secrets:
+      dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
+      dockerhub-pass: ${{ secrets.DOCKERHUB_TOKEN }}
+      dockerhub-org: ${{ secrets.DOCKERHUB_USER }}
+  deploy:
+    needs: package
+    uses: govnet-hr/devops/.github/workflows/vps-docker-deploy.yaml@v1
+    with:
+      service: 'public-portal'
+      deploy-dir: '/labs/hr'
+      tag: ${{ inputs.tag || github.sha }}
+    permissions:
+      id-token: write
+      contents: read
+    secrets:
+      deploy-host-user: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_USER }}
+      deploy-host-ip: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_IP }}
+      deploy-host-port: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_PORT }}
+      deploy-host-ssh-private-key: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_PK }}
+    
