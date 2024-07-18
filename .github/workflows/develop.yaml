@@ -1,65 +1,50 @@
 name: HR Portal (Develop)
+
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches: [develop]
+    branches: ['main']
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  workflow_call:
-    inputs:
-      portal: 
-        required: false
-        type: string
-        default: 'public-portal'
-      tag: 
-        required: false
-        type: string
-        default: 'develop'
-      environment:
-        required: true
-        type: string
-        default: "develop"
-      node-version:
-        required: false
-        type: string
-        default: ${{ vars.NODE_VERSION || 'v16.3.0' }}
+
+# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
 jobs:
-  build:
-    permissions:
-      id-token: write
-      contents: read
-    uses: govnet-hr/devops/.github/workflows/vite-build.yaml@v1
-    with:
-      portal: ${{ inputs.portal || vars.PORTAL }}
-      environment: ${{ inputs.environment || vars.ENV }}
-      node-version: ${{ inputs.node-version }}
-  package:
-    needs: build
-    permissions:
-      id-token: write
-      contents: read
-    uses: govnet-hr/devops/.github/workflows/vite-package.yaml@v1
-    with:
-      portal: ${{ inputs.portal || vars.PORTAL }}
-      environment: ${{ inputs.environment || vars.ENV }}
-      dockerhub-repo: 'eposta-hr-public-portal'
-      node-version: ${{ inputs.node-version }}
-      tag: ${{ inputs.tag || 'develop' }}
-    secrets:
-      dockerhub-user: ${{ secrets.DOCKERHUB_USER }}
-      dockerhub-pass: ${{ secrets.DOCKERHUB_TOKEN }}
-      dockerhub-org: ${{ secrets.DOCKERHUB_USER }}
+  # Single deploy job since we're just deploying
   deploy:
-    needs: package
-    uses: govnet-hr/devops/.github/workflows/vps-docker-deploy.yaml@v1
-    with:
-      service: 'public-portal'
-      deploy-dir: '/labs/hr'
-      tag: ${{ inputs.tag || github.sha }}
-    permissions:
-      id-token: write
-      contents: read
-    secrets:
-      deploy-host-user: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_USER }}
-      deploy-host-ip: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_IP }}
-      deploy-host-port: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_PORT }}
-      deploy-host-ssh-private-key: ${{ secrets.DEVELOP_DEPLOY_HOST_SSH_PK }}
-    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload dist folder
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
