@@ -567,6 +567,17 @@ const model = ref([
                     { label: 'Configurations', icon: 'pi pi-fw pi-bars', to: '/salary/configuration' }
                     // { label: 'Nationalities', icon: 'pi pi-fw pi-briefcase', to: '/nationality/show-nationalities' }
                 ]
+            },
+             {
+                label: 'Objective Status',
+                 icon: 'pi pi-fw pi-sync',
+                items: [
+                    // { label: 'Create Job Description', icon: 'pi pi-fw pi-plus-circle', to: '/job-description/create' },
+                    { label: 'Organisation Update', icon: 'pi pi-fw pi-bars', to: '/performance/status-update' },
+                    { label: 'Department Update', icon: 'pi pi-fw pi-bars', to: '/performance/status-update/department' },
+                    { label: 'Individual Update', icon: 'pi pi-fw pi-bars', to: '/performance/status-update/individual' }
+                    // { label: 'Nationalities', icon: 'pi pi-fw pi-briefcase', to: '/nationality/show-nationalities' }
+                ]
             }
         ]
     }

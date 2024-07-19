@@ -47,6 +47,12 @@ const clearFilter = () => {
 };
 const handleUpdateAllowance = async () => {
     await updateAllowance(allowanceDataToUpdate, allowanceData, allowances, successMessage, updateError, success, loading);
+    if (successMessage?.value) {
+        showSuccess(successMessage?.value);
+    }
+    if (updateError?.value) {
+        showError(updateError?.value);
+    }
 };
 const openModal = (allowance) => {
     console.log('allowance', allowance);
@@ -116,7 +122,7 @@ const add = () => {
 //     await getAllowances(allowances, loading);
 // };
 const serverError = ref('');
-const loadingAdd = ref(false)
+const loadingAdd = ref(false);
 const submitForm = async () => {
     serverError.value = '';
     loadingAdd.value = true;
@@ -194,7 +200,7 @@ const submitForm = async () => {
             <!-- <CreateAllowance @refresh="refresh" /> -->
             <UpdateAllowance @handleAddAllowance="handleAddAllowance" />
             <div class="flex justify-content-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                <Button type="button" label="Cancel" severity="secondary" @click="addModalVisibility = false"></Button>
                 <Button v-if="!loadingAdd" type="button" label="Submit" @click="submitForm"></Button>
 
                 <SpinnerVue :loading="loadingAdd" size="3rem" />

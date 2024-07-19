@@ -42,7 +42,7 @@ const initFilters = () => {
 
 const updateObjective = async () => {
     try {
-         updateError.value = '';
+        updateError.value = '';
         loading.value = true;
         const url = `${baseURL}/organizationalObjective/update`;
         const formData = {
@@ -64,10 +64,9 @@ const updateObjective = async () => {
             showSuccess(data?.message);
             await getOrganisationObjectives(objectives);
         } else {
-            showError( data?.message ? data?.message : data?.error);
+            showError(data?.message ? data?.message : data?.error);
             updateError.value = data?.message ? data?.message : data?.error;
             loading.value = false;
-
         }
     } catch (error) {
         showError();
@@ -83,15 +82,13 @@ const openModal = (objective) => {
     visible.value = true;
 };
 
-
 const deleteObjective = async (id) => {
     // const url = `${baseURL}/appraisal/appeal/delete/${id}`;
     const url = `${baseURL}/organizationalObjective/delete/${id}`;
     // await confirmDelete(url);
     await confirmDelete(url, async () => {
-        await  getOrganisationObjectives(objectives);
+        await getOrganisationObjectives(objectives);
     });
-   
 };
 
 onMounted(async () => {
@@ -105,7 +102,7 @@ const AddLoading = ref(false);
 const submitForm = async () => {
     serverError.value = '';
     AddLoading.value = true;
-    const formData = { ...payload.value};
+    const formData = { ...payload.value };
 
     const url = `${baseURL}/organizationalObjective/create`;
 
@@ -116,14 +113,14 @@ const submitForm = async () => {
             success.value = true;
             AddLoading.value = false;
             showSuccess(data?.message);
-              await getOrganisationObjectives(objectives);
+            await getOrganisationObjectives(objectives);
         } else {
-            showError( data?.error || data?.message);
+            showError(data?.error || data?.message);
             serverError.value = data?.error || data?.message;
             AddLoading.value = false;
         }
     } catch (error) {
-        showError()
+        showError();
         AddLoading.value = false;
         console.log(error?.error);
     }
@@ -139,7 +136,7 @@ const handleData = (data) => {
 </script>
 
 <template>
-    <div class=" flex justify-content-center">
+    <div class="flex justify-content-center">
         <Dialog v-model:visible="visible" header="Edit organisation objective" :style="{ width: '50%' }">
             <Message v-if="success" severity="success">{{ successMessage }}</Message>
             <Message v-if="updateError" severity="error">{{ updateError }}</Message>
@@ -199,16 +196,38 @@ const handleData = (data) => {
             </template>
 
             <template #empty> No Objectives found. </template>
-            <template #loading> Loading Objectives data. Please wait. </template>
+            <template #loading> Loading Objectives data Please wait. </template>
 
             <Column :sortable="true" field="name" header="Objective" style="min-width: 9rem">
                 <template #body="{ data }"> {{ data?.name }}</template>
             </Column>
             <Column :sortable="false" field="description" header="Description" style="min-width: 9rem">
-                <template #body="{ data }"> {{ data.description }} </template>
+                <template #body="{ data }"> {{ data?.description }} </template>
+            </Column>
+            <Column :sortable="false" field="progressUpdate" header="Status" style="min-width: 9rem">
+                <template #body="{ data }">
+                    <Button
+                        :label="data?.progressUpdate?.progressStatus"
+                        :class="[
+                            'p-button-sm',
+                            'small-button',
+                            data?.progressUpdate?.progressStatus === 'NOT_STARTED'
+                                ? 'not-started-status'
+                                : data?.progressUpdate?.progressStatus === 'IN_PROGRESS'
+                                ? 'in-progress-status'
+                                : data?.progressUpdate?.progressStatus === 'COMPLETED'
+                                ? 'completed-status'
+                                : data?.progressUpdate?.progressStatus === 'ON_HOLD'
+                                ? 'on-hold-status'
+                                : data?.progressUpdate?.progressStatus === 'CANCELLED'
+                                ? 'cancelled-status'
+                                : ''
+                        ]"
+                    />
+                </template>
             </Column>
             <Column :sortable="false" field="dueDate" header="Due Date" style="min-width: 9rem">
-                <template #body="{ data }"> {{ data.dueDate }} </template>
+                <template #body="{ data }"> {{ data?.dueDate }} </template>
             </Column>
 
             <Column style="min-width: 15rem">
@@ -259,5 +278,34 @@ const handleData = (data) => {
     .gap-3-sm > * {
         margin-bottom: 1rem;
     }
+}
+.not-started-status {
+    background-color: #ffc107; /* Yellow */
+    color: white;
+}
+
+.in-progress-status {
+    background-color: #17a2b8; /* Teal */
+    color: white;
+}
+
+.completed-status {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+
+.on-hold-status {
+    background-color: #6c757d; /* Gray */
+    color: white;
+}
+
+.cancelled-status {
+    background-color: #d9534f; /* Red */
+    color: white;
+}
+
+.small-button {
+    padding: 0.25rem 0.5rem; /* Adjust the padding as needed */
+    font-size: 0.675rem; /* Adjust the font size if necessary */
 }
 </style>

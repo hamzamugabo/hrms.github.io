@@ -26,11 +26,11 @@ const successMessage = ref('');
 const updateError = ref('');
 const cost = ref(0);
 const description = ref('');
-const difficultyLevel = ref('');
+const difficultyLevel = ref({name:"",code:""});
 const durationHours = ref(0);
 const tags = ref('');
 const title = ref('');
-const trainingStatus = ref('');
+const trainingStatus =  ref({name:"",code:""});
 const searchTerm = ref('');
 
 const initFilters = () => {
@@ -50,11 +50,11 @@ const update = async () => {
             id: courseData?.value?.id,
             cost: cost.value,
             description: description.value,
-            difficultyLevel: difficultyLevel.value,
+            difficultyLevel: difficultyLevel.value?.name,
             durationHours: durationHours.value,
             tags: tags.value,
             title: title.value,
-            trainingStatus: trainingStatus.value
+            trainingStatus: trainingStatus.value?.name
         };
         // Perform form submission logic (e.g., send data to backend)
         console.log('Form submitted:', formData);
@@ -87,11 +87,11 @@ const openModal = (course) => {
 
     cost.value = course?.cost;
     description.value = course?.description;
-    difficultyLevel.value = course?.difficultyLevel;
+    difficultyLevel.value ={name:course?.difficultyLevel, code:course?.difficultyLevel} ;
     durationHours.value = course?.durationHours;
     tags.value = course?.tags;
     title.value = course?.title;
-    trainingStatus.value = course?.trainingStatus;
+    trainingStatus.value = {name:course?.trainingStatus, code:course?.trainingStatus};
 
     visible.value = true;
 };
@@ -151,6 +151,44 @@ const getStatusColor = (status) => {
             return 'default-color';
     }
 };
+const  serverError = ref('');
+const loadingAdd = ref(false)
+const submitForm = async () => {
+    serverError.value = '';
+    loadingAdd.value = true;
+    const formData = {
+     ...payload.value
+    };
+
+    const url = `${baseURL}/course/create`;
+
+    try {
+        const data = await postData(url, formData);
+        if (data?.status === 200 || data?.status === 201) {
+            successMessage.value = data?.message;
+            // success.value = true;
+            showSuccess(data?.message);
+             await getCourses(courses);
+            loadingAdd.value = false;
+        } else {
+            showError();
+            serverError.value = data?.error || data?.message;
+            loadingAdd.value = false;
+        }
+    } catch (error) {
+        showError();
+
+        loadingAdd.value = false;
+        console.log(error?.error);
+    }
+};
+const payload = ref({});
+
+const handleData = (data) =>{
+
+payload.value = data
+}
+
 </script>
 
 <template>
@@ -167,33 +205,33 @@ const getStatusColor = (status) => {
                 <div class="col-12">
                     <div class="card">
                         <div class="p-fluid formgrid grid">
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="cost">cost</label>
                                 <InputNumber v-model="cost" inputId="cost" :useGrouping="false" />
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="description">Description</label>
                                 <InputText required id="description" type="text" v-model="description" />
                             </div>
 
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="difficultyLevel">Difficulty Level</label>
                                 <Dropdown id="difficultyLevel" v-model="difficultyLevel" :options="DifficultyLevel" optionLabel="name" placeholder="Select difficulty Level"></Dropdown>
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="durationHours">Duration Hours</label>
                                 <InputNumber v-model="durationHours" inputId="durationHours" :useGrouping="false" />
                             </div>
 
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="tags">Tags</label>
                                 <InputText id="tags" type="text" v-model="tags" />
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="title">Title</label>
                                 <InputText id="title" type="text" v-model="title" />
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="trainingStatus">Training Status</label>
                                 <Dropdown id="trainingStatus" v-model="trainingStatus" :options="TrainingStatus" optionLabel="name" placeholder="Select Training Status"></Dropdown>
                             </div>
@@ -209,8 +247,14 @@ const getStatusColor = (status) => {
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
         </Dialog>
-        <Dialog v-model:visible="addModalVisibility" header="Course">
-            <CreateCourse @refresh="refresh" />
+        <Dialog v-model:visible="addModalVisibility" header="Create Course" :style="{ width: '50rem' }">
+            <CreateCourse @handleData="handleData" />
+              <div class="flex justify-content-end gap-2">
+                <Button type="button" label="Cancel" severity="secondary" @click="addModalVisibility = false"></Button>
+                <Button v-if="!loadingAdd" type="button" label="Submit" @click="submitForm"></Button>
+
+                <SpinnerVue :loading="loadingAdd" size="3rem" />
+            </div>
         </Dialog>
     </div>
     <div class="card">

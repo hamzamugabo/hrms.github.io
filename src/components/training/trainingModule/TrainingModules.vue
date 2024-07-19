@@ -124,13 +124,49 @@ const getStatusColor = (status) => {
             return 'default-color';
     }
 };
+const serverError = ref('');
+const loadingAdd = ref(false)
+const submitForm = async () => {
+    serverError.value = '';
+    loadingAdd.value = true;
+    const formData = {
+       ...payload.value
+    };
+
+    const url = `${baseURL}/modules/create`;
+
+    try {
+        const data = await postData(url, formData);
+        if (data?.status === 200 || data?.status === 201) {
+            successMessage.value = data?.message;
+            success.value = true;
+            showSuccess(data?.message);
+            loadingAdd.value = false;
+            await getTrainingModule(modules);
+        } else {
+            showError( data?.error || data?.message);
+            serverError.value = data?.error || data?.message;
+            loadingAdd.value = false;
+        }
+    } catch (error) {
+        showError();
+
+        loadingAdd.value = false;
+        console.log(error?.error);
+    }
+};
+const payload = ref({})
+const handleData = (data) =>{
+    payload.value = data
+}
+
 </script>
 
 <template>
     <div class="flex justify-content-center">
         <!-- <Button label="Show" @click="visible = true" /> -->
         <Dialog v-model:visible="visible" header="Update Training Module" :style="{ width: '50rem' }">
-            <Message v-if="success" severity="success">{{ successMessage }}</Message>
+            <!-- <Message v-if="success" severity="success">{{ successMessage }}</Message> -->
 
             <Message v-if="updateError" severity="error">{{ updateError }}</Message>
             <!-- <span class="p-text-secondary block mb-5">Update {{ courseData?.name }} category</span> -->
@@ -140,29 +176,29 @@ const getStatusColor = (status) => {
                 <div class="col-12">
                     <div class="card">
                         <div class="p-fluid formgrid grid">
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="moduleOrder">moduleOrder</label>
                                 <InputNumber v-model="moduleOrder" inputId="moduleOrder" :useGrouping="false" />
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="description">Description</label>
                                 <InputText required id="description" type="text" v-model="description" />
                             </div>
 
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="durationHours">Duration Hours</label>
                                 <InputNumber v-model="durationHours" inputId="durationHours" :useGrouping="false" />
                             </div>
 
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="resources">resources</label>
                                 <InputText id="resources" type="text" v-model="resources" />
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="title">Title</label>
                                 <InputText id="title" type="text" v-model="title" />
                             </div>
-                            <div class="field col-12 md:col-12">
+                            <div class="field col-12 md:col-6">
                                 <label for="trainingStatus">Training Status</label>
                                 <Dropdown id="trainingStatus" v-model="trainingStatus" :options="TrainingStatus" optionLabel="name" placeholder="Select Training Status"></Dropdown>
                             </div>
@@ -178,8 +214,14 @@ const getStatusColor = (status) => {
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
         </Dialog>
-        <Dialog v-model:visible="addModalVisibility" header="Course">
-            <CreateModule @refresh="refresh" />
+        <Dialog v-model:visible="addModalVisibility"  header="Create Training Module" :style="{ width: '50rem' }">
+            <CreateModule @handleData="handleData" />
+            <div class="flex justify-content-end gap-2">
+                <Button type="button" label="Cancel" severity="secondary" @click="addModalVisibility = false"></Button>
+                <Button v-if="!loadingAdd" type="button" label="Submit" @click="submitForm"></Button>
+
+                <SpinnerVue :loading="loadingAdd" size="3rem" />
+            </div>
         </Dialog>
     </div>
     <div class="card">

@@ -216,6 +216,28 @@ const handleData = (data) => {
             <Column :sortable="false" field="description" header="Description" style="min-width: 9rem">
                 <template #body="{ data }"> {{ data.description }} </template>
             </Column>
+             <Column :sortable="false" field="progressUpdate" header="Status" style="min-width: 9rem">
+                <template #body="{ data }">
+                    <Button
+                        :label="data?.progressUpdate?.progressStatus"
+                        :class="[
+                            'p-button-sm',
+                            'small-button',
+                            data?.progressUpdate?.progressStatus === 'NOT_STARTED'
+                                ? 'not-started-status'
+                                : data?.progressUpdate?.progressStatus === 'IN_PROGRESS'
+                                ? 'in-progress-status'
+                                : data?.progressUpdate?.progressStatus === 'COMPLETED'
+                                ? 'completed-status'
+                                : data?.progressUpdate?.progressStatus === 'ON_HOLD'
+                                ? 'on-hold-status'
+                                : data?.progressUpdate?.progressStatus === 'CANCELLED'
+                                ? 'cancelled-status'
+                                : ''
+                        ]"
+                    />
+                </template>
+            </Column>
             <Column :sortable="false" field="dueDate" header="Due Date" style="min-width: 9rem">
                 <template #body="{ data }"> {{ data.dueDate }} </template>
             </Column>

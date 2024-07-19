@@ -26,6 +26,9 @@ const workingDays = ref(props?.days || 0);
 const transportAllowance = ref(props?.transport || 0);
 const gazettedDays = ref([]);
 const { getEmployees } = utils();
+console.log('allowanceType', allowanceType?.value)
+
+// watch(())
 
 onMounted(async () => {
     await getEmployees(employees, false);
@@ -75,7 +78,9 @@ const allowancesWhichAcceptAmountInput = [
     { name: 'HARDSHIP', code: 'HARDSHIP' },
     { name: 'VEHICLE_FUEL', code: 'VEHICLE_FUEL' },
     { name: 'MILEAGE', code: 'MILEAGE' },
-    { name: 'SPECIAL_DUTY', code: 'SPECIAL_DUTY' }
+    { name: 'SPECIAL_DUTY', code: 'SPECIAL_DUTY' },
+    // { name: 'ACTING', code: 'ACTING' },
+    // { name: 'ACTING', code: 'ACTING' },
 ];
 
 const submitForm = () => {
@@ -134,11 +139,18 @@ const submitForm = () => {
     if (props?.allowance) {
         formData = { ...formData, id: props.allowance.id };
     }
-    // console.log('formData',formData)
+    console.log('formData', formData);
     emit('handleAddAllowance', formData);
 };
+// onMounted(()=>{
+//      if (allowancesWhichAcceptAmountInput.some((a) => a.name === allowanceType.value.name)) {
+//         showAmountInputField.value = true;
+//     } else {
+//         showAmountInputField.value = false;
+//     }
+// })
 
-watch([amount, endDate, startDate, employeeId, allowanceType, workingDays, gazettedDays, allowanceType, allowanceSubType], () => {
+watch([amount, endDate, startDate, employeeId, allowanceType, workingDays, gazettedDays, allowanceType, allowanceSubType, transportAllowance], () => {
     if (allowancesWhichAcceptAmountInput.some((a) => a.name === allowanceType.value.name)) {
         showAmountInputField.value = true;
     } else {
@@ -170,7 +182,7 @@ watch([amount, endDate, startDate, employeeId, allowanceType, workingDays, gazet
                 </template>
             </AutoComplete>
         </div>
-        <div class="field col-12 md:col-12">
+        <div v-if="allowanceType.name !== 'TRANSFER'" class="field col-12 md:col-12">
             <label for="allowanceType">Allowance Type</label>
             <Dropdown id="allowanceType" v-model="allowanceType" :options="AllowanceType" optionLabel="name" placeholder="Select allowance type"></Dropdown>
         </div>

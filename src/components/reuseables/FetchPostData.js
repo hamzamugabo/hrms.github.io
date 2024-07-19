@@ -139,7 +139,7 @@ const fetchAUTHData = async (url, loading) => {
 };
 
 const postData = async (url, payload = {}, loading) => {
-    console.log('this is the payload data', payload);
+    // console.log('this is the payload data', payload);
     // const serverError = useUserStore();
     // const router = useRouter(); // Access the router instance
 

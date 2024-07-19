@@ -124,6 +124,15 @@ const leaveTypes = [
     { name: 'SPECIAL_LEAVE', code: 'SPECIAL_LEAVE' },
     { name: 'LEAVE_WITHOUT_PAY', code: 'LEAVE_WITHOUT_PAY' }
 ];
+const ProgressStatus = [
+
+    {name:"NOT_STARTED",code:"NOT_STARTED"},
+    {name:"IN_PROGRESS",code:"IN_PROGRESS"},
+    {name:"COMPLETED",code:"COMPLETED"},
+    {name:"ON_HOLD",code:"ON_HOLD"},
+    {name:"CANCELLED",code:"CANCELLED"}
+
+]
 
 export {
     genderOptionsEnum,
@@ -144,5 +153,6 @@ export {
     RewardType,
     DifficultyLevel,
     TrainingStatus,
-    QuestionType
+    QuestionType,
+    ProgressStatus
 };

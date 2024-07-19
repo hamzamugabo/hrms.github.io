@@ -8,8 +8,10 @@ export const usePerformanceUtils = () => {
 
         try {
             const { data } = await fetchData(url, loading);
-
-            objectives.value = data;
+          console.log('getOrganisationObjectives', data)
+                objectives.value = data;
+           
+           
         } catch (error) {
             objectives.value = [];
             console.error('Error fetching objectives:', error);
@@ -28,6 +30,18 @@ export const usePerformanceUtils = () => {
             // Handle errors here
         }
     };
+    // const getOrganisationObjectiveUpdateStatus = async (id) => {
+    //     const url = `${baseURL}/progress_update/by-organizational/${id}`;
+
+    //     try {
+    //         const { data } = await fetchData(url, loading);
+
+    //         return data;
+    //     } catch (error) {
+    //         console.error('Error fetching objectives:', error);
+    //         // Handle errors here
+    //     }
+    // };
 
     const getDepartmentObjectives = async (objectives) => {
         const url = `${baseURL}/departmentObjective`;
@@ -136,7 +150,7 @@ export const usePerformanceUtils = () => {
                         };
                     })
                 );
-console.log('allIndividualObjectives', allIndividualObjectives)
+                console.log('allIndividualObjectives', allIndividualObjectives);
                 objectives.value = allIndividualObjectives;
             } else {
                 objectives.value = []; // Handle case where data is not an array or is empty
@@ -144,6 +158,18 @@ console.log('allIndividualObjectives', allIndividualObjectives)
             // objectives.value = data;
         } catch (error) {
             objectives.value = [];
+            console.error('Error fetching objectives:', error);
+            // Handle errors here
+        }
+    };
+    const getIndividualObjectivById = async (id) => {
+        const url = `${baseURL}/objective/individual/by-id/${id}`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+
+            return data;
+        } catch (error) {
             console.error('Error fetching objectives:', error);
             // Handle errors here
         }
@@ -158,7 +184,7 @@ console.log('allIndividualObjectives', allIndividualObjectives)
                 let allIndividualObjectives = await Promise.all(
                     data.map(async (element) => {
                         const agreement = await getPerformanceAgreementById(element?.performanceAgreementId);
-                        console.log('agreement', agreement)
+                        console.log('agreement', agreement);
                         const employee = await getEmployeeById(element?.employeeId);
                         const supervisor = await getEmployeeById(element?.supervisorId);
                         return {
@@ -713,6 +739,7 @@ console.log('allIndividualObjectives', allIndividualObjectives)
         getFinancialMetric,
         getSupervisorFinancialMetric,
         getSupervisorInternalProcessMetric,
-        getSupervisorCustomerMetric
+        getSupervisorCustomerMetric,
+        getIndividualObjectivById
     };
 };

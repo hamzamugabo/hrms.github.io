@@ -82,6 +82,9 @@ import CreateAppraisalResult from '@/components/performance/appraisalResult/Crea
 import AppraisalResults from '@/components/performance/appraisalResult/Results.vue';
 import CreateAppraisalAppeal from '@/components/performance/appraisalAppeal/Create.vue';
 import AppraisalAppeals from '@/components/performance/appraisalAppeal/Appeals.vue';
+import StatusUpdates from '@/components/performance/statusUpdate/organisationUpdate/ShowUpdates.vue';
+import DepartmentStatusUpdates from '@/components/performance/statusUpdate/departmentUpdate/ShowUpdates.vue';
+import IndividualStatusUpdates from '@/components/performance/statusUpdate/individualUpdate/ShowUpdates.vue';
 import CreateJobDescription from '@/components/jobDescription/Create.vue';
 import JobDescriptions from '@/components/jobDescription/JobDescriptions.vue';
 import CreateNomination from '@/components/performance/nomination/Create.vue';
@@ -635,7 +638,25 @@ const router = createRouter({
                     component: AppraisalAppeals,
                     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
                 },
-                // Performance/Nomination
+                {
+                    path: '/performance/status-update',
+                    name: 'StatusUpdates',
+                    component: StatusUpdates,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/performance/status-update/department',
+                    name: 'DepartmentStatusUpdates',
+                    component: DepartmentStatusUpdates,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/performance/status-update/individual',
+                    name: 'IndividualStatusUpdates',
+                    component: IndividualStatusUpdates,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                // Performance/Nomination StatusUpdates
                 {
                     path: '/performance/nomination/create',
                     name: 'CreateNomination',

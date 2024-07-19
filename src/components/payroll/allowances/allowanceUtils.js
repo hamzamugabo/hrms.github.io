@@ -6,7 +6,6 @@ import changeDateFormat from '@/components/reuseables/changeDateFormat';
 
 // const { showError, showSuccess } = useToastPopup();
 
-
 export const utils = () => {
     const getAllowances = async (allowances, loading) => {
         loading.value = true;
@@ -203,30 +202,64 @@ export const utils = () => {
     };
     const updateAllowance = async (allowanceDataToUpdate, allowanceData, allowances, successMessage, updateError, success, loading) => {
         updateError.value = '';
+
         try {
+            let formData = {
+                ...allowanceDataToUpdate.value,
+                id: allowanceData?.value?.id
+            };
+
             loading.value = true;
             let url = `${baseURL}/allowance/update`;
 
             if (allowanceData?.value?.allowanceType === 'OVERTIME') {
                 url = `${baseURL}/allowance/update-overtime`;
+                formData = {
+                    employeeId: allowanceDataToUpdate.value?.employeeId,
+                    endDate: allowanceDataToUpdate.value?.endDate,
+                    gazettedDays: allowanceDataToUpdate.value?.gazettedDays,
+                    id: allowanceData?.value?.id,
+                    startDate: allowanceDataToUpdate.value?.startDate,
+                    workingDays: allowanceDataToUpdate.value?.workingDays
+                };
             } else if (allowanceData?.value?.allowanceType === 'TRANSFER') {
                 url = `${baseURL}/allowance/update-transfer`;
+                formData = {
+                    employeeId: allowanceDataToUpdate.value?.employeeId,
+                    endDate: allowanceDataToUpdate.value?.endDate,
+                    id: allowanceData?.value?.id,
+                    startDate: allowanceDataToUpdate.value?.startDate,
+                    transferType: allowanceDataToUpdate.value?.transferType,
+                    transportAllowance: allowanceDataToUpdate.value?.transportAllowance
+                };
             } else if (allowanceData?.value?.allowanceType === 'TRAVEL_OUTSIDE') {
                 url = `${baseURL}/allowance/update-travelOutside`;
+                formData = {
+                    allowanceSubType: allowanceDataToUpdate.value?.allowanceSubType,
+                    employeeId: allowanceDataToUpdate.value?.employeeId,
+                    endDate: allowanceDataToUpdate.value?.endDate,
+                    id: allowanceData?.value?.id,
+                    startDate: allowanceDataToUpdate.value?.startDate,
+                    transportAllowance: allowanceDataToUpdate.value?.transportAllowance
+                };
             } else {
                 url = `${baseURL}/allowance/update`;
+                formData = {
+                    allowanceType: allowanceDataToUpdate.value?.allowanceType,
+                    amount: allowanceDataToUpdate.value?.amount,
+                    endDate: allowanceDataToUpdate.value?.endDate,
+                    id: allowanceData?.value?.id,
+                    startDate: allowanceDataToUpdate.value?.startDate
+                };
             }
-            const formData = {
-                ...allowanceDataToUpdate.value,
-                id: allowanceData?.value?.id
-            };
-            // console.log('allowance to update', formData);
+
+            console.log('allowance to update', formData);
             const data = await postData(url, formData, loading);
             if (data?.status === 200 || data?.status === 201) {
                 successMessage.value = data?.message;
 
                 loading.value = false;
-// showSuccess();
+                // showSuccess();
                 success.value = true;
                 loading.value = false;
                 setTimeout(() => {
@@ -234,6 +267,7 @@ export const utils = () => {
                     successMessage.value = '';
                 }, 1000);
                 await getAllowances(allowances, loading);
+                // return  data?.message;
             } else {
                 // showError();
                 updateError.value = data?.message ? data?.message : data?.error;
@@ -300,5 +334,5 @@ export const utils = () => {
         }
     };
 
-    return { getAllowances, getEmployeeById, getEmployees, searchByEmployeeId, deleteAllowance, searchEmployee, updateAllowance, searchByDateRange, getDeductions,getNssfDeductions, updateDeduction, searchDeductionByEmployeeId };
+    return { getAllowances, getEmployeeById, getEmployees, searchByEmployeeId, deleteAllowance, searchEmployee, updateAllowance, searchByDateRange, getDeductions, getNssfDeductions, updateDeduction, searchDeductionByEmployeeId };
 };
