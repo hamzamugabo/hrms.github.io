@@ -231,34 +231,34 @@ onMounted(() => {
                 <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" />
             </div>
         </div>
-        <div class="col-12 xl:col-6">
-            <div style="height: 18rem">
-                <WeeklyAttendance :attendanceData="weeklyAttendance" />
-            </div>
-        </div>
+        <!-- <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" /> -->
+
+        <WeeklyAttendance :attendanceData="weeklyAttendance" />
 
         <div class="col-12 xl:col-6">
             <div class="card" style="height: 25rem">
                 <!-- <h5>Recent Leaves</h5> -->
-                <div class="flex">
-                    <h5>Employees attendance</h5>
+                <div style="height: 100%">
+                    <div class="flex">
+                        <h5>Employees attendance</h5>
 
-                    <Dropdown v-model="timeFrame" :options="attendanceFilters" optionLabel="name" placeholder="search employee..." class="mr-2 ml-auto" style="width: 8rem" />
-                </div>
+                        <Dropdown v-model="timeFrame" :options="attendanceFilters" optionLabel="name" placeholder="search employee..." class="mr-2 ml-auto" style="width: 8rem" />
+                    </div>
 
-                <div class="flex mb-5">
-                    <div>
-                        <input type="radio" id="bar" value="bar" v-model="chartType" :class="{ 'selected-radio': chartType === 'bar' }" />
-                        <label for="bar">Bar</label>
+                    <div class="flex mb-5">
+                        <div>
+                            <input type="radio" id="bar" value="bar" v-model="chartType" :class="{ 'selected-radio': chartType === 'bar' }" />
+                            <label for="bar">Bar</label>
+                        </div>
+                        <div class="ml-2">
+                            <input type="radio" id="line" value="line" v-model="chartType" :class="{ 'selected-radio': chartType === 'line' }" />
+                            <label for="line">Line</label>
+                        </div>
                     </div>
-                    <div class="ml-2">
-                        <input type="radio" id="line" value="line" v-model="chartType" :class="{ 'selected-radio': chartType === 'line' }" />
-                        <label for="line">Line</label>
+                    <div style="height: 18rem">
+                        <AttendenceTimeFramesBarLIne v-if="chartType === 'bar'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
+                        <AttendenceTimeFramesLineGraph v-if="chartType === 'line'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
                     </div>
-                </div>
-                <div style="height: 18rem">
-                    <AttendenceTimeFramesBarLIne v-if="chartType === 'bar'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
-                    <AttendenceTimeFramesLineGraph v-if="chartType === 'line'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
                 </div>
             </div>
         </div>

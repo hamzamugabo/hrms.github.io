@@ -72,13 +72,13 @@ watch(
 </script>
 
 <template>
-    <!-- <div class="col-12 xl:col-6"> -->
+    <div class="col-12 xl:col-6">
         <div class="card" style="height: 18rem">
             <h6>Weekly Attendance</h6>
             <div class="chart-container_">
             <Chart type="bar" :data="chartData" :options="chartOptions" />
         </div>
-        <!-- </div> -->
+        </div>
     </div>
 </template>
 
