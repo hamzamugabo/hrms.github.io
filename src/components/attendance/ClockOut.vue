@@ -74,27 +74,22 @@ function formatDate(dateString) {
 }
 
 const submitForm = async () => {
-     addAttendanceError.value = '';
+    addAttendanceError.value = '';
     if (!attendanceData?.value) {
         addAttendanceError.value = 'No clock in information';
         return;
     }
-    const now = new Date();
     // console.log('attendance data', attendanceData.value);
     const formData = {
-        date: attendanceData?.value?.date,
-        notes: attendanceData?.value?.notes || attendanceData?.value?.notes,
-        timeIn: formatDate(attendanceData.value?.timeIn),
-        timeOut: formatDate(now.toString()),
-        id: attendanceData?.value?.id
+        employeeId
     };
 
     try {
         loading.value = true;
 
-        const url = `${baseURL}/attendance/update`;
+        const url = `${baseURL}/attendance/clock-out`;
 
-        // console.log('Form submitted:', formData);
+        //  
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -102,7 +97,7 @@ const submitForm = async () => {
         if (data?.status === 200 || data?.status === 201) {
             successMessageAddAttendance.value = data?.message;
             // successAddAttendance.value = true;
-        showSuccess(data?.message);
+            showSuccess(data?.message);
 
             loading.value = false;
             attendanceData.value = data?.data;
@@ -115,7 +110,7 @@ const submitForm = async () => {
         }
     } catch (error) {
         showError('Failed');
-        console.log('Form submitted:', formData);
+         
 
         loading.value = false;
         console.log(error?.error);
@@ -123,7 +118,7 @@ const submitForm = async () => {
 };
 
 const handleCreateAttendanceOvertime = async () => {
-     addAttendanceOvertimeError.value = '';
+    addAttendanceOvertimeError.value = '';
     loadingOverTime.value = true;
     const attendanceId = attendanceData.value?.id;
     // const formData = attendanceBreakRequestData?.value;
@@ -136,7 +131,7 @@ const handleCreateAttendanceOvertime = async () => {
     try {
         const url = `${baseURL}/attendance/overtime/create/${attendanceId}`;
 
-        // console.log('Form submitted:', formData);
+        //  
         // loadingOverTime.value = false;
 
         const data = await postData(url, formData, loadingOverTime);
@@ -156,7 +151,7 @@ const handleCreateAttendanceOvertime = async () => {
         }
     } catch (error) {
         showError('Failed');
-        console.log('Form submitted:', formData);
+         
 
         loadingOverTime.value = false;
         console.log(error?.error);
@@ -191,10 +186,10 @@ const showHideOvertime = () => {
             <SpinnerVue :loading="loadingOverTime" size="3rem" />
         </div>
     </Dialog>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="submitForm" class="form-container">
         <div class="grid">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="min-width: 300px">
                     <Button
                         v-if="attendanceData?.id"
                         type="button"
@@ -221,8 +216,17 @@ const showHideOvertime = () => {
         <div style="display: flex; justify-content: center">
             <SpinnerVue :loading="loading" size="3rem" />
         </div>
-        <div v-if="!loading" class="mb-10" style="margin: 50px 0px">
-            <button v-if="!attendanceData?.timeOut" style="background-color: #db0000; color: #ffffff; padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; padding-bottom: 40px" class="block mx-auto border-none pb-3">Clock Out</button>
+        <div v-if="!loading" class="mb-10" style="margin: 0px 0px">
+            <button v-if="!attendanceData?.timeOut" style="background-color: #db0000; color: #ffffff; padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; padding-bottom: 10px" class="block mx-auto border-none pb-3">Clock Out</button>
         </div>
     </form>
 </template>
+<style scoped>
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+</style>

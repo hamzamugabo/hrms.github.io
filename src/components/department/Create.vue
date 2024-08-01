@@ -80,7 +80,7 @@ const searchStations = (event) => {
 onMounted(async () => {
     await getStations();
 });
-</script>
+</script> 
 <template>
     <div class="form-container_">
         <form @submit.prevent="submitForm" class="form-content_">

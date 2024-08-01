@@ -12,7 +12,6 @@ import { useConfirmDialog } from '@/components/reuseables/useConfirmDialog.js';
 // const { showError } = useToastPopup();
 const { confirmDelete } = useConfirmDialog();
 
-
 const router = useRouter();
 const applicantStore = useApplicantStore();
 const applicants = ref([]);
@@ -23,7 +22,7 @@ const filters = ref(null);
 const searchTerm = ref('');
 const showViewIcon = ref(false);
 const showUpdateIcon = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 
 const getApplicants = async () => {
     const url = `${baseURL}/applicant`;
@@ -34,10 +33,10 @@ const getApplicants = async () => {
         disableMessage.value = '';
         loadingDisable.value = false;
         applicants.value = data;
-        console.log('applicants', data)
+        console.log('applicants', data);
         if (!data) {
             applicants.value = [];
-            console.log('no applicants available')
+            console.log('no applicants available');
         }
     } catch (error) {
         applicants.value = [];
@@ -71,7 +70,12 @@ const viewApplicant = (applicant) => {
 
 const updateApplicant = (applicant) => {
     applicantStore.setApplicantData(applicant);
-    router.push('/update-applicant');
+
+    const applicantId = { id: applicant?.id };
+    router.push({
+        path: '/update-applicant',
+        query: applicantId
+    });
 };
 
 // const deleteApplicant = async (applicant) => {
@@ -108,7 +112,7 @@ const searchApplicant = async () => {
         queryParams.append('searchTerm', searchTerm.value);
         const queryUrl = `${url}?${queryParams.toString()}`;
         const { data } = await fetchData(queryUrl, loading, router);
-        console.log('data===>', data);
+         
         applicants.value = data || [];
     } catch (error) {
         applicants.value = [];
@@ -138,7 +142,7 @@ const deleteApplicant = async (data) => {
 };
 // const addModalVisibility = ref(false);
 const handleAdd = () => {
-     router.push('/applicant/create');
+    router.push('/applicant/create');
 };
 
 const refresh = async () => {
@@ -147,15 +151,15 @@ const refresh = async () => {
 </script>
 
 <template>
- <Toast />
-     
+    <Toast />
+
     <div class="card">
         <Message v-if="disableMessage" severity="success">{{ disableMessage }}</Message>
-         <div class="p-fluid formgrid grid flex-grow">
-                    <div class="field col-12 md:col-12">
-                        <AddButton :label="'Applicant'" @handleAdd="handleAdd" />
-                    </div>
-                </div>
+        <div class="p-fluid formgrid grid flex-grow">
+            <div class="field col-12 md:col-12">
+                <AddButton :label="'Applicant'" @handleAdd="handleAdd" />
+            </div>
+        </div>
         <DataTable
             v-model:filters="filters"
             :value="applicants"
@@ -168,7 +172,6 @@ const refresh = async () => {
             :globalFilterFields="['firstName', 'phoneNumber', 'idType', 'idNumber', 'emailAddress', 'maritalStatus', 'gender']"
         >
             <template #header>
-
                 <div class="flex justify-content-between">
                     <!-- <Button type="button" icon="pi pi-filter-slash" class="mr-2" label="Clear" outlined @click="clearFilter()" /> -->
                     <IconField iconPosition="left">
@@ -183,7 +186,6 @@ const refresh = async () => {
             <template #loading> Loading Applicants data. Please wait. </template>
             <Column :sortable="true" field="firstName" header="Name" style="min-width: 14rem">
                 <template #body="{ data }"> {{ data.firstName }} {{ data.lastName }} </template>
-                 
             </Column>
             <Column :sortable="true" field="phoneNumber" header="Phone Number" style="min-width: 12rem">
                 <template #body="{ data }">
@@ -239,8 +241,7 @@ const refresh = async () => {
 
                         <Button
                             type="button"
-                          
-                            class=" text-white font-bold py-1 px-2 rounded"
+                            class="text-white font-bold py-1 px-2 rounded"
                             @click="updateApplicant(data)"
                             style="width: 2rem; cursor: pointer; margin-right: 5px; border-radius: 200px; background-color: #0e9d6e"
                             @mouseover="showUpdateIcon = true"

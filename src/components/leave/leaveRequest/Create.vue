@@ -74,7 +74,7 @@ const getAllLeaveTypes = async () => {
     try {
         loading.value = true;
         const { data } = await fetchData(url, loading);
-        console.log('all leave types', data)
+        console.log('all leave types', data);
         leaveTypes.value = data;
     } catch (error) {
         console.error('Error fetching leave types:', error);
@@ -157,22 +157,14 @@ watch([selectedAutoValue, startDate, description, leaveTypeId, endDate], () => {
                     </div>
                     <div class="field col-12 md:col-12">
                         <label for="leaveType">Select Leave Type</label>
-                        <AutoComplete
-                            placeholder="Search"
-                            optionLabel="maxDurationInDays"
-                            id="leaveType"
-                            :dropdown="true"
-                            :multiple="false"
-                            v-model="leaveTypeId"
-                            :suggestions="autoFilteredValueLeave"
-                            @complete="searchLeaveType"
-                            field="leaveTypeEnum"
-                        >
+                        <AutoComplete placeholder="Search" optionLabel="maxDurationInDays" id="leaveType" :dropdown="true" :multiple="false" v-model="leaveTypeId" :suggestions="autoFilteredValueLeave" @complete="searchLeaveType" field="name">
                             <template #option="slotProps">
                                 <div class="flex align-options-center">
-                                    <div>{{ slotProps.option.leaveTypeEnum }}</div>
+                                    <div>{{ slotProps.option.name }}</div>
                                     <div>&nbsp;</div>
-                                    <div>{{ slotProps.option.maxDurationInDays }} days</div>
+                                    <div>
+                                        <strong> {{ slotProps.option.maxDurationInDays }} days</strong>
+                                    </div>
                                 </div>
                             </template>
                         </AutoComplete>

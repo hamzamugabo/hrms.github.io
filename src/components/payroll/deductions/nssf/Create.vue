@@ -24,8 +24,7 @@ const submitForm = async () => {
         const payload = {
             ...nssfData.value
         };
-        console.log('submit', payload);
-        console.log('url', url);
+  
         const data = await postData(url, payload);
         if (data?.status === 200 || data?.status === 201) {
             // success.value = true;

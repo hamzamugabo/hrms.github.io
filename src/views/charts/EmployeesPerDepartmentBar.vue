@@ -8,9 +8,7 @@ const chartOptions = ref({});
 
 const setChartData = () => {
     const labels = props?.lables;
-    //  employees.value.map((department) => department.departmentName);
     const data = props?.data;
-    //  employees.value.map((department) => department.employeeCount);
 
     return {
         labels,
@@ -53,12 +51,9 @@ const setChartOptions = () => {
                 beginAtZero: true,
                 ticks: {
                     color: textColorSecondary,
-                    min: 1,
-                    stepSize: 1,
-                    callback: function (value) {
-                        if (Number.isInteger(value)) {
-                            return value;
-                        }
+                    stepSize: 10,
+                    callback: (value) => {
+                        return (value % 10 === 0) ? value : '';
                     }
                 },
                 grid: {
@@ -86,7 +81,10 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="card">
+    <div class="card" style="height: 18rem">
+        <h6>Employees per department</h6>
+        <div class="chart-container_">
         <Chart type="bar" :data="chartData" :options="chartOptions" />
+    </div>
     </div>
 </template>

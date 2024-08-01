@@ -27,8 +27,10 @@ const fetchData = async (url, loading, router) => {
             if (data?.status === 200) {
                 return data;
             } else {
-                console.error('Invalid response:', data);
-                throw data?.message;
+                // console.log('data')
+                // console.log('Invalid response:', data);
+                return data;
+                // throw data?.message;
             }
         } else if (response.status === 401) {
             // serverError.updateError('Unauthorized');
@@ -41,7 +43,7 @@ const fetchData = async (url, loading, router) => {
             // throw new Error(`Request failed with status ${response.status}: ${data?.message}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
         // throw error;
     } finally {
         if (loading) {
@@ -73,7 +75,7 @@ const fetchDataWithPayload = async (url, loading) => {
             if (data?.status === 200 || data?.status === 201) {
                 return data;
             } else {
-                console.error('Invalid response:', data);
+                console.log('Invalid response:', data);
                 throw new Error('Invalid response status.');
             }
         } else if (response.status === 401) {
@@ -87,7 +89,7 @@ const fetchDataWithPayload = async (url, loading) => {
             // throw new Error(`Request failed with status ${response.status}: ${data?.message}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
         throw error;
     } finally {
         if (loading) {
@@ -118,7 +120,7 @@ const fetchAUTHData = async (url, loading) => {
             if (data?.status === 200 && data) {
                 return data; // Assuming you want to return the data if token is valid
             } else {
-                console.error('Invalid response:', data);
+                console.log('Invalid response:', data);
                 throw new Error('Invalid response status.');
             }
         } else if (response.status === 401) {
@@ -129,7 +131,7 @@ const fetchAUTHData = async (url, loading) => {
             throw new Error(`Request failed with status ${response.status}: ${data?.message}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
         // throw error;
     } finally {
         if (loading) {
@@ -139,7 +141,8 @@ const fetchAUTHData = async (url, loading) => {
 };
 
 const postData = async (url, payload = {}, loading) => {
-    // console.log('this is the payload data', payload);
+    console.log('this is the payload data', payload);
+    // console.log('this is the payload data permissions' , payload?.permissions);
     // const serverError = useUserStore();
     // const router = useRouter(); // Access the router instance
 
@@ -157,14 +160,17 @@ const postData = async (url, payload = {}, loading) => {
             },
             body: JSON.stringify(payload)
         });
+     
 
         if (response.ok) {
             const data = await response.json();
             if (data?.status === 200 || data?.status === 201) {
                 return data;
             } else {
-                console.error('Invalid response:', data?.message);
-                throw new Error('Invalid response status.');
+                console.log('Invalid response:', data);
+
+                return data;
+                // throw new Error('Invalid response status.');
             }
         } else if (response.status === 401) {
             // serverError.updateError('Unauthorized');
@@ -177,7 +183,7 @@ const postData = async (url, payload = {}, loading) => {
             // throw new Error(`Request failed with status ${response.status}: ${data?.message}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
         throw error;
     } finally {
         if (loading) {
@@ -185,6 +191,56 @@ const postData = async (url, payload = {}, loading) => {
         }
     }
 };
+const putData = async (url, payload = {}, loading) => {
+    // console.log('this is the payload data', payload);
+    // const serverError = useUserStore();
+    // const router = useRouter(); // Access the router instance
+
+    try {
+        const accessToken = loadFromLocalStorage()?.accessToken;
+        if (!accessToken) {
+            throw new Error('Access token not found.');
+        }
+
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data?.status === 200 || data?.status === 201) {
+                return data;
+            } else {
+                // console.log('Invalid response:', data);
+                return data;
+
+                // throw new Error('Invalid response status.');
+            }
+        } else if (response.status === 401) {
+            // serverError.updateError('Unauthorized');
+            // Redirect to login page using router.push
+            // router.push('/auth/login'); // Adjust the path as per your actual login route
+            throw new Error('Unauthorized');
+        } else {
+            const data = await response.json();
+            return data;
+            // throw new Error(`Request failed with status ${response.status}: ${data?.message}`);
+        }
+    } catch (error) {
+        console.log('Error:', error);
+        throw error;
+    } finally {
+        if (loading) {
+            loading.value = false;
+        }
+    }
+};
+
 const postDataUpload = async (url, payload, loading) => {
     try {
         const accessToken = loadFromLocalStorage()?.accessToken;
@@ -203,21 +259,21 @@ const postDataUpload = async (url, payload, loading) => {
         if (response.ok) {
             const data = await response.json();
             if (data?.status === 200 || data?.status === 201) {
-                console.log('Data:', data);
+                 
                 return data; // Return the data if successful
             } else {
-                console.error('Invalid response:', data?.message);
+                console.log('Invalid response:', data?.message);
                 return data;
                 // throw new Error('Invalid response status.');
             }
         } else {
             const data = await response.json();
-            console.error('Error response:', data);
+            console.log('Error response:', data);
             return data;
             // throw new Error(`Request failed with status ${response?.status}: ${data?.message}`);
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.log('Error:', error);
         throw error; // Rethrow the error for handling in the calling function
     } finally {
         if (loading) {
@@ -229,4 +285,4 @@ const postDataUpload = async (url, payload, loading) => {
 const baseURL = import.meta.env.VITE_APP_API_URL;
 const baseAUTHURL = import.meta.env.VITE_APP_API_URL_AUTH;
 
-export { fetchData, postData, baseURL, baseAUTHURL, fetchAUTHData, postDataUpload, fetchDataWithPayload };
+export { fetchData, postData, baseURL, baseAUTHURL, fetchAUTHData, postDataUpload, fetchDataWithPayload, putData };

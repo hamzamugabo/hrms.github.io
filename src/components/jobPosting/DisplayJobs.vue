@@ -54,7 +54,7 @@ const getInterviewByJobId = async (jobPostingId) => {
     const url = `${baseURL}/interviews/interview/${jobPostingId}`;
     try {
         const { data } = await fetchData(url, loadingJobs);
-        console.log('jobs interviews', data);
+      
         loadInterview.value = false;
         return data;
     } catch (error) {
@@ -71,7 +71,7 @@ const getJobs = async () => {
     const url = `${baseURL}/job-posting`;
     try {
         const { data } = await fetchData(url, loadingJobs);
-        console.log('jobs', data);
+    
 
         loadingJobs.value = false;
 
@@ -88,7 +88,7 @@ const getJobs = async () => {
 };
 
 const viewJob = (job) => {
-    console.log('job', job);
+
     jobStore.setJobData(job);
 
     const jobId = { id: job?.id };
@@ -116,7 +116,7 @@ const applyJob = async (job) => {
     const user = loadFromLocalStorage();
     // console.log('user',user)
     if (!user?.user?.id) {
-        console.log('user not an applicant');
+    
         router.push('/applicant/create');
         return;
     }

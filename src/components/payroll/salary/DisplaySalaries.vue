@@ -172,7 +172,7 @@ const searchByEmployeeId = async () => {
         const url = `${baseURL}/leave/request/by-employeeId/${employeeId.value?.id}`;
 
         const { data } = await fetchData(url, loading);
-        console.log('data===>', data);
+         
         let allRequests = await Promise.all(
             data.map(async (element) => {
                 const employee = await getEmployeeById(element?.employeeId);
@@ -243,7 +243,7 @@ const submitForm = async () => {
 
     try {
         const payload = { ...salaryData?.value };
-        // console.log('submit', payload);
+        //  
         const data = await postData(url, payload);
         if (data?.status === 200 || data?.status === 201) {
             // success.value = true;

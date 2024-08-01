@@ -4,6 +4,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/piniaStore/userStore';
 const { layoutConfig, onMenuToggle } = useLayout();
+import defaultProfile from '@/components/reuseables/defaultProfilePic';
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
@@ -25,10 +26,7 @@ const logoUrl = computed(() => {
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
-// const onSettingsClick = () => {
-//     topbarMenuActive.value = false;
-//     router.push('/documentation');
-// };
+
 const topbarMenuClasses = computed(() => {
     return {
         'layout-topbar-menu-mobile-active': topbarMenuActive.value
@@ -45,12 +43,14 @@ const bindOutsideClickListener = () => {
         document.addEventListener('click', outsideClickListener.value);
     }
 };
+
 const unbindOutsideClickListener = () => {
     if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener);
+        document.removeEventListener('click', outsideClickListener.value);
         outsideClickListener.value = null;
     }
 };
+
 const isOutsideClicked = (event) => {
     if (!topbarMenuActive.value) return;
 
@@ -59,29 +59,34 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl?.isSameNode(event.target) || sidebarEl?.contains(event.target) || topbarEl?.isSameNode(event.target) || topbarEl?.contains(event.target));
 };
-const dropdownOpen = ref(false);
-
-const toggleDropdown = () => {
-    dropdownOpen.value = !dropdownOpen.value;
-};
 
 const logout = () => {
     console.log('logout');
     localStorage.removeItem('userInfo');
     user.updateUser(null);
     router.push('/auth/login');
-
-    // Implement logout logic here
 };
 
-const goToProfile = () => {
-    // Implement navigation to profile page here
+const profileOp = ref();
+const notificationOp = ref();
+const notifications = ref([
+    { id: 1, title: 'New Leave Request', message: 'John Doe has requested leave for 3 days.', time: '10 mins ago' },
+    { id: 2, title: 'Timesheet Submitted', message: 'Jane Smith submitted her timesheet.', time: '1 hour ago' },
+    { id: 3, title: 'Policy Update', message: 'The vacation policy has been updated.', time: '3 hours ago' }
+]);
+
+const toggleProfile = (event) => {
+    profileOp.value.toggle(event);
+};
+
+const toggleNotifications = (event) => {
+    notificationOp.value.toggle(event);
 };
 </script>
 
 <template>
     <div class="layout-topbar" style="background-color: #db0000">
-          <button class="p-link layout-menu-button layout-topbar-button" style="margin-right:2rem" @click="onMenuToggle()">
+        <button class="p-link layout-menu-button layout-topbar-button" style="margin-right: 2rem" @click="onMenuToggle()">
             <i class="pi pi-bars header-footer-content"></i>
         </button>
         <router-link to="/" class="layout-topbar-logo">
@@ -89,54 +94,72 @@ const goToProfile = () => {
             <span style="color: white">HRMS</span>
         </router-link>
 
-      
-
         <button class="p-link layout-topbar-menu-button layout-topbar-button" @click="onTopBarMenuButton()">
             <i class="pi pi-ellipsis-v"></i>
         </button>
-        <!-- <div style="margin-left:10%">Hello</div> -->
-        <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-calendar"></i>
-                <span>Calendar</span>
-            </button>
-            <div class="dropdown-container">
-                <!-- <i class="pi pi-user" @click="toggleDropdown"></i> -->
 
-                <div v-if="dropdownOpen" class="dropdown">
-                    <ul>
-                        <li @click="goToProfile">Profile</li>
-                        <li @click="logout">Logout</li>
-                    </ul>
-                </div>
+        <div class="layout-topbar-menu" :class="topbarMenuClasses">
+            <div class="flex justify-content-center">
+                <button @click="toggleProfile" class="p-link layout-topbar-button">
+                    <img :src="defaultProfile" alt="logo" style="width: 30px; height: 30px" />
+                    <span>Profile</span>
+                </button>
+                <OverlayPanel ref="profileOp">
+                    <div class="flex flex-column gap-3 w-10rem">
+                        <ul class="list-none p-0 m-0 flex flex-column gap-3">
+                            <li class="flex align-items-center gap-2">
+                                <i class="pi pi-user"></i>
+                                <div>
+                                    <span class="font-medium">Profile</span>
+                                </div>
+                            </li>
+                            <li @click="logout" class="flex align-items-center gap-2">
+                                <i class="pi pi-sign-out"></i>
+                                <div>
+                                    <span class="font-medium">Logout</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </OverlayPanel>
             </div>
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-user" @click="toggleDropdown"></i>
-                <span>Profile</span>
-            </button>
             <button class="p-link layout-topbar-button">
                 <i class="pi pi-cog"></i>
                 <span>Settings</span>
             </button>
+            <div class="flex justify-content-center">
+                <button class="p-link layout-topbar-button" @click="toggleNotifications">
+                    <i class="pi pi-bell"></i>
+                    <span>Notification</span>
+                    {{ notifications?.length }}
+                </button>
+                <OverlayPanel ref="notificationOp">
+                    <div class="flex flex-column gap-3 w-25rem">
+                        <div v-if="notifications.length">
+                            <ul class="list-none p-0 m-0 flex flex-column gap-3">
+                                <li v-for="notification in notifications" :key="notification.id" class="flex align-items-center gap-2">
+                                    <i class="pi pi-info-circle text-primary"></i>
+                                    <div>
+                                        <span class="font-medium">{{ notification.title }}</span>
+                                        <div class="text-sm text-color-secondary">{{ notification.message }}</div>
+                                    </div>
+                                    <div class="flex align-items-center gap-2 text-color-secondary ml-auto text-sm">
+                                        <span>{{ notification.time }}</span>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div v-else>
+                            <span class="font-medium text-900 block mb-2">No new notifications</span>
+                        </div>
+                    </div>
+                </OverlayPanel>
+            </div>
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
-.dropdown-container {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: white;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
 ul {
     list-style-type: none;
     padding: 0;
@@ -151,7 +174,4 @@ li {
 li:hover {
     background-color: #f9f9f9;
 }
-// .header-footer-content{
-//     color:white
-// }
 </style>

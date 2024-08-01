@@ -48,7 +48,7 @@ const handleUpdateDeduction = async () => {
     await updateDeduction(deductionDataToUpdate, deductionData, deductions, successMessage, updateError, success, loading);
 };
 const openModal = (deduction) => {
-    console.log('deduction', deduction);
+   
     deductionData.value = deduction;
 
     visible.value = true;
@@ -94,28 +94,7 @@ const searchEmployee = (event) => {
         });
     }
 };
-// const deleteDeduction = async (id) => {
-//     if (!id) {
-//         generalError.value = 'No deduction';
-//         return;
-//     }
-//     const url = `${baseURL}/deduction/delete/${id}`;
 
-//     try {
-//         const data = await fetchData(url);
-//         if (!data?.data) {
-//             await getNssfDeductions(deductions, loading);
-//         }
-//         await getNssfDeductions(deductions, loading);
-
-//         console.log(data);
-//     } catch (error) {
-//         // Handle errors here
-//     }
-// };
-// const addDeduction = () => {
-//     router.push('/deduction/create');
-// };
 const deleteDeduction = async (data) => {
     const url = `${baseURL}/deduction/delete/${data?.id}`;
     // await confirmDelete(url);

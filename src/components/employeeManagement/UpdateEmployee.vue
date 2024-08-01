@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-// import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useEmployeeStore } from '@/piniaStore/employeeData.js';
 import changeDateFormat from '@/components/reuseables/changeDateFormat.js';
 // import QualificationsForm from './QualificationFormTemplate.vue';
@@ -240,11 +240,14 @@ const getQualifications = async () => {
 const getEmployee = async (employee) => {
     const employeeId = storedEmployeeData?.id || employee?.id;
     const url = `${baseURL}/employees/by-id/${employeeId}`;
-
+    if (!employeeId) {
+        useRouter().back();
+        return;
+    }
     try {
         if (url && employeeId) {
             const { data } = await fetchData(url, loading);
-            console.log('employee to edit data', data);
+          
             firstName.value = data?.firstName;
             lastName.value = data?.lastName;
             otherName.value = data?.otherNames;
@@ -343,7 +346,7 @@ const submitForm = async () => {
             customIdType: others?.value
         };
 
-        // console.log('formData', formData)
+        //  
 
         const data = await postData(url, formData, loading);
 
@@ -401,14 +404,7 @@ const resetForm = () => {
     yearOfAwardProfessional.value = '';
     commentProfessional.value = '';
 };
-onMounted(() => {
-    if (employeeData.value) {
-        console.log('they should update');
-        // updateFields();
-    } else {
-        console.log('not updated the fields');
-    }
-});
+
 </script>
 
 <template>

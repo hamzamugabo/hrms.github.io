@@ -265,7 +265,7 @@ export const useEmployee = () => {
             if (response.ok) {
                 const data = await response.json();
                 if (data?.status === 200 || data?.status === 201) {
-                    console.log('Data:', data);
+                     
                     return data; // Return the data if successful
                 } else {
                     console.error('Invalid response:', data?.message);

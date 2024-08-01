@@ -280,28 +280,28 @@ const handleData = (data) => {
     }
 }
 .not-started-status {
-    background-color: #ffc107; /* Yellow */
-    color: white;
+    background-color: #ff9800; /* Bright Orange */
+    color: white; /* White Text for Contrast */
 }
 
 .in-progress-status {
-    background-color: #17a2b8; /* Teal */
-    color: white;
+    background-color: #00bcd4; /* Vivid Teal */
+    color: white; /* White Text for Contrast */
 }
 
 .completed-status {
-    background-color: #28a745; /* Green */
-    color: white;
+    background-color: #4caf50; /* Fresh Green */
+    color: white; /* White Text for Contrast */
 }
 
 .on-hold-status {
-    background-color: #6c757d; /* Gray */
-    color: white;
+    background-color: #9c27b0; /* Deep Purple */
+    color: white; /* White Text for Contrast */
 }
 
 .cancelled-status {
-    background-color: #d9534f; /* Red */
-    color: white;
+    background-color: #f44336; /* Bold Red */
+    color: white; /* White Text for Contrast */
 }
 
 .small-button {

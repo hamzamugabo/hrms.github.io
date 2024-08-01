@@ -44,7 +44,7 @@ const handleUpdateInterviewer = async () => {
     try {
         const url = `${baseURL}/interviewers/update`;
 
-        console.log('Form submitted:', formData);
+         
 
         const data = await postData(url, formData, loading);
 
@@ -83,7 +83,7 @@ const handleAddInterviewer = async () => {
     try {
         const url = `${baseURL}/interviewers/create/${interviewDataUpdate?.value?.id}`;
 
-        console.log('Form submitted:', formData);
+         
 
         const data = await postData(url, formData, loading);
 

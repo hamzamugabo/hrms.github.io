@@ -114,7 +114,7 @@ const submitForm = async () => {
     AddLoading.value = true;
     console.log('payload', payload.value);
     const formData = { ...payload.value };
-    console.log('formData', formData);
+     
 
     const url = `${baseAUTHURL}/appraisal/result/create`;
 

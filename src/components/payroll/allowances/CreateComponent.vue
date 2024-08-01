@@ -3,13 +3,13 @@ import { ref, watch, onMounted } from 'vue';
 import changeDateFormat from '@/components/reuseables/changeDateFormat';
 import { AllowanceType, TransferType, TravelOutsideAllowanceSubType } from '@/components/reuseables/enums';
 import { baseURL, fetchData } from '@/components/reuseables/FetchPostData';
-import { utils } from './allowanceUtils.js';
+import { utils } from '@/components/payroll/allowances/allowanceUtils.js';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
 const { showError } = useToastPopup();
 const emit = defineEmits(['handleAddAllowance']);
 const props = defineProps(['employee', 'salary', 'start', 'end', 'fee', 'type', 'allowance', 'days', 'transport']);
-console.log('allowance data', props?.allowance);
+
 const startDate = ref(props?.start || '');
 const endDate = ref(props?.end || '');
 const allowanceType = ref({ name: props?.type || '', code: props?.type || '' });
@@ -17,16 +17,16 @@ const amount = ref(parseInt(props?.fee) || 0);
 const employeeId = ref('');
 const salaryId = ref('');
 const salaryAmount = ref('');
-const employees = ref([]);
 const transferType = ref({ name: props.allowance?.transferType || '', code: props.allowance?.transferType || '' });
 const allowanceSubType = ref({ name: props.allowance?.allowanceSubType || '', code: props.allowance?.allowanceSubType || '' });
 const showAmountInputField = ref(false);
+const employees = ref([]);
 const autoFilteredEmployees = ref([]);
 const workingDays = ref(props?.days || 0);
 const transportAllowance = ref(props?.transport || 0);
 const gazettedDays = ref([]);
 const { getEmployees } = utils();
-console.log('allowanceType', allowanceType?.value)
+
 
 // watch(())
 
@@ -51,7 +51,7 @@ const getEmployeeSalary = async (id) => {
 
     try {
         const { data } = await fetchData(url, false);
-        console.log('employee salary', data);
+     
         if (!data) {
             showError('No salary attached to the Employee');
             return;
@@ -139,7 +139,7 @@ const submitForm = () => {
     if (props?.allowance) {
         formData = { ...formData, id: props.allowance.id };
     }
-    console.log('formData', formData);
+     
     emit('handleAddAllowance', formData);
 };
 // onMounted(()=>{
@@ -162,7 +162,7 @@ watch([amount, endDate, startDate, employeeId, allowanceType, workingDays, gazet
     maxGazettedDates.value = new Date(endDate.value);
 
     if (employeeId?.value?.id) {
-        console.log('employee id', employeeId?.value?.id);
+     
         getEmployeeSalary(employeeId.value.id);
     }
 });

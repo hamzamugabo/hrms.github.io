@@ -1,10 +1,11 @@
 import { ref } from 'vue';
 import { baseURL, fetchData } from '@/components/reuseables/FetchPostData';
-import trainingModules from '@/samples/trainingModule';
+
+import { utils } from '@/components/payroll/allowances/allowanceUtils.js';
 
 export const useTrainingUtils = () => {
     const loading = ref(false);
-
+    const { getEmployeeById } = utils();
     const getCourses = async (responsData) => {
         const url = `${baseURL}/course`;
 
@@ -13,6 +14,8 @@ export const useTrainingUtils = () => {
 
             responsData.value = data;
         } catch (error) {
+            responsData.value = [];
+
             console.error('Error fetching :', error);
             // Handle errors here
         }
@@ -34,7 +37,6 @@ export const useTrainingUtils = () => {
 
         try {
             const { data } = await fetchData(url, loading);
-            console.log('responsData====>', responsData);
             if (Array.isArray(data) && data.length > 0) {
                 let allData = await Promise.all(
                     data.map(async (element) => {
@@ -49,50 +51,166 @@ export const useTrainingUtils = () => {
 
                 responsData.value = allData;
             } else {
-                if (trainingModules) {
-                    let allData = await Promise.all(
-                        trainingModules?.data.map(async (element) => {
-                            const course = await getCourseByid(element?.courseId);
-
-                            return {
-                                ...element,
-                                courseTitle: course?.title
-                            };
-                        })
-                    );
-
-                    console.log('allData', allData)
-
-                    responsData.value = allData;
-                }else{
-                    responsData.value = [];
-
-                }
+                responsData.value = [];
             }
         } catch (error) {
-            // if (trainingModules) {
-            //     let allData = await Promise.all(
-            //         trainingModules?.data.map(async (element) => {
-            //             const course = await getCourseByid(element?.courseId);
+            responsData.value = [];
 
-            //             return {
-            //                 ...element,
-            //                 courseTitle: course?.title
-            //             };
-            //         })
-            //     );
-
-            //     console.log('allData', allData)
-
-            //     responsData.value = allData;
-            // }else{
-            //     responsData.value = [];
-
-            // }
             console.error('Error fetching======> :', error);
             // Handle errors here
         }
     };
 
-    return { getCourses, getCourseByid, getTrainingModule };
+    const getTrainingAssesment = async (responsData) => {
+        const url = `${baseURL}/training/assessment`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+            if (Array.isArray(data) && data.length > 0) {
+                let allData = await Promise.all(
+                    data.map(async (element) => {
+                        const course = await getCourseByid(element?.courseId);
+                        const employee = await getEmployeeById(element?.employeeId);
+
+                        return {
+                            ...element,
+                            courseTitle: course?.title,
+                            employee: `${employee?.firstName} ${employee?.lastName}`
+                        };
+                    })
+                );
+
+                responsData.value = allData;
+            } else {
+                responsData.value = [];
+            }
+        } catch (error) {
+            responsData.value = [];
+
+            console.error('Error fetching======> :', error);
+            // Handle errors here
+        }
+    };
+    const getTrainingAssessmentByid = async (id) => {
+        const url = `${baseURL}/training/assessment/by-id/${id}`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching :', error);
+            // Handle errors here
+        }
+    };
+    const getTrainingQuestionByid = async (id) => {
+        const url = `${baseURL}/questions/by-id/${id}`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching :', error);
+            // Handle errors here
+        }
+    };
+    const getTrainingModuleById = async (id) => {
+        const url = `${baseURL}/modules/by-id/${id}`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+
+            return data;
+        } catch (error) {
+            console.error('Error fetching :', error);
+            // Handle errors here
+        }
+    };
+    const getTrainingQuestions = async (responsData) => {
+        const url = `${baseURL}/questions`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+            if (Array.isArray(data) && data.length > 0) {
+                let allData = await Promise.all(
+                    data.map(async (element) => {
+                        const assessment = await getTrainingAssessmentByid(element?.trainingAssessmentId);
+
+                        return {
+                            ...element,
+                            assessment: assessment?.title
+                        };
+                    })
+                );
+
+                responsData.value = allData;
+            } else {
+                responsData.value = [];
+            }
+        } catch (error) {
+            responsData.value = [];
+
+            console.error('Error fetching======> :', error);
+            // Handle errors here
+        }
+    };
+    const getTrainingAnswers = async (responsData) => {
+        const url = `${baseURL}/training_answer`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+            if (Array.isArray(data) && data.length > 0) {
+                let allData = await Promise.all(
+                    data.map(async (element) => {
+                        const question = await getTrainingQuestionByid(element?.trainingQuestionId);
+
+                        return {
+                            ...element,
+                            question: question?.questionText
+                        };
+                    })
+                );
+
+                responsData.value = allData;
+            } else {
+                responsData.value = [];
+            }
+        } catch (error) {
+            responsData.value = [];
+
+            console.error('Error fetching======> :', error);
+            // Handle errors here
+        }
+    };
+
+    const getLessons = async (responsData) => {
+        const url = `${baseURL}/lessons`;
+
+        try {
+            const { data } = await fetchData(url, loading);
+            if (Array.isArray(data) && data.length > 0) {
+                let allData = await Promise.all(
+                    data.map(async (element) => {
+                        const module = await getTrainingModuleById(element?.trainingModuleId);
+
+                        return {
+                            ...element,
+                            moduleTitle: module?.title
+                        };
+                    })
+                );
+                console.log('lessons', allData);
+                responsData.value = allData;
+            } else {
+                responsData.value = [];
+            }
+        } catch (error) {
+            responsData.value = [];
+
+            console.error('Error fetching======> :', error);
+            // Handle errors here
+        }
+    };
+    return { getCourses, getCourseByid, getTrainingModule, getTrainingAssesment, getTrainingQuestions, getTrainingAnswers, getLessons };
 };

@@ -69,7 +69,7 @@ const submitForm = async () => {
         // loading.value = false;
 
         const data = await postData(url, formFields, loading);
-        console.log('response', data);
+         
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 

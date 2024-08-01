@@ -1,119 +1,77 @@
 <script setup>
-import { ref } from 'vue';
-import { baseURL, postData } from '@/components/reuseables/FetchPostData';
-import { useToastPopup } from '@/components/reuseables/useToast.js';
+// Define component props and emits
+defineProps(['qualifications', 'label', 'autoFilteredAwardingInstitutions', 'autoFilteredQualifications', 'institutionId', 'qualificationId', 'maxJoiningDate', 'update']);
 
-const { showError, showSuccess } = useToastPopup();
+const emit = defineEmits(['remove', 'add', 'searchAwardingInstitution', 'searchQualification']);
 
-const prop = defineProps(['applicantId']);
-
-const award = ref('');
-const endDate = ref('');
-const fieldOfStudy = ref('');
-const schoolName = ref('');
-const startDate = ref('');
-const loading = ref('');
-const success = ref(false);
-const successMessage = ref('');
-const updateApplicantError = ref('');
-const addEmployeeError = ref('');
-
-const submitForm = async () => {
-    updateApplicantError.value = '';
-    loading.value = true;
-    try {
-        const url = `${baseURL}/applicant/education/create/${prop?.applicantId}`;
-
-        if (!schoolName.value.trim()) {
-            alert('Please enter School name.');
-            return;
-        }
-
-        const formData = {
-            award: award.value,
-            endDate: endDate.value,
-            fieldOfStudy: fieldOfStudy.value,
-            schoolName: schoolName.value,
-            startDate: startDate.value
-        };
-
-        // console.log('formData', formData)
-
-        const data = await postData(url, formData, loading);
-
-        if (data?.status === 200 || data?.status === 201) {
-            successMessage.value = data?.message;
-            loading.value = false;
-            resetForm();
-            success.value = true;
-            loading.value = false;
-            showSuccess();
-            setTimeout(() => {
-                success.value = false;
-                successMessage.value = '';
-            }, 1000);
-
-        } else {
-            showError(data?.message ? data?.message : data?.error);
-            updateApplicantError.value = data?.message ? data?.message : data?.error;
-        }
-    } catch (error) {
-        showError('Failed');
-        loading.value = false;
-
-        console.error('Login error:', error);
-    }
+const removeQualification = (index) => {
+    emit('remove', index);
 };
-const resetForm = () => {
-    award.value = '';
-    endDate.value = '';
-    fieldOfStudy.value = '';
-    schoolName.value = '';
-    startDate.value = '';
+
+const addQualification = () => {
+    emit('add');
 };
 </script>
 
 <template>
-    <Toast />
-    <form @submit.prevent="submitForm">
-        <div class="grid" >
-            <div class="col-12">
-                <div class="card">
-                    <Message v-if="success" severity="success">{{ successMessage }}</Message>
+    <div class="grid">
+        <div class="col-12">
+            <div>
+                <div v-if="update !== 'update'" style="display: flex; justify-content: space-between">
+                    <h5 class="mr-4 ml-2">{{ label }}</h5>
+                    <Button
+                        type="button"
+                        icon="pi pi-trash"
+                        @click="addQualification"
+                        style="width: auto; padding: 10px; cursor: pointer; margin-left: 5px; border-radius: 10px; margin-bottom: 10px; height: 30px; background-color: #db0000"
+                        @mouseover="showUpdateIcon = true"
+                        @mouseleave="showUpdateIcon = false"
+                    >
+                        Add New Qualification
+                    </Button>
+                </div>
 
-                    <Message v-if="addEmployeeError" severity="error">{{ addEmployeeError }}</Message>
+                <div class="p-fluid formgrid grid card" v-for="(qualification, index) in qualifications" :key="index" style="margin-bottom: 10px">
+                    <div class="field col-12 md:col-4">
+                        <label :for="'award' + index">Award</label>
+                        <InputText :id="'award' + index" type="text" v-model="qualification.award" />
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label :for="'schoolName' + index">School Name</label>
+                        <InputText :id="'schoolName' + index" type="text" v-model="qualification.schoolName" />
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label :for="'fieldOfStudy' + index">Field of Study</label>
+                        <InputText :id="'fieldOfStudy' + index" type="text" v-model="qualification.fieldOfStudy" />
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label :for="'startDate' + index">Start Date</label>
+                        <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.startDate" :maxDate="maxJoiningDate" />
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label :for="'endDate' + index">End Date</label>
+                        <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.endDate" :maxDate="maxJoiningDate" />
+                    </div>
 
-                    <h5>Qualification details</h5>
-                    <div class="p-fluid formgrid grid">
-                        <div class="field col-12 md:col-4">
-                            <label for="school">School Name</label>
-                            <InputText required id="school" type="text" v-model="schoolName" />
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <label for="award">Award</label>
-                            <InputText required id="award" type="text" v-model="award" />
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <label for="dob">Start Date</label>
-                            <Calendar :showIcon="true" :showButtonBar="true" v-model="startDate"></Calendar>
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <label for="dob">End Date</label>
-                            <Calendar :showIcon="true" :showButtonBar="true" v-model="endDate"></Calendar>
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <label for="fieldOfStudy">Filed of study</label>
-                            <InputText id="fieldOfStudy" type="text" v-model="fieldOfStudy" />
-                        </div>
+                    <div class="field col-12 md:col-4" v-if="qualifications.length > 1" style="align-self: center; margin-top: 20px">
+                        <Button @click="removeQualification(index)" v-if="qualifications.length > 1" icon="pi pi-times" severity="danger" rounded aria-label="Cancel" />
                     </div>
                 </div>
             </div>
         </div>
-        <div style="display: flex; justify-content: center">
-            <SpinnerVue :loading="loading" size="3rem" />
-        </div>
-        <div v-if="!loading" class="mb-10" style="margin: 50px 0px">
-            <button style="background-color: #db0000; cursor: pointer; color: #ffffff; padding: 0.5rem 1rem; border-radius: 0.5rem; padding-bottom: 40px" class="block mx-auto border-none pb-3">Update Applicant</button>
-        </div>
-    </form>
+    </div>
 </template>
+
+<style scoped>
+.tab {
+    @apply text-sm bg-gray-50 rounded-t cursor-pointer text-gray-800 w-full text-center py-2 px-4 gap-3 border-b-2 border-gray-200;
+}
+
+.tab:hover {
+    @apply bg-primary-50 text-primary-700 border-b-2 border-primary-400 rounded-t;
+}
+
+.tab-active {
+    @apply text-sm bg-primary-50 rounded-t cursor-pointer font-bold text-primary-700 text-center w-full py-2 px-4 gap-3 border-b-4 border-primary-700;
+}
+</style>

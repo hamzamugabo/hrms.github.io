@@ -70,7 +70,7 @@ export const utils = () => {
 
             const { data } = await fetchData(url, loading);
             employeePayroll.value = data;
-            // console.log('data===>', data);
+            //  
             let allPayrolls = await Promise.all(
                 data?.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId, false);

@@ -13,7 +13,8 @@ const props = defineProps({
     employeeSearch: {
         type: String,
         default: ''
-    }
+    },
+ 
 });
 const payrollSummary = ref({});
 const { getPayrollSummary } = utils();
@@ -36,7 +37,7 @@ const submitForm = async () => {
 
     if (!payrollData?.value?.salaryId) {
         serverError.value = "Add Employee's salary first";
-    loading.value = false;
+        loading.value = false;
 
         return;
     }
@@ -45,7 +46,7 @@ const submitForm = async () => {
         const payload = {
             ...payrollData.value
         };
-        console.log('submit', payload);
+
         const data = await postData(url, payload);
         if (data?.status === 200 || data?.status === 201) {
             success.value = true;
@@ -139,7 +140,7 @@ const handleCreateEmployeePayroll = (data) => {
                     </IconField>
                 </div>
             </div>
-            <div class="overflow-y-auto" style="max-height: 300px">
+            <div class="overflow-y-auto" style="max-height: 200px">
                 <ul class="list-none p-0">
                     <li v-for="employee in filteredEmployees" :key="employee.id" class="flex justify-between items-center border-b py-2">
                         <div class="flex-1">

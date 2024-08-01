@@ -26,11 +26,11 @@ const successMessage = ref('');
 const updateError = ref('');
 const cost = ref(0);
 const description = ref('');
-const difficultyLevel = ref({name:"",code:""});
+const difficultyLevel = ref({ name: '', code: '' });
 const durationHours = ref(0);
 const tags = ref('');
 const title = ref('');
-const trainingStatus =  ref({name:"",code:""});
+const trainingStatus = ref({ name: '', code: '' });
 const searchTerm = ref('');
 
 const initFilters = () => {
@@ -45,7 +45,6 @@ const update = async () => {
     try {
         loading.value = true;
         const url = `${baseURL}/course/update`;
-
         const formData = {
             id: courseData?.value?.id,
             cost: cost.value,
@@ -56,12 +55,20 @@ const update = async () => {
             title: title.value,
             trainingStatus: trainingStatus.value?.name
         };
+        if (!title.value) {
+            showError('Please enter title');
+            return;
+        }
+        if (!trainingStatus.value) {
+            showError('Please select status');
+            return;
+        }
         // Perform form submission logic (e.g., send data to backend)
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
-        console.log('response', data);
+         
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 
@@ -87,11 +94,11 @@ const openModal = (course) => {
 
     cost.value = course?.cost;
     description.value = course?.description;
-    difficultyLevel.value ={name:course?.difficultyLevel, code:course?.difficultyLevel} ;
+    difficultyLevel.value = { name: course?.difficultyLevel, code: course?.difficultyLevel };
     durationHours.value = course?.durationHours;
     tags.value = course?.tags;
     title.value = course?.title;
-    trainingStatus.value = {name:course?.trainingStatus, code:course?.trainingStatus};
+    trainingStatus.value = { name: course?.trainingStatus, code: course?.trainingStatus };
 
     visible.value = true;
 };
@@ -151,14 +158,21 @@ const getStatusColor = (status) => {
             return 'default-color';
     }
 };
-const  serverError = ref('');
-const loadingAdd = ref(false)
+const serverError = ref('');
+const loadingAdd = ref(false);
 const submitForm = async () => {
     serverError.value = '';
     loadingAdd.value = true;
     const formData = {
-     ...payload.value
+        ...payload.value
     };
+
+    if (Object.keys(formData).length === 0) {
+        showError('No data entered');
+        loadingAdd.value = false;
+
+        return;
+    }
 
     const url = `${baseURL}/course/create`;
 
@@ -168,7 +182,7 @@ const submitForm = async () => {
             successMessage.value = data?.message;
             // success.value = true;
             showSuccess(data?.message);
-             await getCourses(courses);
+            await getCourses(courses);
             loadingAdd.value = false;
         } else {
             showError();
@@ -184,11 +198,9 @@ const submitForm = async () => {
 };
 const payload = ref({});
 
-const handleData = (data) =>{
-
-payload.value = data
-}
-
+const handleData = (data) => {
+    payload.value = data;
+};
 </script>
 
 <template>
@@ -249,7 +261,7 @@ payload.value = data
         </Dialog>
         <Dialog v-model:visible="addModalVisibility" header="Create Course" :style="{ width: '50rem' }">
             <CreateCourse @handleData="handleData" />
-              <div class="flex justify-content-end gap-2">
+            <div class="flex justify-content-end gap-2">
                 <Button type="button" label="Cancel" severity="secondary" @click="addModalVisibility = false"></Button>
                 <Button v-if="!loadingAdd" type="button" label="Submit" @click="submitForm"></Button>
 

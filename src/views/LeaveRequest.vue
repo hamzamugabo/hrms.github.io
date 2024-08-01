@@ -125,7 +125,7 @@ const searchByStatus = async () => {
         const url = `${baseURL}/leave/request/by-status/${searchTerm.value?.name}`;
 
         const { data } = await fetchData(url, loading);
-        console.log('data===>', data);
+         
         let allRequests = await Promise.all(
             data.map(async (element) => {
                 const employee = await getEmployeeById(element?.employeeId);
@@ -161,7 +161,7 @@ const searchByEmployeeId = async () => {
         const url = `${baseURL}/leave/request/by-employeeId/${employeeId.value?.id}`;
 
         const { data } = await fetchData(url, loading);
-        // console.log('data===>', data);
+        //  
         let allRequests = await Promise.all(
             data.map(async (element) => {
                 const employee = await getEmployeeById(element?.employeeId);

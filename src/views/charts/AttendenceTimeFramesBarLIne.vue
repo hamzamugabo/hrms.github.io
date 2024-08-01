@@ -81,7 +81,9 @@ watch(
 </script>
 
 <template>
-    <div class="card">
+    <div style="height:18rem">
+        <div class="chart-container_">
         <Chart type="bar" :data="chartData" :options="chartOptions" />
+    </div>
     </div>
 </template>

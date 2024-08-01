@@ -166,7 +166,7 @@ const submitForm = async () => {
         const payload = {
             ...payrollData.value
         };
-        console.log('submit', payload);
+         
         const data = await postData(url, payload);
         if (data?.status === 200 || data?.status === 201) {
             // success.value = true;

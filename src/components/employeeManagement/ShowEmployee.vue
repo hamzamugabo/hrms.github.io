@@ -18,6 +18,10 @@ import DisplayDependants from './DisplayEmployeeDependants.vue';
 import AddDocuments from './AddEmployeeDocuments.vue';
 import AttendenceTimeFramesLineGraph from '../../views/charts/AttendenceTimeFramesLineGraphEmployee.vue';
 import Summaries from './DisplayEmployeeSummaries.vue';
+import { useToastPopup } from '@/components/reuseables/useToast.js';
+
+const { showError, showSuccess } = useToastPopup();
+
 
 const {
     getNationality,
@@ -105,13 +109,13 @@ const hitOptionsButton = () => {
         // (setNextOfKIn?.value?.id);
     }
     if (whatToAdd.value === 'dependant' && !setNextOfKIn?.value?.id) {
-        console.log('add');
+      
 
         addEmployeeDependant(employeeDependantDetails, employeeInfor?.value?.id, employeeDependants, loadingAddDependant, successMessageAddDependant, addDependantError, successAddDependant);
         // (employeeInfor?.value?.id);
     }
     if (whatToAdd.value === 'dependant' && setNextOfKIn?.value?.id) {
-        console.log('update');
+      
         updateEmployeeDependant(setNextOfKIn?.value?.id, employeeDependantDetails, loadingAddDependant, successAddDependant, successMessageAddDependant, addDependantError, employeeInfor?.value?.id, employeeDependants);
         // (setNextOfKIn?.value?.id);
     }
@@ -164,7 +168,7 @@ watch(
     (newValue, oldValue) => {
         if (newValue !== oldValue) {
             const timeFrameUrl = `${baseURL}/attendance/by-employee/${employeeInfor?.value?.id}/timeSeries`;
-            console.log('url', timeFrameUrl);
+          
             timeFrameUrlState.value = timeFrameUrl;
         }
     }
@@ -179,7 +183,7 @@ const updateProfilePicture = async (formData) => {
     try {
         const url = `${baseURL}/employees/upload-profile-picture`;
 
-        console.log('formData', formData);
+         
 
         const data = await postDataUpload(url, formData, loading);
 
@@ -203,7 +207,7 @@ const handleFileSelected = async (file) => {
         formData.append('employeeId', employeeInfor?.value?.id);
         formData.append('file', file);
 
-        // console.log('formData', formData);
+        //  
         fileData.value = file;
         imageUrl.value = URL.createObjectURL(file);
         imageBinaryData.value = formData; // Assign FormData directly
@@ -257,7 +261,7 @@ const handleDeleteDependant = (data) => {
 };
 const addDocs = () => {
     visibleAddDoc.value = true;
-    console.log('employeeId', employeeInfor.value.id);
+  
 };
 
 const uploadedFiles = ref([]);
@@ -268,9 +272,7 @@ const uploadEmployeeDocuments = (documents, fileNames) => {
 };
 const handleUploadEmployeeDocuments = async () => {
     serverErrorUploadDocs.value = '';
-    console.log('employeeId==>', employeeInfor?.value?.id);
-    console.log('uploadedFiles==>', uploadedFiles?.value);
-    console.log('concatenatedFileNames==>', concatenatedFileNames?.value);
+
     loadingEmployeeDocs.value = true;
     const formData = new FormData();
     formData.append('employeeId', employeeInfor?.value?.id);
@@ -280,27 +282,30 @@ const handleUploadEmployeeDocuments = async () => {
     });
     formData.append('labels', concatenatedFileNames.value);
 
-    console.log('formdata', formData);
+     
     const url = `${baseURL}/employee-file/upload-files`;
     try {
         const data = await postDataUpload(url, formData, loadingEmployeeDocs);
-        console.log('error console==>', data?.error);
+    
         if (data?.status === 200 || data?.status === 201) {
             successUploadDocs.value = true;
             successMessageUploadDocs.value = data?.message;
 
             loadingEmployeeDocs.value = false;
+            showSuccess(data?.message);
             setTimeout(() => {
                 successUploadDocs.value = false;
                 successMessageUploadDocs.value = '';
             }, 1000);
         } else {
+            showError( data?.error || data?.message);
             successUploadDocs.value = false;
             successMessageUploadDocs.value = '';
             serverErrorUploadDocs.value = data?.error || data?.message;
             loadingEmployeeDocs.value = false;
         }
     } catch (error) {
+        showError()
         successUploadDocs.value = false;
         successMessageUploadDocs.value = '';
         serverErrorUploadDocs.value = error?.error || error?.message;

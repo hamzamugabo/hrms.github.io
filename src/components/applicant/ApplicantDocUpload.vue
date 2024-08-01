@@ -12,12 +12,7 @@ const schoolName = ref('');
 const startDate = ref('');
 
 const educationDoc = ref([]);
-const maxDate = ref(getMaxDate())
-function getMaxDate() {
-    const today = new Date();
-    today.setDate(today.getDate());
-    return today;
-}
+
 const onFileChangeAcademicDocsChild = (e) => {
     const files = e.target.files;
 
@@ -55,33 +50,13 @@ watch([schoolName, award, fieldOfStudy, startDate, endDate], () => {
 <template>
     <div class="p-fluid formgrid grid">
         <div class="field col-12 md:col-4">
-            <label for="school">School Name</label>
-            <InputText required id="school" type="text" v-model="schoolName" />
-        </div>
-        <div class="field col-12 md:col-4">
-            <label for="award">Award</label>
-            <InputText required id="award" type="text" v-model="award" />
-        </div>
-        <div class="field col-12 md:col-4">
-            <label for="dob">Start Date</label>
-            <Calendar :showIcon="true" :showButtonBar="true" :maxDate="maxDate" v-model="startDate"></Calendar>
-        </div>
-        <div class="field col-12 md:col-4">
-            <label for="dob">End Date</label>
-            <Calendar :showIcon="true" :showButtonBar="true" v-model="endDate"  :maxDate="maxDate"></Calendar>
-        </div>
-        <div class="field col-12 md:col-4">
-            <label for="fieldOfStudy">Filed of study</label>
-            <InputText id="fieldOfStudy" type="text" v-model="fieldOfStudy" />
-        </div>
-        <div class="field col-12 md:col-4">
-            <label for="fieldOfStudy">Academic Documents</label>
+            <!-- <label for="fieldOfStudy">Academic Documents</label> -->
             <div class="mt-1 mb-0">
                 <!-- Add 'multiple' attribute to allow multiple file selection -->
                 <input type="file" id="fileInputAcedemic" @change="onFileChangeAcademicDocsChild($event)" accept=".pdf,.doc,.docx" multiple style="display: none" />
 
                 <label for="fileInputAcedemic" class="bg-light-grey text-black px-4 py-2 rounded-lg mr-2 hover:bg-grey-700 focus:bg-blue-600 focus:outline-none updateProfileButton">
-                    <span class="mr-2">Upload </span>
+                    <span class="mr-2">Upload Academic Documents </span>
                     <span>&#8679;</span>
                     <!-- Unicode for the upload icon (upwards arrow) -->
                 </label>

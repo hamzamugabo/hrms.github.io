@@ -12,11 +12,10 @@ const paymentDate = ref(props?.payDate || '');
 const endDate = ref(props?.end || '');
 const paymentMethod = ref(props?.type || '');
 const amount = ref(parseInt(props?.fee) || 0);
-const employeeId = ref('');
+const employeeId = ref(props?.employee?.id || '');
 const salaryId = ref('');
 const employees = ref([]);
 const autoFilteredEmployees = ref([]);
-
 
 const getEmployees = async () => {
     const url = `${baseURL}/employees`;
@@ -68,17 +67,14 @@ const updateEndDateConstraints = () => {
 };
 
 const submitForm = () => {
-    // const payDate = new Date();
     const formData = {
         employeeId: props?.employee?.id || employeeId?.value?.id,
         payPeriodEndDate: changeDateFormat(endDate.value),
         payPeriodStartDate: changeDateFormat(startDate.value),
         paymentDate: changeDateFormat(paymentDate.value),
         paymentMethod: paymentMethod.value?.name,
-        salaryId: salaryId.value,
-        // totalAmountPaid: parseInt(amount.value)
+        salaryId: salaryId.value
     };
-    // console.log('formdata', formData)
     emit('handleCreateEmployeePayroll', formData);
 };
 
@@ -89,7 +85,8 @@ watch([amount, endDate, startDate, employeeId, paymentMethod, paymentDate, () =>
         getEmployeeSalary(props?.employee?.id || employeeId?.value?.id);
     }
 });
-const searchEmployee = (event) => { 
+
+const searchEmployee = (event) => {
     if (!event.query.trim().length) {
         autoFilteredEmployees.value = employees?.value?.length > 0 ? [...employees.value] : [];
     } else {
@@ -104,14 +101,13 @@ const searchEmployee = (event) => {
 
 <template>
     <div class="p-fluid formgrid grid">
-         <div v-if="update !== 'update'" class="field col-12 md:col-12">
-            <label for="employee">Select Employee </label>
+        <div v-if="!props?.employee?.id" class="field col-12 md:col-12">
+            <label for="employee">Select Employee</label>
             <AutoComplete placeholder="Search employee" id="employee" optionLabel="lastName" :dropdown="true" :multiple="false" v-model="employeeId" :suggestions="autoFilteredEmployees" @complete="searchEmployee($event)" field="firstName">
                 <template #option="slotProps">
                     <div class="flex align-options-center">
                         <div>{{ slotProps?.option?.firstName }}</div>
                         <div>&nbsp;</div>
-
                         <div>{{ slotProps?.option?.lastName }}</div>
                     </div>
                 </template>
@@ -119,26 +115,19 @@ const searchEmployee = (event) => {
         </div>
         <div class="field col-12 md:col-12">
             <label for="paymentMethod">Payment method</label>
-            <Dropdown id="paymentMethod" v-model="paymentMethod" :options="method" optionLabel="name" placeholder="Select paymentMethod"></Dropdown>
+            <Dropdown id="paymentMethod" v-model="paymentMethod" :options="method" optionLabel="name" placeholder="Select payment method"></Dropdown>
         </div>
-
-        <!-- <div class="field col-12 md:col-12">
-            <label for="salary">Amount </label>
-            <InputNumber disabled v-model="amount" inputId="integeronly" />
-        </div> -->
-<div class="field col-12 md:col-12">
-            <label for="startDate">Payment Date</label>
-            <Calendar :maxDate="startMaxDate" id="calendar-12h" v-model="paymentDate"  />
+        <div class="field col-12 md:col-12">
+            <label for="paymentDate">Payment Date</label>
+            <Calendar :maxDate="startMaxDate" id="paymentDate" v-model="paymentDate" />
         </div>
-
         <div class="field col-12 md:col-12">
             <label for="startDate">Start Date</label>
-            <Calendar :maxDate="startMaxDate" id="calendar-12h" v-model="startDate" @change="updateEndDateConstraints" />
+            <Calendar :maxDate="startMaxDate" id="startDate" v-model="startDate" @change="updateEndDateConstraints" />
         </div>
-
         <div class="field col-12 md:col-12">
             <label for="endDate">End Date</label>
-            <Calendar :minDate="minEndDate"  id="calendar-12h" v-model="endDate" />
+            <Calendar :minDate="minEndDate" :maxDate="maxEndDate" id="endDate" v-model="endDate" />
         </div>
     </div>
 </template>

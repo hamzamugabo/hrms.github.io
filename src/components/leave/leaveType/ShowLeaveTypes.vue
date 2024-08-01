@@ -8,7 +8,7 @@ import AddButton from '@/components/reuseables/AddButton.vue';
 // import ComfirmDelete from '@/components/reuseables/DeleteAlert.vue';
 import { useConfirmDialog } from '@/components/reuseables/useConfirmDialog.js';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
-import { leaveTypes } from '@/components/reuseables/enums';
+// import { leaveTypes } from '@/components/reuseables/enums';
 
 const { showError, showSuccess } = useToastPopup();
 
@@ -20,7 +20,7 @@ const loading = ref(true);
 const visible = ref(false);
 const leaveTypesData = ref('');
 // const departmentUpdatedName = ref('');
-const name = ref({ name: '', code: '' });
+const name = ref('');
 const maxDurationInDays = ref(0);
 const success = ref(false);
 const successMessage = ref('');
@@ -55,7 +55,7 @@ const submitForm = async () => {
         const leveTypeData = {
             description: description.value,
             maxDurationInDays: parseInt(maxDurationInDays.value),
-            leaveTypeEnum: name.value?.name
+            name: name.value
         };
         console.log('submit', leveTypeData);
         const data = await postData(url, leveTypeData);
@@ -93,8 +93,9 @@ const getLeaveTypes = async () => {
     try {
         const { data } = await fetchData(url, loading);
         leeveTypes.value = data;
+    
     } catch (error) {
-         leeveTypes.value = [];
+        leeveTypes.value = [];
         // Handle errors here
     }
 };
@@ -117,12 +118,13 @@ const updateLeaveType = async () => {
         const url = `${baseURL}/leave/type/update`;
         const formData = {
             id: leaveTypesData.value?.id,
-            leaveTypeEnum: name?.value,
-            maxDurationInDays: maxDurationInDays?.value
+            name: name?.value,
+            maxDurationInDays: maxDurationInDays?.value,
+            description: description.value
         };
 
         const data = await postData(url, formData, loading);
-        // console.log('response', data);
+        //  
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 
@@ -150,11 +152,10 @@ const updateLeaveType = async () => {
 };
 const openModal = (leaveType) => {
     leaveTypesData.value = leaveType;
-    name.value = { name: leaveType?.name, code: leaveType?.name };
+    name.value = leaveType?.name;
     maxDurationInDays.value = leaveType?.maxDurationInDays;
     visible.value = true;
 };
-
 
 onMounted(async () => {
     await getLeaveTypes();
@@ -184,12 +185,18 @@ const addLeaveType = () => {
             <!-- <span class="p-text-secondary block mb-5">Update {{ leaveTypesData?.name }} Department</span> -->
             <div class="flex align-items-center gap-3 mb-3">
                 <label for="name" class="font-semibold w-6rem">name</label>
-                <Dropdown v-model="name" :options="leaveTypes" optionLabel="name" placeholder="Select a Leave Type" required />
+                <InputText required id="name" type="text" v-model="name" />
+
+                <!-- <Dropdown v-model="name" :options="leaveTypes" optionLabel="name" placeholder="Select a Leave Type" required /> -->
             </div>
             <div class="flex align-items-center gap-3 mb-3">
                 <label for="maxDurationInDays" class="font-semibold w-6rem">maxDurationInDays</label>
                 <InputNumber required v-model="maxDurationInDays" inputId="integeronly" />
                 <!-- <InputText required id="duration" type="text" v-model="maxDurationInDays" @input="validateInput" /> -->
+            </div>
+            <div class="flex align-items-center gap-3 mb-3">
+                <label for="jobTitle">Description</label>
+                <Textarea rows="3" cols="30" v-model="description" />
             </div>
 
             <div class="flex justify-content-end gap-2">
@@ -211,7 +218,9 @@ const addLeaveType = () => {
                         <div class="p-fluid formgrid grid">
                             <div class="field col-12 md:col-12">
                                 <label for="jobTitle">Name</label>
-                                <Dropdown v-model="name" :options="leaveTypes" optionLabel="name" placeholder="Select a Leave Type" required />
+                                <InputText required id="name" type="text" v-model="name" />
+
+                                <!-- <Dropdown v-model="name" :options="leaveTypes" optionLabel="name" placeholder="Select a Leave Type" required /> -->
                             </div>
                             <div class="field col-12 md:col-12">
                                 <label for="jobTitle">Duration in days</label>
@@ -229,19 +238,12 @@ const addLeaveType = () => {
             </div>
 
             <div class="flex justify-content-end gap-2">
-                <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
+                <Button type="button" label="Cancel" severity="secondary" @click="visibleAddLeave = false"></Button>
                 <Button v-if="!loading" type="button" label="Submit" @click="submitForm"></Button>
 
                 <SpinnerVue :loading="loading" size="3rem" />
             </div>
-            <!-- <div style="display: flex; justify-content: center">
-                    <SpinnerVue :loading="loading" size="3rem" />
-                </div>
-                <div v-if="!loading" class="mb-5" style="margin: 20px 0px">
-                    <button style="background-color: #db0000; cursor: pointer; color: #ffffff; padding: 0.5rem 1rem; border-radius: 0.5rem; padding-bottom: 2px" class="block mx-auto border-none pb-3">Submit</button>
-                </div> -->
-            <!-- </div> -->
-            <!-- </div> -->
+
         </Dialog>
     </div>
     <div class="card">
@@ -265,8 +267,8 @@ const addLeaveType = () => {
             </template>
             <template #empty> No Leave Types found. </template>
             <template #loading> Loading Leave Types data. Please wait. </template>
-            <Column :sortable="true" field="leaveTypeEnum" header="Type" style="min-width: 18rem">
-                <template #body="{ data }"> {{ data.leaveTypeEnum }} </template>
+            <Column :sortable="true" field="name" header="Type" style="min-width: 18rem">
+                <template #body="{ data }"> {{ data.name }} </template>
             </Column>
             <Column :sortable="false" field="maxDurationInDays" header="maxDurationInDays" style="min-width: 18rem">
                 <template #body="{ data }"> {{ data.maxDurationInDays }} </template>

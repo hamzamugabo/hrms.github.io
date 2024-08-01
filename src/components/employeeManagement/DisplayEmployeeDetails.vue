@@ -124,6 +124,14 @@ const updateDepartmentVisible = ref(false);
                         <p class="bioTitle">Duty Station</p>
                         <p class="bioValue">{{ dutyStation?.name }}</p>
                     </div>
+                     <div class="col-12 md:col-4">
+                        <p class="bioTitle">Tin Number</p>
+                        <p class="bioValue">{{ employeeInfor?.tinNumber }}</p>
+                    </div>
+                     <div class="col-12 md:col-4">
+                        <p class="bioTitle">Nssf Number</p>
+                        <p class="bioValue">{{ employeeInfor?.nssfNumber }}</p>
+                    </div>
                 </div>
             </div>
         </div>

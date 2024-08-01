@@ -134,6 +134,12 @@ const ProgressStatus = [
 
 ]
 
+const QuestionDifficulty = [
+
+    {name:"EASY",code:"EASY"},
+    {name:"MEDIUM", code:"MEDIUM"},
+    {name:"HARD", code:"HARD"}
+]
 export {
     genderOptionsEnum,
     maritalStatusOptionsEnum,
@@ -154,5 +160,6 @@ export {
     DifficultyLevel,
     TrainingStatus,
     QuestionType,
-    ProgressStatus
+    ProgressStatus,
+    QuestionDifficulty
 };

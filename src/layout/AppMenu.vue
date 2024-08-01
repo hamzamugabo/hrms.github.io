@@ -8,7 +8,7 @@ const model = ref([
         label: 'Home',
         items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
     },
-
+  
     {
         label: 'Employee Management',
         icon: 'pi pi-fw pi-user',
@@ -29,22 +29,7 @@ const model = ref([
                 icon: 'pi pi-fw pi-user-minus',
 
                 items: [
-                    {
-                        label: 'Leave Type',
-                        icon: 'pi pi-fw pi-user',
-                        items: [
-                            // {
-                            //     label: 'Create Leave Type',
-                            //     icon: 'pi pi-fw pi-plus-circle',
-                            //     to: '/leave/type/create'
-                            // },
-                            {
-                                label: 'Leave Types',
-                                icon: 'pi pi-fw pi-bars',
-                                to: '/leave/type'
-                            }
-                        ]
-                    },
+                   
                     {
                         label: 'Leave Request',
                         icon: 'pi pi-fw pi-user',
@@ -73,77 +58,7 @@ const model = ref([
                 ]
             },
 
-            {
-                label: 'Duty Station',
-                icon: 'pi pi-fw pi-user-minus',
-
-                items: [
-                    {
-                        label: 'Station',
-                        icon: 'pi pi-fw pi-user',
-                        items: [
-                            // {
-                            //     label: 'Create station',
-                            //     icon: 'pi pi-fw pi-plus-circle',
-                            //     to: '/duty-station/create'
-                            // },
-                            {
-                                label: 'Stations',
-                                icon: 'pi pi-fw pi-bars',
-                                to: '/duty-station'
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Category',
-                        icon: 'pi pi-fw pi-user',
-                        items: [
-                            // {
-                            //     label: 'Create Category',
-                            //     icon: 'pi pi-fw pi-plus-circle',
-                            //     to: '/category/create'
-                            // },
-                            {
-                                label: 'Categories',
-                                icon: 'pi pi-fw pi-bars',
-                                to: '/category'
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Region',
-                        icon: 'pi pi-fw pi-user',
-                        items: [
-                            // {
-                            //     label: 'Create Region',
-                            //     icon: 'pi pi-fw pi-plus-circle',
-                            //     to: '/region/create'
-                            // },
-                            {
-                                label: 'Regions',
-                                icon: 'pi pi-fw pi-bars',
-                                to: '/region'
-                            }
-                        ]
-                    },
-                    {
-                        label: 'Contact',
-                        icon: 'pi pi-fw pi-user',
-                        items: [
-                            // {
-                            //     label: 'Create contact',
-                            //     icon: 'pi pi-fw pi-plus-circle',
-                            //     to: '/contact-details/create'
-                            // },
-                            {
-                                label: 'Contact Details',
-                                icon: 'pi pi-fw pi-bars',
-                                to: '/contact-details'
-                            }
-                        ]
-                    }
-                ]
-            }
+          
         ]
     },
 
@@ -352,7 +267,7 @@ const model = ref([
                         ]
                     },
                     {
-                        label: 'Employee Behavioral Metric',
+                        label: ' Behavioral Metric',
                         icon: 'pi pi-fw pi-chart-line',
                         items: [
                             // {
@@ -368,7 +283,7 @@ const model = ref([
                         ]
                     },
                     {
-                        label: 'Employee Customer Metric',
+                        label: ' Customer Metric',
                         icon: 'pi pi-fw pi-chart-line',
                         items: [
                             // {
@@ -492,7 +407,7 @@ const model = ref([
         items: [
             {
                 label: 'Course',
-                icon: 'pi pi-fw pi-thumbs-up',
+                icon: 'pi pi-fw pi-graduation-cap',
                 items: [
                     {
                         label: 'Courses',
@@ -502,13 +417,57 @@ const model = ref([
                 ]
             },
             {
-                label: 'Training Modules',
-                icon: 'pi pi-fw pi-thumbs-up',
+                label: 'Modules',
+                icon: 'pi pi-fw check-circle',
                 items: [
                     {
                         label: 'Modules',
                         icon: 'pi pi-fw pi-bars',
                         to: '/training/module'
+                    }
+                ]
+            },
+            {
+                label: 'Lessons',
+                icon: 'pi pi-fw pi-thumbs-up',
+                items: [
+                    {
+                        label: 'Lesson',
+                        icon: 'pi pi-fw pi-bars',
+                        to: '/training/lesson'
+                    }
+                ]
+            },
+            {
+                label: 'Assessment',
+                icon: 'pi pi-fw pi-thumbs-up',
+                items: [
+                    {
+                        label: 'Assessments',
+                        icon: 'pi pi-fw pi-bars',
+                        to: '/training/assessment'
+                    }
+                ]
+            },
+            {
+                label: 'Questions',
+                icon: 'pi pi-fw pi-thumbs-up',
+                items: [
+                    {
+                        label: 'Questions',
+                        icon: 'pi pi-fw pi-bars',
+                        to: '/training/questions'
+                    }
+                ]
+            },
+            {
+                label: 'Answers',
+                icon: 'pi pi-fw pi-thumbs-up',
+                items: [
+                    {
+                        label: 'Answers',
+                        icon: 'pi pi-fw pi-bars',
+                        to: '/training/answers'
                     }
                 ]
             }
@@ -523,6 +482,93 @@ const model = ref([
                 items: [
                     // { label: 'Create Designation', icon: 'pi pi-fw pi-plus-circle', to: '/designation/add' },
                     { label: 'designations', icon: 'pi pi-fw pi-bars', to: '/designation/show-designations' }
+                ]
+            },
+              {
+                        label: 'Leave Type',
+                        icon: 'pi pi-fw pi-user',
+                        items: [
+                            // {
+                            //     label: 'Create Leave Type',
+                            //     icon: 'pi pi-fw pi-plus-circle',
+                            //     to: '/leave/type/create'
+                            // },
+                            {
+                                label: 'Leave Types',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/leave/type'
+                            }
+                        ]
+                    },
+              {
+                label: 'Duty Station',
+                icon: 'pi pi-fw pi-user-minus',
+
+                items: [
+                    {
+                        label: 'Category',
+                        icon: 'pi pi-fw pi-user',
+                        items: [
+                            // {
+                            //     label: 'Create Category',
+                            //     icon: 'pi pi-fw pi-plus-circle',
+                            //     to: '/category/create'
+                            // },
+                            {
+                                label: 'Categories',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/category'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Region',
+                        icon: 'pi pi-fw pi-user',
+                        items: [
+                            // {
+                            //     label: 'Create Region',
+                            //     icon: 'pi pi-fw pi-plus-circle',
+                            //     to: '/region/create'
+                            // },
+                            {
+                                label: 'Regions',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/region'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Contact',
+                        icon: 'pi pi-fw pi-user',
+                        items: [
+                            // {
+                            //     label: 'Create contact',
+                            //     icon: 'pi pi-fw pi-plus-circle',
+                            //     to: '/contact-details/create'
+                            // },
+                            {
+                                label: 'Contact Details',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/contact-details'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Station',
+                        icon: 'pi pi-fw pi-user',
+                        items: [
+                            // {
+                            //     label: 'Create station',
+                            //     icon: 'pi pi-fw pi-plus-circle',
+                            //     to: '/duty-station/create'
+                            // },
+                            {
+                                label: 'Stations',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/duty-station'
+                            }
+                        ]
+                    }
                 ]
             },
             {
@@ -561,16 +607,16 @@ const model = ref([
             },
             {
                 label: 'Salary Configuration',
-                 icon: 'pi pi-fw pi-dollar',
+                icon: 'pi pi-fw pi-dollar',
                 items: [
                     // { label: 'Create Job Description', icon: 'pi pi-fw pi-plus-circle', to: '/job-description/create' },
                     { label: 'Configurations', icon: 'pi pi-fw pi-bars', to: '/salary/configuration' }
                     // { label: 'Nationalities', icon: 'pi pi-fw pi-briefcase', to: '/nationality/show-nationalities' }
                 ]
             },
-             {
+            {
                 label: 'Objective Status',
-                 icon: 'pi pi-fw pi-sync',
+                icon: 'pi pi-fw pi-sync',
                 items: [
                     // { label: 'Create Job Description', icon: 'pi pi-fw pi-plus-circle', to: '/job-description/create' },
                     { label: 'Organisation Update', icon: 'pi pi-fw pi-bars', to: '/performance/status-update' },
@@ -578,9 +624,65 @@ const model = ref([
                     { label: 'Individual Update', icon: 'pi pi-fw pi-bars', to: '/performance/status-update/individual' }
                     // { label: 'Nationalities', icon: 'pi pi-fw pi-briefcase', to: '/nationality/show-nationalities' }
                 ]
+            },
+
+            {
+                label: ' Access Control',
+                icon: 'pi pi-fw pi-key',
+                items: [
+                    {
+                        label: 'Permission Groups',
+                        icon: 'pi pi-fw pi-lock-open',
+                        items: [
+                            {
+                                label: 'Groups',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/access-control/permission-group'
+                            }
+                        ]
+                    },
+                    {
+                        label: 'Permissions',
+                        icon: 'pi pi-fw pi-lock-open',
+                        items: [
+                            {
+                                label: 'Permissions',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/access-control/permission'
+                            }
+                        ]
+                    },
+                   
+                    {
+                        label: 'Roles',
+                        icon: 'pi pi-fw pi-lock-open',
+                        items: [
+                            // {
+                            //     label: 'Create Metric',
+                            //     icon: 'pi pi-fw pi-plus-circle',
+                            //     to: '/performance-metric/employee-customer/create'
+                            // },
+                            {
+                                label: 'Roles',
+                                icon: 'pi pi-fw pi-bars',
+                                to: '/access-control/roles'
+                            }
+                        ]
+                    }
+                ]
             }
         ]
-    }
+    },
+      {
+        label: 'User Management',
+        items: [
+            {
+                label: 'Users',
+                icon: 'pi pi-fw pi-user',
+                items: [{ label: 'All Users', icon: 'pi pi-fw pi-bars', to: '/users' }]
+            }
+        ]
+    },
 ]);
 </script>
 

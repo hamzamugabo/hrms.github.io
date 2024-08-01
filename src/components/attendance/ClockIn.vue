@@ -5,7 +5,7 @@ import ClockIn from './index.vue';
 const user = loadFromLocalStorage();
 
 const employeeId = user?.user?.id;
-console.log(employeeId)
+
 </script>
 
 <template>

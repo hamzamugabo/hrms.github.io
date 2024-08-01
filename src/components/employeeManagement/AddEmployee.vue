@@ -6,10 +6,9 @@ import QualificationsForm from './QualificationFormTemplate.vue';
 import Stepper from 'primevue/stepper';
 import StepperPanel from 'primevue/stepperpanel';
 
-// import countryList from 'country-list';
 import { fetchData, postData, baseURL, postDataUpload } from '@/components/reuseables/FetchPostData.js';
 import { genderOptionsEnum, maritalStatusOptionsEnum, idTypeOptionsEnum, employeeLevelsEnum } from '@/components/reuseables/enums.js';
-// import { useRouter } from 'vue-router';
+
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
 import EmployeeExperience from './AddEmployeeExperience.vue';
 import NextOfKin from './AddEmployeeNextOfKin.vue';
@@ -100,6 +99,8 @@ const serverErrorUploadDocs = ref('');
 const employeeLevel = ref();
 const autoFilteredJobDescription = ref([]);
 const jobDescriptionId = ref('');
+const nssfNumber = ref('');
+const tinNumber = ref('');
 const jobDescriptions = ref([]);
 const educationQualificationLabel = ref('Education qualification');
 const educationQualification = ref([
@@ -313,78 +314,7 @@ const assignQualificationType = async (id, qualificationTypeId) => {
         showError('Failed', '');
     }
 };
-const addEducationQualificationLoading = ref(false);
-const addEmplyeeEducationQualification = async (employeeId, nextCallback) => {
-    addEducationQualificationLoading.value = true;
-    try {
-        if (!employeeId) {
-            showError('no employee');
-            return;
-        }
-        const url = `${baseURL}/employees/qualifications/create`;
-        educationQualification?.value?.forEach(async (qualificationElement) => {
-            // Check if any required properties are missing or empty
-            if (!qualificationElement?.awardingInstitutionId?.id || !qualificationElement?.name || !qualificationElement?.qualificationTypeId?.id || !qualificationElement?.yearOfAward) {
-                // Skip the element and move to the next iteration
-                return;
-            }
 
-            const formData = {
-                // awardingInstitutionId: qualificationElement?.awardingInstitutionId?.id,
-                employeeId: employeeId,
-                name: qualificationElement?.name,
-                // qualificationTypeId: qualificationElement?.qualificationTypeId?.id,
-                yearOfAward: changeDateFormat(qualificationElement?.yearOfAward)
-            };
-            //  {
-            //     awardingInstitutionId: qualificationElement?.awardingInstitutionId?.id,
-            //     employeeId: employeeId,
-            //     name: qualificationElement?.name,
-            //     qualificationTypeId: qualificationElement?.qualificationTypeId?.id,
-            //     yearOfAward: changeDateFormat(qualificationElement?.yearOfAward)
-            // };
-
-            const data = await postData(url, formData, addEducationQualificationLoading);
-            console.log('response', data);
-            if (data?.status === 200 || data?.status === 201) {
-                qualificationError.value = '';
-                qualificationSuccessMessage.value = data?.message;
-                // employeeStore.departmendepartmentIdtIddepartmentId(formData);
-                addEducationQualificationLoading.value = false;
-
-                // resetForm();
-                qualificationSuccess.value = true;
-                await assignAwardingInstitution(data?.data?.id, qualificationElement?.awardingInstitutionId);
-                await assignQualificationType(data?.data?.id, qualificationElement?.qualificationTypeId);
-
-                addEducationQualificationLoading.value = false;
-                showSuccess(data?.message);
-
-                setTimeout(() => {
-                    qualificationSuccess.value = false;
-                    qualificationSuccessMessage.value = '';
-                }, 1000);
-                nextCallback();
-            } else {
-                addEducationQualificationLoading.value = false;
-
-                qualificationSuccessMessage.value = '';
-                qualificationSuccess.value = false;
-
-                qualificationError.value = data?.message ? data?.message : data?.error;
-                showError(data?.message ? data?.message : data?.error);
-                setTimeout(() => {
-                    qualificationError.value = '';
-                }, 1000);
-            }
-        });
-    } catch (error) {
-        addEducationQualificationLoading.value = false;
-        console.log(error?.error);
-        qualificationSuccessMessage.value = '';
-        qualificationSuccess.value = false;
-    }
-};
 const validatePhoneNumber = (number) => {
     const phonePattern = /^\d{10,12}$/; // Adjust the pattern to match 10 to 15 digits
     return phonePattern.test(number);
@@ -425,34 +355,126 @@ const resetForm = () => {
 // const navigateToAddQualification = () => {
 //     history.push('/employees/qualification/create');
 // };
+const addEducationQualificationLoading = ref(false);
+const addEmplyeeEducationQualification = async (employeeId) => {
+    addEducationQualificationLoading.value = true;
+    try {
+        if (!employeeId) {
+            showError('no employee');
+            return;
+        }
+        const url = `${baseURL}/employees/qualifications/create`;
+        educationQualification?.value?.forEach(async (qualificationElement) => {
+            // Check if any required properties are missing or empty
+            if (!qualificationElement?.awardingInstitutionId?.id || !qualificationElement?.name || !qualificationElement?.qualificationTypeId?.id || !qualificationElement?.yearOfAward) {
+                // Skip the element and move to the next iteration
+                return;
+            }
+
+            const formData = {
+                // awardingInstitutionId: qualificationElement?.awardingInstitutionId?.id,
+                employeeId: employeeId,
+                name: qualificationElement?.name,
+                // qualificationTypeId: qualificationElement?.qualificationTypeId?.id,
+                yearOfAward: changeDateFormat(qualificationElement?.yearOfAward)
+            };
+            //  {
+            //     awardingInstitutionId: qualificationElement?.awardingInstitutionId?.id,
+            //     employeeId: employeeId,
+            //     name: qualificationElement?.name,
+            //     qualificationTypeId: qualificationElement?.qualificationTypeId?.id,
+            //     yearOfAward: changeDateFormat(qualificationElement?.yearOfAward)
+            // };
+
+            const data = await postData(url, formData, addEducationQualificationLoading);
+
+            if (data?.status === 200 || data?.status === 201) {
+                qualificationError.value = '';
+                qualificationSuccessMessage.value = data?.message;
+                // employeeStore.departmendepartmentIdtIddepartmentId(formData);
+                addEducationQualificationLoading.value = false;
+
+                // resetForm();
+                qualificationSuccess.value = true;
+                await assignAwardingInstitution(data?.data?.id, qualificationElement?.awardingInstitutionId);
+                await assignQualificationType(data?.data?.id, qualificationElement?.qualificationTypeId);
+
+                addEducationQualificationLoading.value = false;
+                showSuccess(data?.message);
+
+                setTimeout(() => {
+                    qualificationSuccess.value = false;
+                    qualificationSuccessMessage.value = '';
+                }, 1000);
+                // nextCallback();
+            } else {
+                addEducationQualificationLoading.value = false;
+
+                qualificationSuccessMessage.value = '';
+                qualificationSuccess.value = false;
+
+                qualificationError.value = data?.message ? data?.message : data?.error;
+                showError(data?.message ? data?.message : data?.error);
+                setTimeout(() => {
+                    qualificationError.value = '';
+                }, 1000);
+            }
+        });
+    } catch (error) {
+        addEducationQualificationLoading.value = false;
+        console.log(error?.error);
+        qualificationSuccessMessage.value = '';
+        qualificationSuccess.value = false;
+    }
+};
+// const achievements = ref('');
+// const companyName = ref('');
+// const startDate = ref('');
+// const endDate = ref('');
+// const jobTitle = ref('');
+// const responsibilities = ref('');
+const exprienceData = ref({});
 const handleExperienceDetails = (data) => {
     employeeExperienceDetails.value = data;
+    if (data) {
+        exprienceData.value = { ...data };
+    }
 };
+const nextOfKinDetail = ref({});
 const handleNextOfKinDetails = (data) => {
     employeeNextOfKinDetails.value = data;
+    if (data) {
+        nextOfKinDetail.value = { ...data };
+    }
 };
+const dependantDetails = ref({});
 const handleDependantDetails = (data) => {
     employeeDependantDetails.value = data;
+    if (data) {
+        dependantDetails.value = { ...data };
+    }
 };
-const addEmployeeExperience = async (employeeId, nextCallback) => {
+const addEmployeeExperience = async (employeeId) => {
     addExperienceError.value = '';
 
     addExperienceLoading.value = true;
+    const payloadData = employeeExperienceDetails?.value || exprienceData.value;
+
     try {
         const url = `${baseURL}/employees/experience/create`;
 
-        if (!employeeExperienceDetails?.value?.companyName?.trim()) {
+        if (!payloadData?.companyName?.trim()) {
             alert('Please enter Company name.');
             return;
         }
 
         const formData = {
-            achievements: employeeExperienceDetails?.value?.achievements,
-            companyName: employeeExperienceDetails?.value?.companyName,
-            endDate: changeDateFormat(employeeExperienceDetails?.value?.endDate),
-            jobTitle: employeeExperienceDetails?.value?.jobTitle,
-            responsibilities: employeeExperienceDetails?.value?.responsibilities,
-            startDate: changeDateFormat(employeeExperienceDetails?.value?.startDate),
+            achievements: payloadData?.achievements,
+            companyName: payloadData?.companyName,
+            endDate: changeDateFormat(payloadData?.endDate),
+            jobTitle: payloadData?.jobTitle,
+            responsibilities: payloadData?.responsibilities,
+            startDate: changeDateFormat(payloadData?.startDate),
             employeeId: employeeId
         };
         console.log('experience', formData);
@@ -472,7 +494,7 @@ const addEmployeeExperience = async (employeeId, nextCallback) => {
                 successAddExperience.value = false;
                 successMessageAddExperience.value = '';
             }, 1000);
-            nextCallback();
+            // nextCallback();
         } else {
             addExperienceLoading.value = false;
             successAddExperience.value = false;
@@ -497,15 +519,16 @@ const addEmployeeNextOfKin = async (employeeId) => {
             showError('Please enter First name.');
             return;
         }
+        const payloadData = employeeNextOfKinDetails?.value || nextOfKinDetail.value;
 
         const formData = {
-            email: employeeNextOfKinDetails?.value?.email,
+            email: payloadData?.email,
             employeeId: employeeId,
-            firstName: employeeNextOfKinDetails?.value?.firstName,
-            lastName: employeeNextOfKinDetails?.value?.lastName,
-            phoneNumber: employeeNextOfKinDetails?.value?.phoneNumber,
-            physicalAddress: employeeNextOfKinDetails?.value?.physicalAddress,
-            relationship: employeeNextOfKinDetails?.value?.relationship
+            firstName: payloadData?.firstName,
+            lastName: payloadData?.lastName,
+            phoneNumber: payloadData?.phoneNumber,
+            physicalAddress: payloadData?.physicalAddress,
+            relationship: payloadData?.relationship
         };
 
         const data = await postData(url, formData, loading);
@@ -544,7 +567,7 @@ const addEmployeeDependant = async (employeeId) => {
     addDependantError.value = '';
     try {
         const url = `${baseURL}/employees/dependent/create`;
-
+        const payloadData = employeeDependantDetails?.value || dependantDetails.value;
         if (!employeeDependantDetails?.value?.firstName?.trim()) {
             alert('Please enter  name.');
             return;
@@ -552,8 +575,8 @@ const addEmployeeDependant = async (employeeId) => {
 
         const formData = {
             employeeId: employeeId,
-            name: `${employeeDependantDetails?.value?.firstName} ${employeeDependantDetails?.value?.lastName}`,
-            phoneNumber: employeeDependantDetails?.value?.phoneNumber
+            name: `${payloadData?.firstName} ${payloadData?.lastName}`,
+            phoneNumber: payloadData?.phoneNumber
         };
 
         const data = await postData(url, formData, loading);
@@ -640,7 +663,6 @@ const handleUploadEmployeeDocuments = async (employeeId) => {
     });
     formData.append('labels', concatenatedFileNames.value);
 
-    console.log('formdata', formData);
     const url = `${baseURL}/employee-file/upload-files`;
     try {
         const data = await postDataUpload(url, formData, loading);
@@ -679,6 +701,7 @@ const handleUploadEmployeeDocuments = async (employeeId) => {
     }
 };
 
+// eslint-disable-next-line no-unused-vars
 const handleSubmitEducationQualification = async (nextCallback) => {
     await addEmplyeeEducationQualification(createdEmployee?.value?.id, nextCallback);
 };
@@ -783,7 +806,8 @@ const assignNationality = async (id, nationality) => {
     }
 };
 const addPersonalDetailsLoading = ref(false);
-const handlePersonalDetails = async (nextCallback) => {
+const savedPersonalDetails = ref({});
+const handlePersonalDetails = async () => {
     addEmployeeError.value = '';
     addPersonalDetailsLoading.value = true;
     try {
@@ -830,12 +854,14 @@ const handlePersonalDetails = async (nextCallback) => {
 
             return;
         }
-        if (!validatePhoneNumber(otherPhoneNumber.value)) {
-            showError('Please enter a valid other Phone Number.');
-            addEmployeeError.value = 'Please enter a valid other Phone Number.';
-            addPersonalDetailsLoading.value = false;
+        if (otherPhoneNumber.value) {
+            if (!validatePhoneNumber(otherPhoneNumber.value)) {
+                showError('Please enter a valid other Phone Number.');
+                addEmployeeError.value = 'Please enter a valid other Phone Number.';
+                addPersonalDetailsLoading.value = false;
 
-            return;
+                return;
+            }
         }
         // Prepare data object for submission
 
@@ -860,17 +886,23 @@ const handlePersonalDetails = async (nextCallback) => {
             otherEmailAddress: otherEmail.value,
             otherPhoneNumber: otherPhoneNumber.value,
             postalAddress: postalAddress.value,
-            customIdType: others.value
+            customIdType: others.value,
+            tinNumber: tinNumber.value,
+            nssfNumber: nssfNumber.value
 
             // educationQualification: educationQualification.value
         };
+        savedPersonalDetails.value = formData;
+        showSuccess('information saved successfully');
+        // nextCallback();
+        addPersonalDetailsLoading.value = false;
 
         // Perform form submission logic (e.g., send data to backend)
-        // console.log('Form submitted:', formData);
-        // addPersonalDetailsLoading.value = false;
+        //
+        addPersonalDetailsLoading.value = false;
 
         const data = await postData(url, formData, addPersonalDetailsLoading);
-        console.log('response', data);
+
         if (!data?.data) {
             showError(data?.message || data?.error);
         }
@@ -889,8 +921,18 @@ const handlePersonalDetails = async (nextCallback) => {
                 if (jobDescriptionId?.value) {
                     await assignJobDescription(data?.data?.id, jobDescriptionId?.value);
                 }
+                await addEmplyeeEducationQualification(data?.data?.id);
+                await addEmployeeExperience(data?.data?.id);
+                if (employeeNextOfKinDetails.value || nextOfKinDetail.value) {
+                    await addEmployeeNextOfKin(data?.data?.id);
+                }
+
+                if (employeeDependantDetails.value || dependantDetails.value) {
+                    await addEmployeeDependant(data?.data?.id);
+                }
+                await handleUploadEmployeeDocuments(data?.data?.id);
             }
-            nextCallback();
+            // nextCallback();
 
             successMessage.value = data?.message;
             employeeStore.setEmployeeData(formData);
@@ -903,7 +945,6 @@ const handlePersonalDetails = async (nextCallback) => {
                 success.value = false;
                 successMessage.value = '';
             }, 1000);
-            // resetForm();
 
             addPersonalDetailsLoading.value = false;
         } else {
@@ -913,23 +954,24 @@ const handlePersonalDetails = async (nextCallback) => {
             showError(data?.data?.message ? data?.data?.message : data?.data?.error);
         }
     } catch (error) {
-        // showError('error adding employee');
         addPersonalDetailsLoading.value = false;
         console.log(error?.error);
     }
 };
 
-const handleSubmitExperience = async (nextCallback) => {
+// eslint-disable-next-line no-unused-vars
+const handleSubmitExperience = async () => {
     // console.log('Form Step 3 Data:');
     // alert('Form Submitted Successfully!');
     // nextCallback();
 
     if (employeeExperienceDetails.value) {
-        await addEmployeeExperience(createdEmployee?.value?.id, nextCallback);
+        await addEmployeeExperience(createdEmployee?.value?.id);
     }
 };
 const addDependantAndNextOfKinLoading = ref(false);
-const handleSubmitNextOfKinAndDependant = async (nextCallback) => {
+// eslint-disable-next-line no-unused-vars
+const handleSubmitNextOfKinAndDependant = async () => {
     // console.log('Form Step 3 Data:');
     // alert('Form Submitted Successfully!');
     // nextCallback();
@@ -943,9 +985,10 @@ const handleSubmitNextOfKinAndDependant = async (nextCallback) => {
     }
     addDependantAndNextOfKinLoading.value = false;
 
-    nextCallback();
+    // nextCallback();
 };
 const activeStep = ref(0);
+// eslint-disable-next-line no-unused-vars
 const handleSubmitDocuments = async () => {
     // console.log('Form Step 3 Data:');
     // alert('Form Submitted Successfully!');
@@ -954,17 +997,26 @@ const handleSubmitDocuments = async () => {
         await handleUploadEmployeeDocuments(createdEmployee?.value?.id);
     }
 };
+const goBack = (prevCallback) => {
+    uploadDocumentLoading.value = false;
+    addDependantAndNextOfKinLoading.value = false;
+    addExperienceLoading.value = false;
+    addPersonalDetailsLoading.value = false;
+    addEducationQualificationLoading.value = false;
+    loading.value = false;
+    prevCallback();
+};
 
 // const active = ref(0);
 </script>
 <template>
     <div class="grid">
-        <Stepper orientation="vertical" v-model:activeStep="activeStep">
+        <Stepper v-model:activeStep="activeStep">
             <StepperPanel header="Personal details">
                 <template #content="{ nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handlePersonalDetails(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <Message v-if="success" severity="success">{{ successMessage }}</Message>
                                 <Message v-if="addEmployeeError" severity="error">{{ addEmployeeError }}</Message>
 
@@ -979,7 +1031,7 @@ const handleSubmitDocuments = async () => {
                                         <InputText required id="lastname" type="text" v-model="lastName" />
                                     </div>
                                     <div class="field col-12 md:col-4">
-                                        <label for="othername">Other Name(s)</label>
+                                        <label for="othername">Other Name(s) (optional)</label>
                                         <InputText id="othername" type="text" v-model="otherName" />
                                     </div>
                                     <div class="field col-12 md:col-4">
@@ -1090,24 +1142,31 @@ const handleSubmitDocuments = async () => {
                                     </div>
 
                                     <div class="field col-12 md:col-4">
-                                        <label for="otherPhoneNumber">Other Phone Number</label>
+                                        <label for="otherPhoneNumber">Other Phone Number (optional)</label>
                                         <InputText id="otherPhoneNumber" type="text" v-model="otherPhoneNumber" />
                                     </div>
 
                                     <div class="field col-12 md:col-4">
-                                        <label for="otherEmail">Other Email Address</label>
+                                        <label for="otherEmail">Other Email Address (optional)</label>
                                         <InputText id="otherEmail" type="text" v-model="otherEmail" />
                                     </div>
                                     <div class="field col-12 md:col-4">
                                         <label for="postalAddress">Postal Address</label>
                                         <InputText required id="postalAddress" type="text" v-model="postalAddress" />
                                     </div>
+                                    <div class="field col-12 md:col-4">
+                                        <label for="nssfNumber">NSSF Number</label>
+                                        <InputText required id="nssfNumber" type="text" v-model="nssfNumber" />
+                                    </div>
+                                    <div class="field col-12 md:col-4">
+                                        <label for="tinNumber">Tin Number</label>
+                                        <InputText required id="tinNumber" type="text" v-model="tinNumber" />
+                                    </div>
                                 </div>
                                 <div class="flex pt-4 justify-content-end">
                                     <div class="flex justify-content-end gap-2">
                                         <SpinnerVue :loading="addPersonalDetailsLoading" size="2rem" />
-                                        <!-- <Button v-if="!addPersonalDetailsLoading" :disabled="addPersonalDetailsLoading" type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" /> -->
-                                        <Button v-if="!addPersonalDetailsLoading" :disabled="addPersonalDetailsLoading" type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                                        <Button v-if="!addPersonalDetailsLoading" :disabled="addPersonalDetailsLoading" type="submit" label="Continue" icon="pi pi-arrow-right" iconPos="right" />
                                     </div>
                                 </div>
                             </form>
@@ -1120,7 +1179,7 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card p-fluid">
-                            <form @submit.prevent="handleSubmitEducationQualification(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <div class="field">
                                     <div class="flex items-center">
                                         <QualificationsForm
@@ -1139,11 +1198,11 @@ const handleSubmitDocuments = async () => {
 
                                 <div class="flex pt-4 justify-content-between">
                                     <div class="flex justify-content-end gap-2">
-                                        <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
+                                        <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="goBack(prevCallback)" />
                                     </div>
                                     <div class="flex justify-content-end gap-2">
                                         <SpinnerVue :loading="addEducationQualificationLoading" size="2rem" />
-                                        <Button v-if="!addEducationQualificationLoading" :disabled="addEducationQualificationLoading" type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                                        <Button v-if="!addEducationQualificationLoading" :disabled="addEducationQualificationLoading" type="submit" label="Continue" icon="pi pi-arrow-right" iconPos="right" />
                                     </div>
                                     <!-- <Button type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" /> -->
                                 </div>
@@ -1157,15 +1216,15 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handleSubmitExperience(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <!-- Experience form fields here -->
-                                <EmployeeExperience @handleExperienceDetails="handleExperienceDetails" :maxJoiningDate="maxJoiningDate" />
+                                <EmployeeExperience @handleExperienceDetails="handleExperienceDetails" :maxJoiningDate="maxJoiningDate" :exprienceData="exprienceData" />
 
                                 <div class="flex pt-4 justify-content-between">
-                                    <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
+                                    <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="goBack(prevCallback)" />
                                     <div class="flex justify-content-end gap-2">
                                         <SpinnerVue :loading="addExperienceLoading" size="2rem" />
-                                        <Button v-if="!addExperienceLoading" :disabled="addExperienceLoading" type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                                        <Button v-if="!addExperienceLoading" :disabled="addExperienceLoading" type="submit" label="Continue" icon="pi pi-arrow-right" iconPos="right" />
                                     </div>
                                     <!-- <Button type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" /> -->
                                 </div>
@@ -1179,17 +1238,25 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handleSubmitNextOfKinAndDependant(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <div class="col-12">
                                     <div class="card">
-                                        <form @submit.prevent="handleSubmitNextOfKinAndDependant(nextCallback)">
-                                            <Message v-if="successAddNextOfKin" severity="success">{{ successMessageAddNextOfKin }}</Message>
+                                        <!-- <form @submit.prevent="handleSubmitNextOfKinAndDependant(nextCallback)"> -->
+                                        <Message v-if="successAddNextOfKin" severity="success">{{ successMessageAddNextOfKin }}</Message>
 
-                                            <Message v-if="addNextOfKinError" severity="error">{{ addNextOfKinError }}</Message>
+                                        <Message v-if="addNextOfKinError" severity="error">{{ addNextOfKinError }}</Message>
 
-                                            <h5>Next Of Kin</h5>
-                                            <NextOfKin @handleNextOfKinDetails="handleNextOfKinDetails" />
-                                        </form>
+                                        <h5>Next Of Kin</h5>
+                                        <NextOfKin
+                                            @handleNextOfKinDetails="handleNextOfKinDetails"
+                                            :lName="nextOfKinDetail?.lastName"
+                                            :fName="nextOfKinDetail?.firstName"
+                                            :phonNo="nextOfKinDetail?.phoneNumber"
+                                            :address="nextOfKinDetail?.physicalAddress"
+                                            :emailAddress="nextOfKinDetail?.email"
+                                            :relation="nextOfKinDetail?.relationship"
+                                        />
+                                        <!-- </form> -->
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -1199,14 +1266,14 @@ const handleSubmitDocuments = async () => {
                                         <Message v-if="addDependantError" severity="error">{{ addDependantError }}</Message>
 
                                         <h5>Dependant</h5>
-                                        <Dependant @handleDependantDetails="handleDependantDetails" />
+                                        <Dependant @handleDependantDetails="handleDependantDetails" :lName="dependantDetails?.lastName" :fName="dependantDetails?.firstName" :phonNo="dependantDetails?.phoneNumber" />
                                     </div>
                                 </div>
                                 <div class="flex pt-4 justify-content-between">
-                                    <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
+                                    <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="goBack(prevCallback)" />
                                     <div class="flex justify-content-end gap-2">
                                         <SpinnerVue :loading="addDependantAndNextOfKinLoading" size="2rem" />
-                                        <Button v-if="!addDependantAndNextOfKinLoading" :disabled="addDependantAndNextOfKinLoading" type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" />
+                                        <Button v-if="!addDependantAndNextOfKinLoading" :disabled="addDependantAndNextOfKinLoading" type="submit" label="Continue" icon="pi pi-arrow-right" iconPos="right" />
                                     </div>
                                     <!-- <Button type="submit" label="Next" icon="pi pi-arrow-right" iconPos="right" /> -->
                                 </div>
@@ -1220,12 +1287,12 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handleSubmitDocuments(nextCallback)">
+                            <form @submit.prevent="handlePersonalDetails(nextCallback)">
                                 <!-- Documents form fields here -->
                                 <AddDocuments @uploadEmployeeDocuments="uploadEmployeeDocuments" />
 
                                 <div class="flex pt-4 justify-content-between">
-                                    <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
+                                    <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="goBack(prevCallback)" />
                                     <div class="flex justify-content-end gap-2">
                                         <SpinnerVue :loading="uploadDocumentLoading" size="2rem" />
                                         <Button v-if="!uploadDocumentLoading" :disabled="uploadDocumentLoading" type="submit" label="submit" icon="pi pi-arrow-right" iconPos="right" />

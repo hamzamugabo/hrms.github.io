@@ -47,6 +47,8 @@ const getRequests = async () => {
 
     try {
         const { data } = await fetchData(url, loading);
+        
+
         if (Array.isArray(data) && data.length > 0) {
             let allRequests = await Promise.all(
                 data.map(async (element) => {
@@ -56,10 +58,12 @@ const getRequests = async () => {
                     return {
                         ...element,
                         employee: employee,
-                        leaveType: leave?.leaveTypeEnum
+                        leaveType: leave?.name
                     };
                 })
             );
+
+         
 
             leaveRequests.value = allRequests;
         } else {
@@ -203,12 +207,12 @@ const LeaveStatus = [
     { name: 'ON_GOING', code: 'ON_GOING' },
     { name: 'REJECTED', code: 'REJECTED' }
 ];
-const filterOPtions = [
-    { name: 'Date Range', code: 'Date Range' },
-    { name: 'Employee', code: 'Employee' },
-    { name: 'Status', code: 'Status' },
-    { name: 'All', code: 'All' }
-];
+// const filterOPtions = [
+//     { name: 'Date Range', code: 'Date Range' },
+//     { name: 'Employee', code: 'Employee' },
+//     { name: 'Status', code: 'Status' },
+//     { name: 'All', code: 'All' }
+// ];
 const getStatusColor = (status) => {
     switch (status) {
         case 'PENDING':
@@ -229,7 +233,6 @@ const searchByStatus = async () => {
         const url = `${baseURL}/leave/request/by-status/${searchTerm.value?.name}`;
 
         const { data } = await fetchData(url, loading);
-        console.log('data===>', data);
 
         if (Array.isArray(data) && data.length > 0) {
             let allRequests = await Promise.all(
@@ -290,7 +293,7 @@ const searchByEmployeeId = async () => {
         const url = `${baseURL}/leave/request/by-employeeId/${employeeId.value?.id}`;
 
         const { data } = await fetchData(url, loading);
-        console.log('data===>', data);
+
         if (Array.isArray(data) && data.length > 0) {
             let allRequests = await Promise.all(
                 data.map(async (element) => {
@@ -513,30 +516,23 @@ const getSubmitFormData = (data) => {
         </div>
         <DataTable v-model:filters="filters" :value="leaveRequests" paginator showGridlines :rows="10" dataKey="id" filterDisplay="menu" :loading="loading" :globalFilterFields="['leaveStatus']">
             <template #header>
-                <div class="p-fluid formgrid grid flex-grow">
+                <!-- <div class="p-fluid formgrid grid flex-grow">
                     <div class="field col-12 md:col-7 flex">
                         <label for="filter" class="font-semibold mr-5">Filter By:</label>
 
                         <Dropdown v-model="filterTerm" :options="filterOPtions" optionLabel="name" placeholder="Filter By" required />
                     </div>
-                </div>
-                <div v-if="filterBy" class="p-fluid formgrid grid flex-grow">
+                </div> -->
+                <!-- <div v-if="filterBy" class="p-fluid formgrid grid flex-grow">
                     <div class="field col-12 md:col-12">
                         <Button type="button" icon="pi pi-filter-slash" class="ml-4 mb-2" label="Clear" outlined @click="clearFilter()" style="float: right; width: 100px" />
                     </div>
-                </div>
-                <div v-if="filterBy" class="flex justify-between items-center">
+                </div> -->
+
+                <div class="filter-container">
                     <div class="p-fluid formgrid grid flex-grow">
-                        <div v-if="filterBy === 'Date Range' || filterBy === 'All'" class="field col-12 md:col-3 mr-0" style="min-width: 200px">
-                            <label for="startDate" class="font-semibold mr-2">From:</label>
-                            <Calendar id="startDate" :showIcon="true" :showButtonBar="true" v-model="startDateSearch" />
-                        </div>
-                        <div v-if="filterBy === 'Date Range' || filterBy === 'All'" class="field col-12 md:col-3" style="min-width: 200px">
-                            <label for="endDate" class="font-semibold mr-2">To:</label>
-                            <Calendar id="endDate" :showIcon="true" :showButtonBar="true" v-model="endDateSearch" />
-                        </div>
-                        <div v-if="filterBy === 'Employee' || filterBy === 'All'" class="field col-12 md:col-3">
-                            <label for="endDate" class="font-semibold mr-2">Employee:</label>
+                        <div class="field col-12 md:col-6 lg:col-3 flex">
+                            <label for="employee" class="font-semibold">Employee:</label>
                             <AutoComplete
                                 placeholder="Search by employee"
                                 id="employee"
@@ -547,10 +543,10 @@ const getSubmitFormData = (data) => {
                                 :suggestions="autoFilteredEmployees"
                                 @complete="searchEmployee($event)"
                                 field="firstName"
-                                style="min-width: 200px"
+                                class="filter-input"
                             >
                                 <template #option="slotProps">
-                                    <div class="flex align-options-center">
+                                    <div class="flex align-items-center">
                                         <div>{{ slotProps?.option?.firstName }}</div>
                                         <div>&nbsp;</div>
                                         <!-- Space character -->
@@ -559,10 +555,18 @@ const getSubmitFormData = (data) => {
                                 </template>
                             </AutoComplete>
                         </div>
-                        <div v-if="filterBy === 'Status' || filterBy === 'All'" class="field col-12 md:col-3">
-                            <label for="endDate" class="font-semibold mr-2">Status:</label>
+                        <div class="field col-12 md:col-6 lg:col-3 flex">
+                            <label for="startDate" class="font-semibold">DateFrom:</label>
+                            <Calendar id="startDate" :showIcon="true" :showButtonBar="true" v-model="startDateSearch" class="filter-input" />
+                        </div>
 
-                            <Dropdown style="min-width: 200px" v-model="searchTerm" :options="LeaveStatus" optionLabel="name" placeholder="Search by status" required />
+                        <div class="field col-12 md:col-6 lg:col-3 flex">
+                            <label for="endDate" class="font-semibold mr-2">DateTo:</label>
+                            <Calendar id="endDate" :showIcon="true" :showButtonBar="true" v-model="endDateSearch" class="filter-input" />
+                        </div>
+                        <div class="field col-12 md:col-6 lg:col-3 flex">
+                            <label for="status" class="font-semibold">Status:</label>
+                            <Dropdown v-model="searchTerm" :options="LeaveStatus" optionLabel="name" placeholder="Search by status" class="filter-input" required />
                         </div>
                     </div>
                 </div>
@@ -612,6 +616,33 @@ const getSubmitFormData = (data) => {
 </template>
 
 <style>
+.filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem; /* Add space between the filter elements */
+}
+
+.filter-input {
+    min-width: 100%; /* Ensure inputs take full width on small screens */
+    max-width: 100%; /* Prevent overflow */
+    height: 35px;
+}
+
+.field label {
+    line-height: 35px;
+}
+
+@media (min-width: 768px) {
+    .filter-input {
+        min-width: 150px; /* Adjust minimum width for medium screens and up */
+    }
+}
+
+@media (min-width: 992px) {
+    .filter-container {
+        flex-wrap: nowrap;
+    }
+}
 .pending-color {
     color: orange; /* Adjust color as needed */
 }

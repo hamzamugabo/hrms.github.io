@@ -58,7 +58,7 @@ const getExperience = async () => {
 };
 
 const updateExperience = (experience) => {
-    console.log('==>', experience);
+  
     achievements.value = experience?.achievements;
     companyName.value = experience?.companyName;
     experienceEndDate.value = experience?.endDate;
@@ -85,10 +85,10 @@ const handleExperienceUpdate = async () => {
             startDate: changeDateFormat(experienceStartDate.value) || experienceToUpdate?.value?.startDate,
             id: experienceToUpdate?.value?.id
         };
-        console.log('experience update formdata==>', formData);
+       
 
         const data = await postData(url, formData, loading);
-        console.log('experience update data==>', data);
+      
 
         if (data?.status === 200 || data?.status === 201) {
             successMessageAddExperience.value = data?.message;
@@ -171,7 +171,7 @@ const handleAdd = () => {
 
 const hitOptionsButton = async () => {
     if (experienceToUpdate?.value?.id) {
-        console.log('update called');
+        
         await handleExperienceUpdate();
     } else {
         await addApplicantExperience();

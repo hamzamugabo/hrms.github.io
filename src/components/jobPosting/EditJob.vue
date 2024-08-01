@@ -6,7 +6,7 @@ import SpinnerVue from '@/components/reuseables/Spinner.vue';
 import { useRouter } from 'vue-router';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
-const { showError, showSuccess} = useToastPopup();
+const { showError, showSuccess } = useToastPopup();
 const router = useRouter();
 const jobName = ref('');
 const jobDescription = ref('');
@@ -52,7 +52,6 @@ const getJob = async () => {
 };
 onMounted(async () => {
     if (!jobStore?.getJobData()) {
-        console.log('still getting job');
         router('/job-posting');
     }
     await getJob();
@@ -105,7 +104,7 @@ const submitForm = async () => {
             addJobError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-showError('Failed')
+        showError('Failed');
         loading.value = false;
         console.log(error?.error);
     }
@@ -113,12 +112,8 @@ showError('Failed')
 </script>
 
 <template>
-
     <form @submit.prevent="submitForm">
- 
-
         <div class="grid">
-            
             <div class="col-12 md:col-12">
                 <div class="card">
                     <Message v-if="success" severity="success">{{ successMessage }}</Message>

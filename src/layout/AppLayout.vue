@@ -15,7 +15,8 @@ const loading = ref(false);
 const tokenValidationMessage = ref('');
 const token = ref('');
 const tokenAuth = async () => {
-    const accessToken = loadFromLocalStorage()?.accessToken;
+    const user = loadFromLocalStorage();
+    const accessToken = user?.accessToken;
     token.value = accessToken;
     const url = `${baseAUTHURL}/validate/${accessToken}`;
     // console.log('url',url)
@@ -23,7 +24,7 @@ const tokenAuth = async () => {
     try {
         if (accessToken) {
             const data = await fetchAUTHData(url, loading, router);
-            console.log('token validation', data);
+            // console.log('token validation', data);
             tokenValidationMessage.value = data;
             if (data?.status !== 200 && !data?.ok) {
                 router.push('/auth/login');

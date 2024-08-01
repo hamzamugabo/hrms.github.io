@@ -2,33 +2,29 @@
 import { ref, watch } from 'vue';
 
 const emit = defineEmits(['handleExperienceDetails']);
+const props = defineProps(['maxJoiningDate', 'exprienceData']);
 
-const achievements = ref('');
-const companyName = ref('');
-const experienceStartDate = ref('');
-const experienceEndDate = ref('');
-const jobTitle = ref('');
-const responsibilities = ref('');
-const maxDate = ref(getMaxDate())
-function getMaxDate() {
-    const today = new Date();
-    today.setDate(today.getDate());
-    return today;
-}
+const achievements = ref(props?.exprienceData?.achievements || '');
+const companyName = ref(props?.exprienceData?.companyName || '');
+const startDate = ref(props?.exprienceData?.startDate || '');
+const endDate = ref(props?.exprienceData?.endDate || '');
+const jobTitle = ref(props?.exprienceData?.jobTitle || '');
+const responsibilities = ref(props?.exprienceData?.responsibilities || '');
+
 const submitForm = () => {
     const formData = {
         achievements: achievements.value,
         companyName: companyName.value,
-        endDate: experienceEndDate.value,
+        endDate: endDate.value,
         jobTitle: jobTitle.value,
         responsibilities: responsibilities.value,
-        startDate: experienceStartDate.value
+        startDate: startDate.value
     };
 
     // Emit the form data to the parent component
     emit('handleExperienceDetails', formData);
 };
-watch([achievements, companyName, experienceStartDate, experienceEndDate, jobTitle, responsibilities], () => {
+watch([achievements, companyName, startDate, endDate, jobTitle, responsibilities], () => {
     submitForm();
 });
 </script>
@@ -54,11 +50,11 @@ watch([achievements, companyName, experienceStartDate, experienceEndDate, jobTit
         </div>
         <div class="field col-12 md:col-4">
             <label for="startDate">Start Date</label>
-            <Calendar :showIcon="true" :showButtonBar="true" :maxDate="maxDate" v-model="experienceStartDate"></Calendar>
+            <Calendar :showIcon="true" :showButtonBar="true" v-model="startDate" :maxDate="maxJoiningDate"></Calendar>
         </div>
         <div class="field col-12 md:col-4">
             <label for="endDate">End Date</label>
-            <Calendar :showIcon="true" :showButtonBar="true" :maxDate="maxDate" v-model="experienceEndDate"></Calendar>
+            <Calendar :showIcon="true" :showButtonBar="true" v-model="endDate" :maxDate="maxJoiningDate"></Calendar>
         </div>
     </div>
 </template>

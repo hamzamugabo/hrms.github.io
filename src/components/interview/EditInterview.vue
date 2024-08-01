@@ -47,7 +47,7 @@ const handleUpdateInterview = async () => {
     try {
         const url = `${baseURL}/interviews/update`;
 
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -71,7 +71,7 @@ const handleUpdateInterview = async () => {
             addInterviewError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-        console.log('Form submitted:', formData);
+         
         showError('Failed');
         loading.value = false;
         console.log(error?.error);
@@ -85,7 +85,7 @@ const handleUpdateInterviewQuestions = async () => {
     try {
         const url = `${baseURL}/interviews/questions/update`;
 
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -109,7 +109,7 @@ const handleUpdateInterviewQuestions = async () => {
             addInterviewQuizError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-        console.log('Form submitted:', formData);
+         
         showError('Failed');
         successMessageAddInterviewQuiz.value = false;
         successAddInterviewQuiz.value = '';
@@ -119,7 +119,7 @@ const handleUpdateInterviewQuestions = async () => {
 };
 
 const handleInterview = (data) => {
-    console.log('interview', data);
+
     interviewData.value = data;
 };
 

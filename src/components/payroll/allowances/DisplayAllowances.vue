@@ -55,7 +55,7 @@ const handleUpdateAllowance = async () => {
     }
 };
 const openModal = (allowance) => {
-    console.log('allowance', allowance);
+ 
     allowanceData.value = allowance;
     paymentFrequency.value = allowance?.paymentFrequency;
     basicSalary.value = allowance?.basicSalary;
@@ -71,7 +71,6 @@ onMounted(async () => {
 initFilters();
 
 watch(searchTerm, async (newVal, oldVal) => {
-    // console.log('searchedArray', searchedEmployees)
     // eslint-disable-next-line no-empty
     if (newVal !== oldVal && searchTerm.value?.name?.length > 0) {
     } else {
@@ -139,11 +138,7 @@ const submitForm = async () => {
     }
 
     try {
-        // const payload = {
-        //     ...allowanceData.value
-        // };
-        console.log('submit', emitedAllowance);
-        console.log('url', url);
+       
         const data = await postData(url, emitedAllowance);
         if (data?.status === 200 || data?.status === 201) {
             // success.value = true;

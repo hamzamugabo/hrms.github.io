@@ -1,7 +1,6 @@
 <script setup>
-
 // eslint-disable-next-line no-unused-vars
-const props = defineProps(['qualifications', 'label', 'autoFilteredAwardingInstitutions', 'autoFilteredQualifications', 'institutionId', 'qualificationId', 'maxJoiningDate']);
+const props = defineProps(['qualifications', 'label', 'autoFilteredAwardingInstitutions', 'autoFilteredQualifications', 'institutionId', 'qualificationId', 'maxJoiningDate', 'update']);
 const emit = defineEmits(['remove', 'add', 'searchAwardingInstitution', 'searchQualification']);
 // const institutionId = ref(props.institutionId);
 // const qualificationId = ref(props.qualificationId);
@@ -35,7 +34,7 @@ const handleSearchQualification = (event) => {
     <div class="grid">
         <div class="col-12">
             <div>
-                <div style="display: flex; justify-content: space-between">
+                <div v-if="update !== 'update'" style="display: flex; justify-content: space-between">
                     <h5 class="mr-4 ml-2">{{ label }}</h5>
                     <Button
                         type="button"
@@ -62,11 +61,15 @@ const handleSearchQualification = (event) => {
                         <label :for="'qualificationName' + index">Qualification Name</label>
                         <InputText :id="'qualificationName' + index" type="text" v-model="qualification.name" />
                     </div>
+                    <div v-if="update === 'update'" class="field col-12 md:col-4">
+                        <!-- <label :for="'ID' + index">ID</label> -->
+                        <InputText hidden :id="'ID' + index" type="text" v-model="qualification.id" />
+                    </div>
                     <div class="field col-12 md:col-4">
                         <label :for="'qualificationType' + index">Year of award</label>
                         <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.yearOfAward" :maxDate="maxJoiningDate"></Calendar>
                     </div>
-                    <div class="field col-12 md:col-4">
+                    <div v-if="update !== 'update'" class="field col-12 md:col-4">
                         <label for="institution">Institution</label>
                         <AutoComplete
                             placeholder="Search"
@@ -80,7 +83,7 @@ const handleSearchQualification = (event) => {
                             field="name"
                         />
                     </div>
-                    <div class="field col-12 md:col-4">
+                    <div v-if="update !== 'update'" class="field col-12 md:col-4">
                         <label for="qualification">Qualification</label>
                         <AutoComplete
                             placeholder="Search"

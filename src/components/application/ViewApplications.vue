@@ -115,7 +115,7 @@ const searchByStatus = async () => {
         const url = `${baseURL}/application/status/${searchTerm.value?.name}`;
 
         const { data } = await fetchData(url, loading, router);
-        console.log('data===>', data);
+     
         let allApplications = await Promise.all(
             data.map(async (element) => {
                 const applicant = await getApplicantId(element?.applicantId);
@@ -145,7 +145,7 @@ const searchByApplicantId = async () => {
         const url = `${baseURL}/application/applicant/${applicantId.value?.id}`;
 
         const { data } = await fetchData(url, loading, router);
-        console.log('data===>', data);
+         
         let allApplications = await Promise.all(
             data.map(async (element) => {
                 const applicant = await getApplicantId(element?.applicantId);
@@ -181,7 +181,7 @@ const searchApplicant = (event) => {
 };
 const handleStatus = async (application) => {
     updateStatusError.value = '';
-    console.log('application', application?.applicationStatus);
+ 
     if (application) {
         console.log('application', application?.applicant);
 
@@ -221,7 +221,7 @@ const handleStatus = async (application) => {
     } catch (error) {
         showError('Failed');
         loading.value = false;
-        console.log('==>', error);
+        console.log('', error);
     }
 };
 // const deleteApplication = async (application) => {

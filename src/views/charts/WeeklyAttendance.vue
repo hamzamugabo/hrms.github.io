@@ -47,7 +47,11 @@ const chartOptions = ref({
             },
             beginAtZero: true,
             ticks: {
-                stepSize: 1, // Ensure y-axis ticks are whole numbers
+                stepSize: 10, // Set the interval between ticks
+                callback: function (value) {
+                    // Ensure ticks are only displayed for specific values
+                    return (value % 10 === 0) ? value : '';
+                },
                 precision: 0 // Ensure no decimal points are shown
             }
         }
@@ -65,13 +69,15 @@ watch(
     },
     { immediate: true }
 );
-
 </script>
 
 <template>
     <div class="col-12 xl:col-6">
-        <div class="card">
+        <div class="card" style="height: 18rem">
+            <h6>Weekly Attendance</h6>
+            <div class="chart-container_">
             <Chart type="bar" :data="chartData" :options="chartOptions" />
+        </div>
         </div>
     </div>
 </template>

@@ -71,11 +71,11 @@ const update = async () => {
             gpsCoordinates: coordinatesUpdated?.value
         };
         // Perform form submission logic (e.g., send data to backend)
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
-        console.log('response', data);
+         
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 

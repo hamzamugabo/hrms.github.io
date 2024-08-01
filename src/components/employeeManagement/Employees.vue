@@ -74,7 +74,7 @@ const searchEmployees = async () => {
         queryParams.append('searchTerm', searchTerm.value);
         const queryUrl = `${url}?${queryParams.toString()}`;
         const { data } = await fetchData(queryUrl, loading);
-        console.log('data===>', data);
+         
         employees.value = data || [];
     } catch (error) {
         employees.value = [];

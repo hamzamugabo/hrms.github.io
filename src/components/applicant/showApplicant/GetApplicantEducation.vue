@@ -42,7 +42,7 @@ const getEducation = async () => {
         }
         const url = `${baseURL}/applicant/education/${prop.applicant?.id}`;
         const { data } = await fetchData(url, loading, router);
-        console.log('eucation', data);
+      
         if (data) {
             educationQualifications.value = data;
         }
@@ -53,7 +53,7 @@ const getEducation = async () => {
 };
 
 const updateEducation = (educationQualifications) => {
-    console.log('==>', educationQualifications);
+
     educationQualificationsToUpdate.value = educationQualifications;
     award.value = educationQualifications.award;
     endDate.value = educationQualifications.endDate;
@@ -78,10 +78,10 @@ const handleEducationUpdate = async () => {
             startDate: changeDateFormat(startDate.value) || educationQualificationsToUpdate?.value?.endDate,
             id: educationQualificationsToUpdate?.value?.id
         };
-        console.log('education update formdata==>', formData);
+
 
         const data = await postData(url, formData, loading);
-        console.log('education update data==>', data);
+      
 
         if (data?.status === 200 || data?.status === 201) {
             successMessageAddEducation.value = data?.message;
@@ -127,7 +127,7 @@ const addApplicantEducation = async () => {
         };
 
         const data = await postData(url, formData, loading);
-        console.log('education data==>', data);
+       
 
         if (data?.status === 200 || data?.status === 201) {
             successMessageAddEducation.value = data?.message;
@@ -160,7 +160,7 @@ const handleAdd_ = () => {
 
 const hitOptionsButton = async () => {
     if (educationQualificationsToUpdate?.value?.id) {
-        console.log('update called');
+        
         await handleEducationUpdate();
     } else {
         await addApplicantEducation();

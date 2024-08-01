@@ -15,15 +15,11 @@ const getEmployeesPerDepartment = async () => {
 
     try {
         const { data } = await fetchData(url, loading, router);
-        // console.log('employees per department', data);
         loading.value = false;
-
         employees.value = data;
     } catch (error) {
         loading.value = false;
-
         console.log('employees per department error', error);
-        // Handle errors here
     }
 };
 
@@ -37,8 +33,18 @@ const setChartData = () => {
             {
                 label: 'Employees per Department',
                 data,
-                backgroundColor: ['rgba(249, 115, 22, 0.2)', 'rgba(6, 182, 212, 0.2)', 'rgba(107, 114, 128, 0.2)', 'rgba(139, 92, 246, 0.2)'],
-                borderColor: ['rgb(249, 115, 22)', 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
+                backgroundColor: [
+                    'rgba(249, 115, 22, 0.2)',
+                    'rgba(6, 182, 212, 0.2)',
+                    'rgba(107, 114, 128, 0.2)',
+                    'rgba(139, 92, 246, 0.2)'
+                ],
+                borderColor: [
+                    'rgb(249, 115, 22)',
+                    'rgb(6, 182, 212)',
+                    'rgb(107, 114, 128)',
+                    'rgb(139, 92, 246)'
+                ],
                 borderWidth: 1
             }
         ]
@@ -50,9 +56,37 @@ const setChartOptions = () => {
     const textColor = documentStyle.getPropertyValue('--text-color');
 
     return {
+        maintainAspectRatio: false,
         plugins: {
             legend: {
                 labels: {
+                    color: textColor
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Number of Employees',
+                    color: textColor
+                },
+                ticks: {
+                    color: textColor,
+                    stepSize: 10,
+                    callback: (value) => {
+                        return (value % 10 === 0) ? value : '';
+                    }
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Departments',
+                    color: textColor
+                },
+                ticks: {
                     color: textColor
                 }
             }
@@ -68,7 +102,18 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="card">
-        <Chart type="pie" :data="chartData" :options="chartOptions" />
+    <div class="card" style="height: 18rem;">
+        <h6>Employees per department</h6>
+        <div class="chart-container_">
+            <Chart type="bar" :data="chartData" :options="chartOptions" />
+        </div>
     </div>
 </template>
+
+<style scoped>
+.chart-container_ {
+    position: relative;
+    height: calc(100% - 2rem); /* Adjust based on header height */
+    margin-top: 1rem;
+}
+</style>

@@ -13,7 +13,7 @@ export const useDashboardUtils = () => {
         try {
             if (accessToken) {
                 const data = await fetchAUTHData(url, loading, router);
-                console.log('token validation', 'status=>', data?.status, 'okay==>', data?.ok);
+                // console.log('token validation', 'status=>', data?.status, 'okay==>', data?.ok);
                 return data;
                 // if (data?.ok && data?.status === 200) {
                 //     // If the route requires authentication and the user is not authenticated, redirect to login

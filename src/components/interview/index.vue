@@ -33,7 +33,7 @@ const submitForm = async () => {
     try {
         const url = `${baseURL}/interviews/create`;
 
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -56,7 +56,7 @@ const submitForm = async () => {
     } catch (error) {
         successAddInterview.value = false;
         successMessageAddInterview.value = '';
-        console.log('Form submitted:', formData);
+         
         showError('Failed');
         loading.value = false;
         console.log(error?.error);
@@ -69,7 +69,7 @@ const handleCreateInterviewer = async (interviewId, availability) => {
     try {
         const url = `${baseURL}/interviewers/create/${interviewId}`;
 
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -89,7 +89,7 @@ const handleCreateInterviewer = async (interviewId, availability) => {
             addInterviewerError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-        console.log('Form submitted:', formData);
+         
         showError('Failed');
 
         loading.value = false;
@@ -104,7 +104,7 @@ const handleCreateInterviewQuestions = async (interviewId) => {
     try {
         const url = `${baseURL}/interviews/questions/create/${interviewId}`;
 
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -126,7 +126,7 @@ const handleCreateInterviewQuestions = async (interviewId) => {
             addInterviewQuizError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-        console.log('Form submitted:', formData);
+         
         showError('Failed');
 
         loading.value = false;

@@ -9,7 +9,7 @@ import { useToastPopup } from '@/components/reuseables/useToast.js';
 const { showError } = useToastPopup();
 const emit = defineEmits(['handleNssf']);
 const props = defineProps(['employee', 'salary', 'start', 'end', 'fee', 'type', 'deduction', 'nssf']);
-console.log('deduction type', props.type);
+
 
 const startDate = ref(props?.start || '');
 const endDate = ref(props?.end || '');
@@ -44,7 +44,7 @@ const getEmployeeSalary = async (id) => {
 
     try {
         const { data } = await fetchData(url, false);
-        console.log('employee salary', data);
+     
         if (!data) {
             showError('No salary attached to the Employee');
             return;
@@ -77,7 +77,6 @@ const submitForm = () => {
         nssfNumber: nssfNumber?.value
     };
 
-    // console.log('formData',formData)
     emit('handleNssf', payload);
 };
 

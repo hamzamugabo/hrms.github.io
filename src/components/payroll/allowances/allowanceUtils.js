@@ -132,7 +132,7 @@ export const utils = () => {
             const url = `${baseURL}/allowance/${employeeId}`;
 
             const { data } = await fetchData(url, loading);
-            // console.log('data===>', data);
+            //  
             let allRequests = await Promise.all(
                 data?.allowances?.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId, false);
@@ -154,7 +154,7 @@ export const utils = () => {
             const url = `${baseURL}/deduction/by/${employeeId}`;
 
             const { data } = await fetchData(url, loading);
-            // console.log('data===>', data);
+            //  
             let allRequests = await Promise.all(
                 data?.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId, false);

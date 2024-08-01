@@ -2,14 +2,14 @@
 import { ref, watch } from 'vue';
 
 const emit = defineEmits(['handleExperienceDetails']);
-defineProps(['maxJoiningDate'])
-
-const achievements = ref('');
-const companyName = ref('');
-const startDate = ref('');
-const endDate = ref('');
-const jobTitle = ref('');
-const responsibilities = ref('');
+const props = defineProps(['maxJoiningDate', 'exprienceData']);
+// console.log('exprienceData', props?.exprienceData);
+const achievements = ref(props?.exprienceData?.achievements || '');
+const companyName = ref(props?.exprienceData?.companyName || '');
+const startDate = ref(props?.exprienceData?.startDate || '');
+const endDate = ref(props?.exprienceData?.endDate || '');
+const jobTitle = ref(props?.exprienceData?.jobTitle || '');
+const responsibilities = ref(props?.exprienceData?.responsibilities || '');
 
 const submitForm = () => {
     const formData = {

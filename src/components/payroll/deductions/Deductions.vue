@@ -49,7 +49,7 @@ const handleUpdateDeduction = async () => {
     await updateDeduction(deductionDataToUpdate, deductionData, deductions, successMessage, updateError, success, loading);
 };
 const openModal = (deduction) => {
-    // console.log('deduction', deduction);
+  
     deductionData.value = deduction;
 
     visible.value = true;
@@ -63,7 +63,7 @@ onMounted(async () => {
 initFilters();
 
 watch(searchTerm, async (newVal, oldVal) => {
-    // console.log('searchedArray', searchedEmployees)
+
     // eslint-disable-next-line no-empty
     if (newVal !== oldVal && searchTerm.value?.name?.length > 0) {
     } else {

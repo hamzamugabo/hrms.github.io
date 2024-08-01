@@ -1,14 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import AddEmployee from '@/components/employeeManagement/AddEmployee.vue';
-import CreateApplicant from '@/components/applicant/addApplicant/AddApplicant.vue';
-import UpdateEmployee from '@/components/employeeManagement/UpdateEmployee.vue';
-import UpdateApplicant from '@/components/applicant/UpdateApplicant.vue';
+// import CreateApplicant from '@/components/applicant/addApplicant/AddApplicant.vue';
+import UpdateEmployee from '@/components/employeeManagement/EmployeeUpdate.vue';
+// import UpdateApplicant from '@/components/applicant/UpdateApplicant.vue';
 import ShowEmployee from '@/components/employeeManagement/ShowEmployee.vue';
 import ShowEmployees from '@/components/employeeManagement/Employees.vue';
-import ShowApplicant from '@/components/applicant/showApplicant/ShowApplicant.vue';
+// Applicant
+import CreateApplicant from '@/components/applicant/AddApplicant.vue';
+// import CreateApplicant from '@/components/applicant/addApplicant/AddApplicant.vue';
+import UpdateApplicant from '@/components/applicant/ApplicantUpdate.vue';
+// import UpdateApplicant from '@/components/applicant/UpdateApplicant.vue';
+import ShowApplicant from '@/components/applicant/ShowApplicant.vue';
 import ShowApplicants from '@/components/applicant/Applicants.vue';
-import ApplicantQulification from '@/components/applicant/QualificationFormTemplate.vue';
+
+// import ShowApplicant from '@/components/applicant/showApplicant/ShowApplicant.vue';
+// import ShowApplicants from '@/components/applicant/Applicants.vue';
+// import ApplicantQulification from '@/components/applicant_/QualificationFormTemplate.vue';
 import PostJob from '@/components/jobPosting/PostJob.vue';
 import DisplayJobs from '@/components/jobPosting/DisplayJobs.vue';
 import EditJob from '@/components/jobPosting/EditJob.vue';
@@ -18,10 +26,10 @@ import AddUser from '@/components/systemUser/Create.vue';
 import UpdateUser from '@/components/systemUser/Update.vue';
 import ShowUser from '@/components/systemUser/Show.vue';
 import ShowUsers from '@/components/systemUser/ShowUsers.vue';
-import CreateProgram from '@/components/training/trainingProgram/Create.vue';
-import ShowPrograms from '@/components/training/trainingProgram/ShowPrograms.vue';
-import ShowProgram from '@/components/training/trainingProgram/ShowProgram.vue';
-import UpdateProgram from '@/components/training/trainingProgram/Update.vue';
+// import CreateProgram from '@/components/training/trainingProgram/Create.vue';
+// import ShowPrograms from '@/components/training/trainingProgram/ShowPrograms.vue';
+// import ShowProgram from '@/components/training/trainingProgram/ShowProgram.vue';
+// import UpdateProgram from '@/components/training/trainingProgram/Update.vue';
 import CreateNationality from '@/components/nationality/Create.vue';
 import CreateRegion from '@/components/dutyStation/region/Create.vue';
 import ShowRegions from '@/components/dutyStation/region/ShowRegions.vue';
@@ -102,6 +110,16 @@ import CreateInternalProcess from '@/components/performance/metrics/internalProc
 import InternalProcessMetrics from '@/components/performance/metrics/internalProcessMetric/InternalProcessMetrics.vue';
 import Courses from '@/components/training/course/Courses.vue';
 import TrainingModule from '@/components/training/trainingModule/TrainingModules.vue';
+import PermissionGroups from '@/components/accessControl/permissionGroup/GroupPermissions.vue';
+import Permissions from '@/components/accessControl/permission/Permissions.vue';
+import Roles from '@/components/accessControl/roles/Roles.vue';
+import RoleDetails from '@/components/accessControl/roles/RoleDetails.vue';
+import UpdateRole from '@/components/accessControl/roles/UpdateRole.vue';
+
+import TrainingAssesment from '@/components/training/trainingAssesment/Assesments.vue';
+import TrainingQuestion from '@/components/training/trainingQuestions/Questions.vue';
+import TrainingAnswers from '@/components/training/trainingAnswer/Answers.vue';
+import Lessons from '@/components/training/lesson/Lessons.vue';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -187,13 +205,13 @@ const router = createRouter({
                     component: ShowApplicant,
                     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
                 },
-                {
-                    path: '/applicant/education/create',
-                    name: 'ApplicantQulification',
-                    component: ApplicantQulification,
+                // {
+                //     path: '/applicant/education/create',
+                //     name: 'ApplicantQulification',
+                //     component: ApplicantQulification,
 
-                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
-                },
+                //     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                // },
                 {
                     path: '/applicants',
                     name: 'Applicants',
@@ -274,30 +292,30 @@ const router = createRouter({
                 // },
 
                 // Training Program
-                {
-                    path: '/training-program/add',
-                    name: 'Program',
-                    component: CreateProgram,
-                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
-                },
-                {
-                    path: '/training-program/update',
-                    name: 'UpdateProgram',
-                    component: UpdateProgram,
-                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
-                },
-                {
-                    path: '/training-program/show-program',
-                    name: 'ShowProgram',
-                    component: ShowProgram,
-                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
-                },
-                {
-                    path: '/training-program/show-programs',
-                    name: 'ShowPrograms',
-                    component: ShowPrograms,
-                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
-                },
+                // {
+                //     path: '/training-program/add',
+                //     name: 'Program',
+                //     component: CreateProgram,
+                //     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                // },
+                // {
+                //     path: '/training-program/update',
+                //     name: 'UpdateProgram',
+                //     component: UpdateProgram,
+                //     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                // },
+                // {
+                //     path: '/training-program/show-program',
+                //     name: 'ShowProgram',
+                //     component: ShowProgram,
+                //     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                // },
+                // {
+                //     path: '/training-program/show-programs',
+                //     name: 'ShowPrograms',
+                //     component: ShowPrograms,
+                //     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                // },
 
                 // Nationality
                 {
@@ -758,6 +776,60 @@ const router = createRouter({
                     path: '/training/module',
                     name: 'TrainingModule',
                     component: TrainingModule,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/access-control/permission-group',
+                    name: 'PermissionGroups',
+                    component: PermissionGroups,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/access-control/permission',
+                    name: 'Permissions',
+                    component: Permissions,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/access-control/roles',
+                    name: 'Roles',
+                    component: Roles,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/access-control/roles-details',
+                    name: 'RoleDetails',
+                    component: RoleDetails,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/access-control/update-role',
+                    name: 'UpdateRole',
+                    component: UpdateRole,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/training/assessment',
+                    name: 'TrainingAssesment',
+                    component: TrainingAssesment,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/training/questions',
+                    name: 'TrainingQuestion',
+                    component: TrainingQuestion,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/training/answers',
+                    name: 'TrainingAnswers',
+                    component: TrainingAnswers,
+                    meta: { roles: ['HR', 'Manager', 'Supervisor'] }
+                },
+                {
+                    path: '/training/lesson',
+                    name: 'Lessons',
+                    component: Lessons,
                     meta: { roles: ['HR', 'Manager', 'Supervisor'] }
                 }
             ]

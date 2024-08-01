@@ -54,11 +54,11 @@ const update = async () => {
             trainingStatus: trainingStatus.value.name
         };
         // Perform form submission logic (e.g., send data to backend)
-        console.log('Form submitted:', formData);
+         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
-        console.log('response', data);
+         
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 
@@ -132,7 +132,12 @@ const submitForm = async () => {
     const formData = {
        ...payload.value
     };
+  if (Object.keys(formData).length === 0) {
+        showError('No data entered');
+        loadingAdd.value = false;
 
+        return;
+    }
     const url = `${baseURL}/modules/create`;
 
     try {
@@ -231,7 +236,7 @@ const handleData = (data) =>{
                 <!-- <Button type="button" icon="pi pi-plus" class="ml-4 mb-2" label="Add objective" outlined @click="addObjective()" style="float: right; width: 10rem" /> -->
             </div>
         </div>
-        <DataTable v-model:filters="filters" :value="modules" paginator showGridlines :rows="10" dataKey="id" filterDisplay="menu" :loading="loading" :globalFilterFields="['department']">
+        <DataTable v-model:filters="filters" :value="modules" paginator showGridlines :rows="10" dataKey="id" filterDisplay="menu" :loading="loading" :globalFilterFields="['title']">
             <template #header>
                 <div class="flex justify-content-between">
                   

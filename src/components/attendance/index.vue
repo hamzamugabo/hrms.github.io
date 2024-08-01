@@ -79,18 +79,13 @@ onMounted(() => {
 const submitForm = async () => {
     addAttendanceError.value = '';
     if (!props?.employeeId) {
-        console.log('no Employee data');
+     
         addAttendanceError.value = 'No Employee information';
         return;
     }
     loading.value = true;
-    const now = new Date();
     const formData = {
-        date: changeDateFormat(now),
         notes: attendanceData.value?.notes,
-        timeIn: formatDate(now.toString()),
-        timeOut: null,
-        // timeOut: formatDate(addHoursToTime(now.toString(), 8)),
         employeeId: props?.employeeId
     };
     if (!formData) {
@@ -99,9 +94,9 @@ const submitForm = async () => {
     }
 
     try {
-        const url = `${baseURL}/attendance/create`;
+        const url = `${baseURL}/attendance/clock-in`;
 
-        // console.log('Form submitted:', formData);
+        //  
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -123,7 +118,7 @@ const submitForm = async () => {
         }
     } catch (error) {
         showError('Failed');
-        console.log('Form submitted:', formData);
+         
 
         loading.value = false;
         console.log(error?.error);
@@ -147,7 +142,7 @@ const handleCreateAttendanceBreak = async () => {
     try {
         const url = `${baseURL}/attendance/breaks/create/${attendanceId}`;
 
-        console.log('Form submitted:', formData);
+         
         // loadingBreak.value = false;
 
         const data = await postData(url, formData, loadingBreak);
@@ -167,7 +162,7 @@ const handleCreateAttendanceBreak = async () => {
         }
     } catch (error) {
         showError('Failed');
-        console.log('Form submitted:', formData);
+         
 
         loadingBreak.value = false;
         console.log(error?.error);
@@ -203,10 +198,10 @@ const showHideBreake = () => {
             <SpinnerVue :loading="loadingBreak" size="3rem" />
         </div>
     </Dialog>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="submitForm" class="form-container">
         <div class="grid">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="min-width: 300px">
                     <Button
                         v-if="attandanceData?.id"
                         type="button"
@@ -223,7 +218,6 @@ const showHideBreake = () => {
 
                     <h5>Attendance</h5>
                     <p>Clocked in: {{ attandanceData?.timeIn }}</p>
-                    <p>Clocked Out: {{ attandanceData?.timeOut }}</p>
                     <Attendance @handleAttendance="handleAttendance" :isTimeOut="false" :isTimeIn="true" v-if="!attandanceData?.id" />
                 </div>
             </div>
@@ -231,8 +225,18 @@ const showHideBreake = () => {
         <div style="display: flex; justify-content: center">
             <SpinnerVue :loading="loading" size="3rem" />
         </div>
-        <div v-if="!loading" class="mb-10" style="margin: 50px 0px">
-            <button v-if="!attandanceData?.id" style="background-color: #db0000; color: #ffffff; padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; padding-bottom: 40px" class="block mx-auto border-none pb-3">Clock In</button>
+        <div v-if="!loading" class="mb-10" style="display: flex; justify-content: center; margin: 0px 0px">
+            <button v-if="!attandanceData?.id" style="background-color: #db0000; color: #ffffff; padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; padding-bottom: 10px" class="border-none">Clock In</button>
         </div>
     </form>
 </template>
+
+<style scoped>
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+</style>
