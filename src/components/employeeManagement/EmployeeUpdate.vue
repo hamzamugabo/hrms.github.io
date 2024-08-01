@@ -781,12 +781,14 @@ const handlePersonalDetails = async (nextCallback) => {
 
             return;
         }
-        if (!validatePhoneNumber(otherPhoneNumber.value)) {
-            showError('Please enter a valid other Phone Number.');
-            addEmployeeError.value = 'Please enter a valid other Phone Number.';
-            addPersonalDetailsLoading.value = false;
+        if (otherPhoneNumber.value) {
+            if (!validatePhoneNumber(otherPhoneNumber.value)) {
+                showError('Please enter a valid other Phone Number.');
+                addEmployeeError.value = 'Please enter a valid other Phone Number.';
+                addPersonalDetailsLoading.value = false;
 
-            return;
+                return;
+            }
         }
         if (!email.value.trim() || !validateEmail(email.value.trim())) {
             showError('Please enter a valid email address.');

@@ -102,7 +102,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="card" style="height: 18rem;">
+    <div class="card" style="height: chart-container_">
         <h6>Employees per department</h6>
         <div class="chart-container_">
             <Chart type="bar" :data="chartData" :options="chartOptions" />
@@ -110,7 +110,7 @@ onMounted(async () => {
     </div>
 </template>
 
-<style scoped>
+<style>
 .chart-container_ {
     position: relative;
     height: calc(100% - 2rem); /* Adjust based on header height */

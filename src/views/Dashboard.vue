@@ -6,7 +6,7 @@ import EmployeesPerDepartment from './charts/EmployeesPerDepartmentBar.vue';
 import AttendenceTimeFramesLineGraph from './charts/AttendenceTimeFramesLineGraph.vue';
 import AttendenceTimeFramesBarLIne from './charts/AttendenceTimeFramesBarLIne.vue';
 import WeeklyAttendance from './charts/WeeklyAttendance.vue';
-import EmployeePayrollComponent from '@/components/payroll/payroll/AddEmployeePayroll.vue';
+// import EmployeePayrollComponent from '@/components/payroll/payroll/AddEmployeePayroll.vue';
 import ObjectStatus from '@/views/ObjectStatus.vue';
 import defaultProfile from '@/components/reuseables/defaultProfilePic';
 import { useRouter } from 'vue-router';
@@ -144,7 +144,7 @@ onMounted(() => {
                         <img :src="defaultProfile" alt="User Picture" class="w-1 h-1 rounded-full mr-4" />
                         <div>
                             <h6 class="text-xl">{{ user?.firstName || user?.username }} {{ user?.lastName }}</h6>
-                            <p class="text-gray-600">{{ user?.userRole || user?.accountType}}</p>
+                            <p class="text-gray-600">{{ user?.userRole || user?.accountType }}</p>
                         </div>
                     </div>
                 </div>
@@ -231,7 +231,11 @@ onMounted(() => {
                 <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" />
             </div>
         </div>
-        <WeeklyAttendance :attendanceData="weeklyAttendance" />
+        <div class="col-12 xl:col-6">
+            <div style="height: 18rem">
+                <WeeklyAttendance :attendanceData="weeklyAttendance" />
+            </div>
+        </div>
 
         <div class="col-12 xl:col-6">
             <div class="card" style="height: 25rem">
@@ -252,9 +256,10 @@ onMounted(() => {
                         <label for="line">Line</label>
                     </div>
                 </div>
-
-                <AttendenceTimeFramesBarLIne v-if="chartType === 'bar'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
-                <AttendenceTimeFramesLineGraph v-if="chartType === 'line'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
+                <div style="height: 18rem">
+                    <AttendenceTimeFramesBarLIne v-if="chartType === 'bar'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
+                    <AttendenceTimeFramesLineGraph v-if="chartType === 'line'" :chartDataObject="chartData" :attendanceFrame="timeFrame.name" :url="timeFrameUrlState" />
+                </div>
             </div>
         </div>
         <ObjectStatus :objectives="objectives" />

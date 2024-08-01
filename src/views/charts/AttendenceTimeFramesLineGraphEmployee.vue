@@ -72,7 +72,9 @@ watch(
 <template>
     <div>
         <!-- <h3>Attendance Data</h3> -->
+         <div class="chart-container_">
         <Chart v-if="chartData" type="line" :data="chartData" :options="chartOptions" />
         <div v-else>Loading...</div>
+    </div>
     </div>
 </template>
