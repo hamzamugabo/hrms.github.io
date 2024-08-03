@@ -16,8 +16,8 @@ const truncateTitle = (title) => {
     }
     return title;
 };
-const showInterviewEmit = (job) => {
-    emit('showInterview', job);
+const showInterviewEmit = (jobId) => {
+    emit('showInterview', jobId);
 };
 const createInterviewEmit = (job) => {
     emit('createInterview', job);
@@ -42,7 +42,7 @@ const deleteJobEmit = (job)=>{
             <p v-if="job?.interviews?.length < 1" @click="createInterviewEmit(job)" style="cursor: pointer; background-color: #f0f0f0; border-radius: 8px; padding: 10px 20px; display: inline-block; text-align: center; user-select: none">
                 Create interview
             </p>
-            <p v-if="job?.interviews?.length > 0" @click="showInterviewEmit(job)" style="cursor: pointer; background-color: #0e9d6e; border-radius: 8px; padding: 10px 20px; display: inline-block; text-align: center; user-select: none">
+            <p v-if="job?.interviews?.length > 0" @click="showInterviewEmit(job.id)" style="cursor: pointer; background-color: #0e9d6e; border-radius: 8px; padding: 10px 20px; display: inline-block; text-align: center; user-select: none">
                 <span v-if="!loadInterview || !jobIdToView === job?.id" style="color: white"> View Interview</span>
                 <span> <SpinnerVue :loading="loadInterview && jobIdToView === job?.id" size="2rem" /></span>
             </p>

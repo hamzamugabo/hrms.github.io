@@ -7,7 +7,7 @@ const props = defineProps(['lName', 'fName', 'phonNo', 'address', 'emailAddress'
 const firstName = ref(props?.fName);
 const lastName = ref(props?.lName);
 const email = ref(props?.emailAddress);
-const phoneNumber = ref(props?.phonNo);
+const phoneNumber = ref(props?.phonNo || null);
 const physicalAddress = ref(props?.address);
 const relationship = ref(props?.relation);
 
@@ -42,7 +42,7 @@ watch([firstName, lastName, email, relationship, phoneNumber, physicalAddress], 
 
         <div class="field col-12 md:col-4">
             <label for="phoneNumber">Phone Number</label>
-            <InputText id="phoneNumber" type="text" v-model="phoneNumber" />
+            <InputNumber v-model="phoneNumber" inputId="phoneNumber" :useGrouping="false" />
         </div>
         <div class="field col-12 md:col-4">
             <label for="email">Email</label>

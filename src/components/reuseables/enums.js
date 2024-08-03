@@ -25,7 +25,6 @@ const employeeLevelsEnum = [
     { name: 'LEVEL_7', code: 'LEVEL_7' }
 ];
 
-
 const PaymentFrequencyType = [
     { name: 'MONTHLY', code: 'MONTHLY' },
     { name: 'BI_WEEKLY', code: 'BI_WEEKLY' },
@@ -125,21 +124,25 @@ const leaveTypes = [
     { name: 'LEAVE_WITHOUT_PAY', code: 'LEAVE_WITHOUT_PAY' }
 ];
 const ProgressStatus = [
-
-    {name:"NOT_STARTED",code:"NOT_STARTED"},
-    {name:"IN_PROGRESS",code:"IN_PROGRESS"},
-    {name:"COMPLETED",code:"COMPLETED"},
-    {name:"ON_HOLD",code:"ON_HOLD"},
-    {name:"CANCELLED",code:"CANCELLED"}
-
-]
+    { name: 'NOT_STARTED', code: 'NOT_STARTED' },
+    { name: 'IN_PROGRESS', code: 'IN_PROGRESS' },
+    { name: 'COMPLETED', code: 'COMPLETED' },
+    { name: 'ON_HOLD', code: 'ON_HOLD' },
+    { name: 'CANCELLED', code: 'CANCELLED' }
+];
 
 const QuestionDifficulty = [
-
-    {name:"EASY",code:"EASY"},
-    {name:"MEDIUM", code:"MEDIUM"},
-    {name:"HARD", code:"HARD"}
-]
+    { name: 'EASY', code: 'EASY' },
+    { name: 'MEDIUM', code: 'MEDIUM' },
+    { name: 'HARD', code: 'HARD' }
+];
+const PostingType = [
+    {
+        name: 'INTERNAL',
+        code: 'INTERNAL'
+    },
+    { name: 'EXTERNAL', code: 'EXTERNAL' }
+];
 export {
     genderOptionsEnum,
     maritalStatusOptionsEnum,
@@ -161,5 +164,6 @@ export {
     TrainingStatus,
     QuestionType,
     ProgressStatus,
-    QuestionDifficulty
+    QuestionDifficulty,
+    PostingType
 };

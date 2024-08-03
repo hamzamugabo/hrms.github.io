@@ -40,13 +40,14 @@ function getMaxDate(start, days) {
     today.setDate(today.getDate() + days);
     return today;
 }
-watch([leaveTypeId, maxDurationInDays], () => {
-    maxDurationInDays.value = leaveTypeId.value?.maxDurationInDays || 0;
-});
 watch([startDate], () => {
     minEndDate.value = new Date(startDate.value);
     maxDate.value = getMaxDate(startDate.value, leaveTypeId.value?.maxDurationInDays || 0);
 });
+watch([leaveTypeId, maxDurationInDays], () => {
+    maxDurationInDays.value = leaveTypeId.value?.maxDurationInDays || 0;
+});
+
 
 const changeCurrentDateFormat = (dateString) => {
     const dateObject = new Date(dateString);
@@ -56,12 +57,18 @@ const changeCurrentDateFormat = (dateString) => {
     return `${year}-${month}-${day}`;
 };
 
-const getEmployees = async () => {
+const getEmployees = async (genderFilter) => {
     const url = `${baseURL}/employees`;
     try {
         loading.value = true;
         const { data } = await fetchData(url, loading);
-        employees.value = data;
+        if (genderFilter) {
+            // Filter employees based on gender
+            employees.value = data.filter((employee) => employee.gender === genderFilter);
+        } else {
+            // Set all employees
+            employees.value = data;
+        }
     } catch (error) {
         console.error('Error fetching employees:', error);
     } finally {
@@ -74,7 +81,7 @@ const getAllLeaveTypes = async () => {
     try {
         loading.value = true;
         const { data } = await fetchData(url, loading);
-        console.log('all leave types', data);
+
         leaveTypes.value = data;
     } catch (error) {
         console.error('Error fetching leave types:', error);
@@ -131,6 +138,20 @@ const handleSubmitForm = async () => {
 watch([selectedAutoValue, startDate, description, leaveTypeId, endDate], () => {
     handleSubmitForm();
 });
+watch(leaveTypeId, async () => {
+    const leaveTypeName = leaveTypeId.value?.name || '';
+
+    // Check if the leave type is "Paternity leave"
+    if (leaveTypeName.includes('Paternity')) {
+        // Fetch and filter employees
+        await getEmployees('MALE');
+    } else if (leaveTypeName.includes('Maternity')) {
+        await getEmployees('FEMALE');
+    } else {
+        // Fetch all employees
+        await getEmployees();
+    }
+});
 </script>
 
 <template>
@@ -143,18 +164,6 @@ watch([selectedAutoValue, startDate, description, leaveTypeId, endDate], () => {
                 <Message v-if="serverError" severity="error">{{ serverError }}</Message>
 
                 <div class="p-fluid formgrid grid">
-                    <div class="field col-12 md:col-12">
-                        <label for="employee">Employee</label>
-                        <AutoComplete placeholder="Search" optionLabel="lastName" id="employee" :dropdown="true" :multiple="false" v-model="selectedAutoValue" :suggestions="autoFilteredValue" @complete="searchEmployee" field="firstName">
-                            <template #option="slotProps">
-                                <div class="flex align-options-center">
-                                    <div>{{ slotProps.option.firstName }}</div>
-                                    <div>&nbsp;</div>
-                                    <div>{{ slotProps.option.lastName }}</div>
-                                </div>
-                            </template>
-                        </AutoComplete>
-                    </div>
                     <div class="field col-12 md:col-12">
                         <label for="leaveType">Select Leave Type</label>
                         <AutoComplete placeholder="Search" optionLabel="maxDurationInDays" id="leaveType" :dropdown="true" :multiple="false" v-model="leaveTypeId" :suggestions="autoFilteredValueLeave" @complete="searchLeaveType" field="name">
@@ -169,6 +178,19 @@ watch([selectedAutoValue, startDate, description, leaveTypeId, endDate], () => {
                             </template>
                         </AutoComplete>
                     </div>
+                    <div class="field col-12 md:col-12">
+                        <label for="employee">Employee</label>
+                        <AutoComplete placeholder="Search" optionLabel="lastName" id="employee" :dropdown="true" :multiple="false" v-model="selectedAutoValue" :suggestions="autoFilteredValue" @complete="searchEmployee" field="firstName">
+                            <template #option="slotProps">
+                                <div class="flex align-options-center">
+                                    <div>{{ slotProps.option.firstName }}</div>
+                                    <div>&nbsp;</div>
+                                    <div>{{ slotProps.option.lastName }}</div>
+                                </div>
+                            </template>
+                        </AutoComplete>
+                    </div>
+
                     <div class="field col-12 md:col-12">
                         <label for="startDate">Start Date</label>
                         <Calendar :showIcon="true" :showButtonBar="true" v-model="startDate" :minDate="minDate"></Calendar>

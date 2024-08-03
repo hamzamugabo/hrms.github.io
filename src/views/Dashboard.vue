@@ -225,15 +225,22 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-
-        <div class="col-12 xl:col-6">
-            <div style="height: 18rem">
-                <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" />
+        <div class="col-12">
+            <div class="grid">
+                <div class="col-12 xl:col-6">
+                    <div style="height: 20rem">
+                        <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" />
+                    </div>
+                </div>
+                <div class="col-12 xl:col-6">
+                    <div style="height: 20rem">
+                        <WeeklyAttendance :attendanceData="weeklyAttendance" />
+                    </div>
+                </div>
             </div>
         </div>
-        <!-- <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" /> -->
 
-        <WeeklyAttendance :attendanceData="weeklyAttendance" />
+        <!-- <EmployeesPerDepartment :label="'Employees per Department'" :lables="barLabels" :data="barData" /> -->
 
         <div class="col-12 xl:col-6">
             <div class="card" style="height: 25rem">
@@ -264,7 +271,7 @@ onMounted(() => {
         </div>
         <ObjectStatus :objectives="objectives" />
 
-        <EmployeePayrollComponent :employees="employees" v-model:employeeSearch="employeeSearch" />
+        <!-- <EmployeePayrollComponent :employees="employees" v-model:employeeSearch="employeeSearch" /> -->
     </div>
 </template>
 <style scoped>

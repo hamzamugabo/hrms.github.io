@@ -37,8 +37,8 @@ const nationality = ref([]);
 
 const idType = ref('');
 const idNumber = ref('');
-const phoneNumber = ref('');
-const otherPhoneNumber = ref('');
+const phoneNumber = ref(null);
+const otherPhoneNumber = ref(null);
 const email = ref('');
 const physicalAddress = ref('');
 const position = ref('');
@@ -1129,7 +1129,9 @@ const goBack = (prevCallback) => {
                                     <!-- <h5>Contact Information</h5> -->
                                     <div class="field col-12 md:col-4">
                                         <label for="phonenumber">Phone Number</label>
-                                        <InputText id="phonenumber" type="text" v-model="phoneNumber" />
+                                        <!-- <InputText id="phonenumber" type="text" v-model="phoneNumber" /> -->
+                                        <InputNumber v-model="phoneNumber" inputId="phoneNumber" :useGrouping="false" />
+
                                     </div>
 
                                     <div class="field col-12 md:col-4">
@@ -1143,7 +1145,9 @@ const goBack = (prevCallback) => {
 
                                     <div class="field col-12 md:col-4">
                                         <label for="otherPhoneNumber">Other Phone Number (optional)</label>
-                                        <InputText id="otherPhoneNumber" type="text" v-model="otherPhoneNumber" />
+                                        <InputNumber v-model="otherPhoneNumber" inputId="otherPhoneNumber" :useGrouping="false" />
+
+                                        <!-- <InputText id="otherPhoneNumber" type="text" v-model="otherPhoneNumber" /> -->
                                     </div>
 
                                     <div class="field col-12 md:col-4">

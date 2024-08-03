@@ -18,7 +18,7 @@ const { confirmDelete } = useConfirmDialog();
 
 const leaveRequests = ref([]);
 const filters = ref(null);
-const loading = ref(true);
+const loading = ref(false);
 const visible = ref(false);
 const leaveRequestsData = ref({});
 // const departmentUpdatedName = ref('');
@@ -43,18 +43,18 @@ const autoFilteredEmployees = ref([]);
 const leveRequestData = ref({});
 
 const getRequests = async () => {
+    loading.value = true;
     const url = `${baseURL}/leave/request`;
 
     try {
         const { data } = await fetchData(url, loading);
-        
 
         if (Array.isArray(data) && data.length > 0) {
             let allRequests = await Promise.all(
                 data.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId);
                     const leave = await getLeaveType(element?.leaveTypeId);
-                    console.log('leave by id', leave);
+
                     return {
                         ...element,
                         employee: employee,
@@ -63,15 +63,19 @@ const getRequests = async () => {
                 })
             );
 
-         
+            loading.value = false;
 
             leaveRequests.value = allRequests;
         } else {
+            loading.value = false;
+
             leaveRequests.value = []; // Handle case where data is not an array or is empty
         }
 
         // Assign allRequests to your reactive variable if needed
     } catch (error) {
+        loading.value = false;
+
         leaveRequests.value = []; // Handle case where data is not an array or is empty
 
         console.log('Error fetching requests:', error);
@@ -152,9 +156,10 @@ const clearFilter = () => {
     getRequests();
     filterBy.value = '';
 };
+const updateLoading = ref(false);
 const updateLeaveRequest = async () => {
     try {
-        loading.value = true;
+        updateLoading.value = true;
         const url = `${baseURL}/leave/request/update`;
         const formData = {
             endDate: changeDateFormat(endDate.value) || leaveRequestsData?.value?.endDate,
@@ -164,14 +169,14 @@ const updateLeaveRequest = async () => {
         };
         // console.log('request', formData);
 
-        const data = await postData(url, formData, loading);
+        const data = await postData(url, formData, updateLoading);
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 
-            loading.value = false;
+            updateLoading.value = false;
 
             // success.value = true;
-            loading.value = false;
+            updateLoading.value = false;
             showSuccess(data?.message);
             await getRequests();
         } else {
@@ -181,7 +186,7 @@ const updateLeaveRequest = async () => {
     } catch (error) {
         showError('Failed');
 
-        loading.value = false;
+        updateLoading.value = false;
         console.log(error?.error);
     }
 };
@@ -197,7 +202,6 @@ onMounted(async () => {
     await getRequests();
     await getLeaveTypes();
     await getEmployees();
-    // console.log( getStatusColor('PENDING'))
 });
 initFilters();
 
@@ -238,11 +242,12 @@ const searchByStatus = async () => {
             let allRequests = await Promise.all(
                 data.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId);
+                    const leave = await getLeaveType(element?.leaveTypeId);
 
                     return {
                         ...element,
                         employee: employee,
-                        leaveType: await getLeaveType(element?.leaveTypeId)
+                        leaveType: leave?.name
                     };
                 })
             );
@@ -265,16 +270,16 @@ const searchByDateRange = async () => {
         queryParams.append('endDate', changeDateFormat(endDateSearch.value));
         const queryUrl = `${url}?${queryParams.toString()}`;
         const { data } = await fetchData(queryUrl, loading);
-        console.log('search by range', data);
         if (Array.isArray(data) && data.length > 0) {
             let allRequests = await Promise.all(
                 data.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId);
+                    const leave = await getLeaveType(element?.leaveTypeId);
 
                     return {
                         ...element,
                         employee: employee,
-                        leaveType: await getLeaveType(element?.leaveTypeId)
+                        leaveType: leave?.name
                     };
                 })
             );
@@ -298,11 +303,12 @@ const searchByEmployeeId = async () => {
             let allRequests = await Promise.all(
                 data.map(async (element) => {
                     const employee = await getEmployeeById(element?.employeeId);
+                    const leave = await getLeaveType(element?.leaveTypeId);
 
                     return {
                         ...element,
                         employee: employee,
-                        leaveType: await getLeaveType(element?.leaveTypeId)
+                        leaveType: leave?.name
                     };
                 })
             );
@@ -341,17 +347,13 @@ watch(searchTerm, async (newVal, oldVal) => {
     }
 });
 watch(filterTerm, async (newVal, oldVal) => {
-    // console.log('searchedArray', searchedEmployees)
     if (newVal !== oldVal && filterTerm?.value?.name?.length > 0) {
         filterBy.value = getFilter(filterTerm.value?.name);
-        console.log('filter by', getFilter(filterTerm.value?.name));
-        console.log('filter value', filterTerm.value?.name);
     } else {
         clearFilter();
     }
 });
 watch(employeeId, async (newVal, oldVal) => {
-    // console.log('searchedArray', searchedEmployees)
     if (newVal !== oldVal && employeeId.value?.id?.length > 0) {
         await searchByEmployeeId();
     } else {
@@ -410,15 +412,13 @@ const approveRequest = async (request) => {
     }
 };
 const serverError = ref('');
-
+const addLoading = ref(false);
 const submitForm = async () => {
     serverError.value = '';
-    loading.value = true;
-    console.log('leaveRequestsData?.value', leaveRequestsData?.value);
-    // Validate form fields before submission
+    addLoading.value = true;
     if (!leaveRequestsData?.value?.startDate || !leaveRequestsData?.value?.endDate || !leaveRequestsData?.value?.employeeId) {
         console.log('Please fill in all fields.');
-        loading.value = false;
+        addLoading.value = false;
         serverError.value = 'Please fill in all fields';
         showError('Please fill in all fields');
         // Show an error message to the user or handle validation in another way
@@ -430,17 +430,16 @@ const submitForm = async () => {
     }
     const url = `${baseURL}/leave/request/create`;
     const payload = { ...leaveRequestsData.value };
-    console.log('payload new', payload);
 
     try {
         // console.log('submit', leveRequestData);
         const data = await postData(url, payload);
-        console.log('payload to submit', payload);
+
         if (data?.status === 200 || data?.status === 201) {
             // success.value = true;
             successMessage.value = data?.message;
 
-            loading.value = false;
+            addLoading.value = false;
 
             showSuccess(data?.message);
             await getRequests();
@@ -449,16 +448,14 @@ const submitForm = async () => {
 
             showError('Failed');
             serverError.value = data?.error || data?.message;
-            loading.value = false;
+            addLoading.value = false;
         }
     } catch (error) {
-        console.log('payload to submit catch', leaveRequestsData?.value);
-
         showError('Failed');
 
         serverError.value = error?.message || error?.message;
 
-        loading.value = false;
+        addLoading.value = false;
         console.log(error?.error);
     }
 };
@@ -472,7 +469,7 @@ const getSubmitFormData = (data) => {
         <Toast />
 
         <!-- <Button label="Show" @click="visible = true" /> -->
-        <Dialog v-model:visible="visible" header="Edit Leave Requests" :style="{ width: '50%' }">
+        <Dialog v-model:visible="visible" header="Edit Leave Requests" :style="{ width: '40%' }">
             <Message v-if="success" severity="success">{{ successMessage }}</Message>
 
             <Message v-if="updateError" severity="error">{{ updateError }}</Message>
@@ -491,19 +488,19 @@ const getSubmitFormData = (data) => {
             </div>
             <div class="flex justify-content-end gap-2">
                 <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                <Button v-if="!loading" type="button" label="Update" @click="updateLeaveRequest"></Button>
+                <Button v-if="!updateLoading" type="button" label="Update" @click="updateLeaveRequest"></Button>
 
-                <SpinnerVue :loading="loading" size="3rem" />
+                <SpinnerVue :loading="updateLoading" size="3rem" />
             </div>
         </Dialog>
 
-        <Dialog v-model:visible="visibleAdd" header="Create Leave Request" :style="{ width: '50%' }">
+        <Dialog v-model:visible="visibleAdd" header="Create Leave Request" :style="{ width: '40%' }">
             <CreateRequest @getSubmitFormData="getSubmitFormData" />
             <div class="flex justify-content-end gap-2">
                 <Button type="button" label="Cancel" severity="secondary" @click="visibleAdd = false"></Button>
-                <Button v-if="!loading" type="button" label="Submit" @click="submitForm"></Button>
+                <Button v-if="!addLoading" type="button" label="Submit" @click="submitForm"></Button>
 
-                <SpinnerVue :loading="loading" size="3rem" />
+                <SpinnerVue :loading="addLoading" size="3rem" />
             </div>
         </Dialog>
     </div>
@@ -516,19 +513,6 @@ const getSubmitFormData = (data) => {
         </div>
         <DataTable v-model:filters="filters" :value="leaveRequests" paginator showGridlines :rows="10" dataKey="id" filterDisplay="menu" :loading="loading" :globalFilterFields="['leaveStatus']">
             <template #header>
-                <!-- <div class="p-fluid formgrid grid flex-grow">
-                    <div class="field col-12 md:col-7 flex">
-                        <label for="filter" class="font-semibold mr-5">Filter By:</label>
-
-                        <Dropdown v-model="filterTerm" :options="filterOPtions" optionLabel="name" placeholder="Filter By" required />
-                    </div>
-                </div> -->
-                <!-- <div v-if="filterBy" class="p-fluid formgrid grid flex-grow">
-                    <div class="field col-12 md:col-12">
-                        <Button type="button" icon="pi pi-filter-slash" class="ml-4 mb-2" label="Clear" outlined @click="clearFilter()" style="float: right; width: 100px" />
-                    </div>
-                </div> -->
-
                 <div class="filter-container">
                     <div class="p-fluid formgrid grid flex-grow">
                         <div class="field col-12 md:col-6 lg:col-3 flex">

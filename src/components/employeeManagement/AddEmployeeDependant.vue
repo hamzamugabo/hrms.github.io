@@ -6,7 +6,7 @@ const props = defineProps(['lName', 'fName', 'phonNo']);
 
 const firstName = ref(props?.fName);
 const lastName = ref(props?.lName);
-const phoneNumber = ref(props?.phonNo);
+const phoneNumber = ref(props?.phonNo || null);
 
 const submitForm = () => {
     const formData = {
@@ -36,7 +36,7 @@ watch([firstName, lastName, phoneNumber], () => {
 
         <div class="field col-12 md:col-4">
             <label for="phoneNumber">Phone Number</label>
-            <InputText id="phoneNumber" type="text" v-model="phoneNumber" />
+            <InputNumber v-model="phoneNumber" inputId="phoneNumber" :useGrouping="false" />
         </div>
     </div>
 </template>

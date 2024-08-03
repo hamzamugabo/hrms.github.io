@@ -7,7 +7,7 @@ import Interview from '../interview/index.vue';
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
-const { showError, showSuccess } = useToastPopup()
+const { showError, showSuccess } = useToastPopup();
 const jobStore = useJobStore();
 
 const router = useRouter();
@@ -25,9 +25,7 @@ const getJob = async () => {
     }
     try {
         const url = `${baseURL}/job-posting/show/${jobStore?.getJobData()?.id}`;
-
         const { data } = await fetchData(url, loading);
-        // console.log('job==', data)
         job.value = data;
     } catch (err) {
         console.log(err);
@@ -40,17 +38,14 @@ onMounted(async () => {
     await getJob();
 });
 const updateJob = () => {
-    console.log('update job', jobStore?.getJobData());
     jobStore.setJobData(jobStore?.getJobData());
     router.push('/edit-job');
 };
 const changeCurrentDateFormat = (dateString) => {
     const dateObject = new Date(dateString);
-
     const year = dateObject.getFullYear();
     const month = String(dateObject.getMonth() + 1).padStart(2, '0');
     const day = String(dateObject.getDate()).padStart(2, '0');
-
     return `${year}-${month}-${day}`;
 };
 const applyJob = async () => {
@@ -60,12 +55,6 @@ const applyJob = async () => {
         router.push('./Jobs');
         return;
     }
-    // const user = loadFromLocalStorage();
-    // if (!user?.id && user?.role !== 'Applicant') {
-    //     console.log('user not an applicant');
-    //     router.push('/applicant/create');
-    //     return;
-    // }
     const currentDate = new Date();
     const formData = {
         applicantId: '9253e407-6fc5-47d1-b16c-7b680d88e061',
@@ -78,19 +67,15 @@ const applyJob = async () => {
         const data = await postData(url, formData, loading);
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
-
-            // success.value = true;
             loading.value = false;
             showSuccess();
         } else {
             showError();
             loading.value = false;
-
             applyError.value = data?.message ? data?.message : data?.error;
         }
     } catch (err) {
-            showError();
-
+        showError();
         console.log('error', err);
     }
 };
@@ -100,85 +85,100 @@ const createInterview = () => {
 </script>
 
 <template>
-    <div class="container">
-        <div v-if="visible === true" class="flex justify-content-center">
-            <!-- <Button label="Show" @click="visible = true" /> -->
-            <Dialog v-model:visible="visible" header="Create interview" :style="{ width: '70%' }">
+    <div class="container mx-auto p-5">
+        <div v-if="visible" class="flex justify-center">
+            <Dialog v-model:visible="visible" header="Create Interview" :style="{ width: '70%' }">
                 <Interview :jobPostingId="job.id" />
-                <div class="flex justify-content-end gap-2">
+                <div class="flex justify-end gap-2">
                     <Button type="button" label="Cancel" severity="secondary" @click="visible = false"></Button>
-                    <!-- <Button v-if="!loading" type="button" label="Update" @click="updateNationality"></Button> -->
-
                     <SpinnerVue :loading="loading" size="3rem" />
                 </div>
             </Dialog>
         </div>
-        <div class="card">
+        <div class="card p-5 shadow-lg rounded-lg">
             <Message v-if="success" severity="success">{{ successMessage }}</Message>
-
             <Message v-if="applyError" severity="error">{{ applyError }}</Message>
-            <!-- <button @click="updateJob(job)" class="btn btn-primary">Update</button> -->
-            <div style="display: flex">
-                <Button
-                    type="button"
-                    icon="pi pi-trash"
-                    class="text-white font-bold py-1 px-2 rounded"
-                    @click="updateJob"
-                    style="width: 12rem; cursor: pointer; margin-right: 5px; border-radius: 200px; background-color: #0e9d6e"
-                    @mouseover="showUpdateIcon = true"
-                    @mouseleave="showUpdateIcon = false"
-                >
-                    <!-- <span class="text-sm">Update</span> -->
-                    <i class="pi pi-file-edit"></i>Update
-                </Button>
-                <Button
-                    type="button"
-                    icon="pi pi-trash"
-                    class="font-bold py-1 px-2 rounded"
-                    @click="createInterview"
-                    style="width: 12rem; cursor: pointer; margin-right: 5px; border-radius: 200px; background-color: #f0f0f0; border-radius: 8px; padding: 10px 20px; display: inline-block; text-align: center; user-select: none; color: black"
-                    @mouseover="showUpdateIcon = true"
-                    @mouseleave="showUpdateIcon = false"
-                >
-                    <!-- <span class="text-sm">Update</span> -->
-                    Create Interview
-                </Button>
+            <div class="flex justify-end mb-5 space-x-4" style="width: 100%">
+                <Button type="button" icon="pi pi-file-edit" class="text-white font-bold py-2 px-6 rounded-full" @click="updateJob" style="background-color: #0e9d6e; cursor: pointer; width: 200px; margin-right: 50px"> Update Job </Button>
+                <Button type="button" icon="pi pi-calendar-plus" class="font-bold py-2 px-6 rounded-full" @click="createInterview" style="background-color: #f0f0f0; color: black; cursor: pointer; width: 200px"> Create Interview </Button>
             </div>
-            <div class="card-header mt-10" style="margin-top: 10px">
-                <h3>{{ job?.jobName }}</h3>
-            </div>
-            <div class="card-body">
-                <p><strong>Description:</strong> {{ job?.jobDescription }}</p>
-                <p><strong>Qualifications:</strong> {{ job?.jobQualifications }}</p>
-                <p><strong>Salary Range:</strong> {{ job?.salaryRange }}</p>
-                <p><strong>Company Information:</strong> {{ job?.companyInformation }}</p>
-                <p><strong>Application Process:</strong> {{ job?.applicationProcess }}</p>
-                <p><strong>Posting Platform:</strong> {{ job?.postingPlatform }}</p>
-                <p><strong>Date Posted:</strong> {{ job?.datePosted }}</p>
-                <p><strong>Expiration Date:</strong> {{ job?.expirationDate }}</p>
-            </div>
-            <div class="card-">
-                <div class="btn-group" role="group" aria-label="Job Actions">
-                    <!-- <span class="text-sm"><i class="pi pi-trash"></i></span> -->
 
-                    <Button
-                        type="button"
-                        icon="pi pi-trash"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                        @click="applyJob(job)"
-                        style="width: 100px; cursor: pointer; border-radius: 10px"
-                        @mouseover="showText = true"
-                        @mouseleave="showText = false"
-                    >
-                        Apply
-                    </Button>
-                    <!-- <button type="button" class="btn btn-primary" @click="viewJob(job.id)"><i class="bi bi-eye-fill"></i> View More</button>
-                        <button type="button" class="btn btn-success" @click="updateJob(job.id)"><i class="bi bi-pencil-fill"></i> Update</button>
-                        <button type="button" class="btn btn-danger" @click="deleteJob(job.id)"><i class="bi bi-trash-fill"></i> Delete</button> -->
+            <div class="text-center mb-5">
+                <h2 class="text-2xl font-bold">{{ job?.jobName }}</h2>
+            </div>
+            <div class="grid">
+                <div class="p-fluid formgrid grid" style="margin-left:5%">
+                    <div class="field col-12 md:col-4">
+                        <p><strong>Date Posted:</strong> {{ job?.datePosted }}</p>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <p><strong>Expiration Date:</strong> {{ job?.expirationDate }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Purpose Of Job:</strong> {{ job?.purposeOfJob }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Responsibilities:</strong> {{ job?.responsibilities }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Key Performance Indicators:</strong> {{ job?.keyPerformanceIndicators }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Competencies:</strong> {{ job?.competencies }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Job Qualifications:</strong> {{ job?.jobQualifications }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Experience:</strong> {{ job?.experience }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Employee Level:</strong> {{ job?.employeeLevel }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Duty Station:</strong> {{ job?.dutyStation }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Reports To:</strong> {{ job?.reportsTo }}</p>
+                    </div>
+                    
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Application Mode:</strong> {{ job?.applicationMode }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Posting Type:</strong> {{ job?.postingType }}</p>
+                    </div>
+                    <div class="field col-12 md:col-12">
+                        <p><strong>Additional Requirements:</strong> {{ job?.additionalRequirements }}</p>
+                    </div>
                 </div>
+            </div>
+            <div class="text-center mt-5">
+                <Button type="button" icon="pi pi-check" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full" @click="applyJob" style="cursor: pointer; width: 200px"> Apply Now </Button>
             </div>
         </div>
     </div>
 </template>
 
-<style></style>
+<style scoped>
+.container {
+    max-width: 1200px;
+}
+.card {
+    background: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    
+}
+.card-header h2 {
+    color: #333;
+}
+.card-body p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+.button-group .button {
+    margin-right: 10px;
+}
+</style>

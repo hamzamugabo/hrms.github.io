@@ -526,7 +526,8 @@ const activeStep = ref(0);
                                     <!-- <h5>Contact Information</h5> -->
                                     <div class="field col-12 md:col-4">
                                         <label for="phonenumber">Phone Number</label>
-                                        <InputText id="phonenumber" type="text" v-model="phoneNumber" />
+                                         <InputText id="phoneNumber" type="text" v-model="phoneNumber" />
+                                        <!-- <InputText id="phonenumber" type="text" v-model="phoneNumber" /> -->
                                     </div>
 
                                     <div class="field col-12 md:col-4">

@@ -1129,7 +1129,7 @@ const handleSubmitDocuments = async () => {
 
                                     <div class="field col-12 md:col-4">
                                         <label for="otherPhoneNumber">Other Phone Number</label>
-                                        <InputText id="otherPhoneNumber" type="text" v-model="otherPhoneNumber" />
+                                        <InputNumber v-model="otherPhoneNumber" inputId="otherPhoneNumber" :useGrouping="false" />
                                     </div>
 
                                     <div class="field col-12 md:col-4">

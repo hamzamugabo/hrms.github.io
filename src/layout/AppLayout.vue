@@ -1,11 +1,12 @@
 <script setup>
+// Import the Breadcrumb component
+// import Breadcrumb from '@/layout/Breadcrumb.vue';
 import { computed, watch, onMounted, ref } from 'vue';
 import AppTopbar from './AppTopbar.vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppConfig from './AppConfig.vue';
 import { useLayout } from '@/layout/composables/layout';
-// import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { baseAUTHURL, fetchAUTHData } from '@/components/reuseables/FetchPostData';
 import loadFromLocalStorage from '@/components/reuseables/getUser';
@@ -19,12 +20,10 @@ const tokenAuth = async () => {
     const accessToken = user?.accessToken;
     token.value = accessToken;
     const url = `${baseAUTHURL}/validate/${accessToken}`;
-    // console.log('url',url)
 
     try {
         if (accessToken) {
             const data = await fetchAUTHData(url, loading, router);
-            // console.log('token validation', data);
             tokenValidationMessage.value = data;
             if (data?.status !== 200 && !data?.ok) {
                 router.push('/auth/login');
@@ -89,7 +88,6 @@ const isOutsideClicked = (event) => {
 
     return !(sidebarEl?.isSameNode(event.target) || sidebarEl?.contains(event.target) || topbarEl?.isSameNode(event.target) || topbarEl?.contains(event.target));
 };
-// tokenValidationMessage?.status === 200 && tokenValidationMessage?.ok
 </script>
 
 <template>
@@ -100,6 +98,7 @@ const isOutsideClicked = (event) => {
         </div>
         <div class="layout-main-container">
             <div class="layout-main">
+                <!-- <Breadcrumb /> -->
                 <router-view></router-view>
             </div>
             <app-footer></app-footer>
@@ -110,5 +109,3 @@ const isOutsideClicked = (event) => {
     <ConfirmDialog></ConfirmDialog>
     <Toast />
 </template>
-
-<style lang="scss" scoped></style>

@@ -113,7 +113,7 @@ onMounted(async () => {
 <style>
 .chart-container_ {
     position: relative;
-    height: calc(100% - 2rem); /* Adjust based on header height */
-    margin-top: 1rem;
+    height: calc(100% - 1rem); /* Adjust based on header height */
+   
 }
 </style>

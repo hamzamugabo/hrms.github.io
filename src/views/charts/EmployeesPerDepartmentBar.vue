@@ -51,7 +51,7 @@ const setChartOptions = () => {
                 beginAtZero: true,
                 ticks: {
                     color: textColorSecondary,
-                    stepSize: 10,
+                    stepSize: 5,
                     callback: (value) => {
                         return (value % 10 === 0) ? value : '';
                     }
@@ -81,9 +81,9 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="card" style="height: 18rem">
+    <div class="card " style="height:19rem">
         <h6>Employees per department</h6>
-        <div class="chart-container_">
+        <div class="chart-container_" >
         <Chart type="bar" :data="chartData" :options="chartOptions" />
     </div>
     </div>

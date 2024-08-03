@@ -37,7 +37,8 @@ const {
     addEmployeeDependant,
     updateEmployeeDependant,
     getEmployeeDutyStation,
-    getEmployeeById
+    getEmployeeById,
+    getDesignationById
 } = useEmployee();
 const router = useRouter();
 const route = useRoute();
@@ -86,19 +87,9 @@ const serverErrorUploadDocs = ref('');
 const loadingEmployeeDocs = ref(false);
 const timeFrame = ref('month');
 const dutyStation = ref({});
+const designation = ref('');
 const timeFrameUrlState = ref(`${baseURL}/attendance/by-employee/${routeId.value}/timeSeries`);
-// const getEmployeeById = async () => {
-//     const url = `${baseURL}/employees/by-id/${routeId.value}`;
 
-//     try {
-//         const { data } = await fetchData(url, loading);
-//         // console.log('employee', data);
-//         employeeInfor.value = data;
-//     } catch (error) {
-//         console.error('Error fetching employee:', error);
-//         // Handle errors here
-//     }
-// };
 
 const hitOptionsButton = () => {
     if (whatToAdd.value === 'next Of Kin' && !setNextOfKIn?.value?.id) {
@@ -158,6 +149,7 @@ const update = () => {
     router.push('/update-employee');
 };
 onMounted(() => {
+   getDesignationById(employeeInfor?.value?.designationId,designation, false)
     if (!employeeStore?.getEmployeeData()) {
         getEmployeeById(routeId.value, employeeInfor, loading);
         // router.push('/employees');
@@ -231,6 +223,8 @@ getDepartment(employeeInfor?.value?.departmentId, department, departmentError, l
 getEductionQualifications(employeeInfor?.value?.id, educationQualifications, departmentError, loading);
 getProfilePicture(employeeInfor?.value?.id, profilePhoto, false);
 getEmployeeDutyStation(dutyStation, routeId.value);
+   getDesignationById(employeeInfor?.value?.designationId,designation, false)
+
 
 const visible = ref(false);
 const handleAdd = (add, editData) => {
@@ -377,6 +371,7 @@ const handleUploadEmployeeDocuments = async () => {
             :profileUploadloading="profileUploadloading"
             @handleFileSelected="handleFileSelected"
             :dutyStation="dutyStation"
+            :designation="designation"
         />
     </div>
 

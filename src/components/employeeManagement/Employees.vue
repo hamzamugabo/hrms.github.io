@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { useRouter } from 'vue-router';
+
 import { baseURL, fetchData } from '@/components/reuseables/FetchPostData';
 import { useEmployeeStore } from '@/piniaStore/employeeData.js';
 import AddButton from '@/components/reuseables/AddButton.vue';
@@ -27,7 +28,7 @@ const getEmployees = async () => {
 
     try {
         const { data } = await fetchData(url, loading);
-        console.log('employess',data);
+        // console.log('employess==>',data);
         disableMessage.value = '';
         loadingDisable.value = false;
         employees.value = data;

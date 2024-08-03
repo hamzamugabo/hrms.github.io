@@ -1,8 +1,12 @@
 <script setup>
+import { ref, watch } from 'vue';
+
 // Define component props and emits
-defineProps(['qualifications', 'label', 'autoFilteredAwardingInstitutions', 'autoFilteredQualifications', 'institutionId', 'qualificationId', 'maxJoiningDate', 'update']);
+const props = defineProps(['qualifications', 'label', 'autoFilteredAwardingInstitutions', 'autoFilteredQualifications', 'institutionId', 'qualificationId', 'maxJoiningDate', 'update']);
 
 const emit = defineEmits(['remove', 'add', 'searchAwardingInstitution', 'searchQualification']);
+
+const minEndDate = ref(new Date());
 
 const removeQualification = (index) => {
     emit('remove', index);
@@ -11,6 +15,20 @@ const removeQualification = (index) => {
 const addQualification = () => {
     emit('add');
 };
+
+function getEndMinDate(date) {
+    const today = new Date(date);
+    today.setDate(today.getDate());
+    return today;
+}
+
+watch(
+    () => props.qualifications.map((q) => q.startDate),
+    (newStartDates) => {
+        minEndDate.value = newStartDates.map(getEndMinDate);
+    },
+    { deep: true }
+);
 </script>
 
 <template>
@@ -19,16 +37,10 @@ const addQualification = () => {
             <div>
                 <div v-if="update !== 'update'" style="display: flex; justify-content: space-between">
                     <h5 class="mr-4 ml-2">{{ label }}</h5>
-                    <Button
-                        type="button"
-                        icon="pi pi-trash"
-                        @click="addQualification"
-                        style="width: auto; padding: 10px; cursor: pointer; margin-left: 5px; border-radius: 10px; margin-bottom: 10px; height: 30px; background-color: #db0000"
-                        @mouseover="showUpdateIcon = true"
-                        @mouseleave="showUpdateIcon = false"
-                    >
+
+                    <p @click="addQualification(job)" style="cursor: pointer; background-color: #f0f0f0; border-radius: 8px; padding: 10px 20px; border-radius: 10px; margin-bottom: 10px; display: inline-block; text-align: center; user-select: none">
                         Add New Qualification
-                    </Button>
+                    </p>
                 </div>
 
                 <div class="p-fluid formgrid grid card" v-for="(qualification, index) in qualifications" :key="index" style="margin-bottom: 10px">
@@ -46,11 +58,11 @@ const addQualification = () => {
                     </div>
                     <div class="field col-12 md:col-4">
                         <label :for="'startDate' + index">Start Date</label>
-                        <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.startDate" :maxDate="maxJoiningDate" />
+                        <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.startDate" :maxDate="props.maxJoiningDate" />
                     </div>
                     <div class="field col-12 md:col-4">
                         <label :for="'endDate' + index">End Date</label>
-                        <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.endDate" :maxDate="maxJoiningDate" />
+                        <Calendar :showIcon="true" :showButtonBar="true" v-model="qualification.endDate" :minDate="minEndDate[index]" :maxDate="props.maxJoiningDate" />
                     </div>
 
                     <div class="field col-12 md:col-4" v-if="qualifications.length > 1" style="align-self: center; margin-top: 20px">

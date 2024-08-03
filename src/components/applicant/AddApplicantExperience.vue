@@ -11,6 +11,17 @@ const endDate = ref(props?.exprienceData?.endDate || '');
 const jobTitle = ref(props?.exprienceData?.jobTitle || '');
 const responsibilities = ref(props?.exprienceData?.responsibilities || '');
 
+
+const minEndDate = ref(new Date());
+function getEndMinDate(date) {
+    const today = new Date(date);
+    today.setDate(today.getDate());
+    return today;
+}
+
+watch([startDate], () => {
+    minEndDate.value = getEndMinDate(startDate.value);
+});
 const submitForm = () => {
     const formData = {
         achievements: achievements.value,
@@ -54,8 +65,17 @@ watch([achievements, companyName, startDate, endDate, jobTitle, responsibilities
         </div>
         <div class="field col-12 md:col-4">
             <label for="endDate">End Date</label>
-            <Calendar :showIcon="true" :showButtonBar="true" v-model="endDate" :maxDate="maxJoiningDate"></Calendar>
+            <Calendar :showIcon="true" :showButtonBar="true" v-model="endDate" :minDate="minEndDate" :maxDate="maxJoiningDate"></Calendar>
+            <small v-if="dateError" class="p-error">{{ dateError }}</small>
         </div>
+        <!-- <div class="field col-12 md:col-4">
+            <label for="startDate">Start Date</label>
+            <Calendar :showIcon="true" :showButtonBar="true" v-model="startDate" :maxDate="maxJoiningDate"></Calendar>
+        </div>
+        <div class="field col-12 md:col-4">
+            <label for="endDate">End Date</label>
+            <Calendar :showIcon="true" :showButtonBar="true" v-model="endDate" :maxDate="maxJoiningDate"></Calendar>
+        </div> -->
     </div>
 </template>
 <style scoped>

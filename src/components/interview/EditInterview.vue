@@ -6,8 +6,6 @@ import Interview from './CreateInterview.vue';
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
 const { showError, showSuccess } = useToastPopup();
-// import Interviewer from './CreateInterviewer.vue';
-import InterviewQuestions from './InterViewQuestions.vue';
 
 const props = defineProps(['jobPostingId', 'interviewDataToUpdate']);
 // console.log('interviewDataToUpdate', props?.interviewDataToUpdate);
@@ -29,8 +27,7 @@ const loading = ref(false);
 const submitForm = async () => {
     const interview = interviewData.value;
     const interviewQuiz = interviewQuizData.value;
-    console.log('interviewQuiz', interviewQuiz);
-    console.log('interview', interview);
+
     if (interview?.feedBack && interview?.location && interview?.dateTime) {
         await handleUpdateInterview();
     }
@@ -47,7 +44,6 @@ const handleUpdateInterview = async () => {
     try {
         const url = `${baseURL}/interviews/update`;
 
-         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -55,7 +51,7 @@ const handleUpdateInterview = async () => {
         if (data?.status === 200 || data?.status === 201) {
             successMessageAddInterview.value = data?.message;
             // successAddInterview.value = true;
-            showSuccess()
+            showSuccess();
             loading.value = false;
             interviewData.value = {};
             setTimeout(() => {
@@ -63,7 +59,7 @@ const handleUpdateInterview = async () => {
                 successMessageAddInterview.value = '';
             }, 1000);
         } else {
-        showError();
+            showError();
 
             successAddInterview.value = false;
             successMessageAddInterview.value = '';
@@ -71,7 +67,6 @@ const handleUpdateInterview = async () => {
             addInterviewError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-         
         showError('Failed');
         loading.value = false;
         console.log(error?.error);
@@ -85,7 +80,6 @@ const handleUpdateInterviewQuestions = async () => {
     try {
         const url = `${baseURL}/interviews/questions/update`;
 
-         
         // loading.value = false;
 
         const data = await postData(url, formData, loading);
@@ -101,7 +95,7 @@ const handleUpdateInterviewQuestions = async () => {
                 successAddInterviewQuiz.value = '';
             }, 1000);
         } else {
-        showError();
+            showError();
 
             successMessageAddInterviewQuiz.value = false;
             successAddInterviewQuiz.value = '';
@@ -109,7 +103,6 @@ const handleUpdateInterviewQuestions = async () => {
             addInterviewQuizError.value = data?.message ? data?.message : data?.error;
         }
     } catch (error) {
-         
         showError('Failed');
         successMessageAddInterviewQuiz.value = false;
         successAddInterviewQuiz.value = '';
@@ -119,19 +112,12 @@ const handleUpdateInterviewQuestions = async () => {
 };
 
 const handleInterview = (data) => {
-
     interviewData.value = data;
-};
-
-const handleInterviewQuestions = (data) => {
-    interviewQuizData.value = data;
 };
 </script>
 
 <template>
     <form @submit.prevent="submitForm">
-    
-
         <div class="grid">
             <div class="col-12">
                 <div class="card">
@@ -141,17 +127,6 @@ const handleInterviewQuestions = (data) => {
 
                     <h5>Interview</h5>
                     <Interview @handleInterview="handleInterview" :interview="interviewDataToUpdate" />
-                </div>
-            </div>
-
-            <div class="col-12">
-                <div class="card">
-                    <Message v-if="successAddInterviewQuiz" severity="success">{{ successMessageAddInterviewQuiz }}</Message>
-
-                    <Message v-if="addInterviewQuizError" severity="error">{{ addInterviewQuizError }}</Message>
-
-                    <h5>Interview Questions</h5>
-                    <InterviewQuestions @handleInterviewQuestions="handleInterviewQuestions" :interview="interviewDataToUpdate" />
                 </div>
             </div>
         </div>

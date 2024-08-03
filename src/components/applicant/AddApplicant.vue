@@ -9,10 +9,11 @@ import StepperPanel from 'primevue/stepperpanel';
 // import countryList from 'country-list';
 import { fetchData, postData, baseURL } from '@/components/reuseables/FetchPostData.js';
 import { genderOptionsEnum, maritalStatusOptionsEnum, idTypeOptionsEnum } from '@/components/reuseables/enums.js';
-// import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
+
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
 import EmployeeExperience from './AddApplicantExperience.vue';
- 
+import loadFromLocalStorage from '@/components/reuseables/getUser';
 import changeDateFormat from '@/components/reuseables/changeDateFormat.js';
 // import AddDocuments from './AddEmployeeDocuments.vue';
 import ApplicantDocUpload from './ApplicantDocUpload.vue';
@@ -23,7 +24,7 @@ const { addApplicantAcademicDocs, updateCoverLetterImport, updateResumeImport } 
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
 const { showError, showSuccess } = useToastPopup();
-
+const route = useRoute();
 const { getJobDescriptions } = useJobDescription();
 const genderOptions = ref(genderOptionsEnum);
 const maritalStatusOptions = ref(maritalStatusOptionsEnum);
@@ -39,8 +40,8 @@ const nationality = ref([]);
 
 const idType = ref('');
 const idNumber = ref('');
-const phoneNumber = ref('');
-const otherPhoneNumber = ref('');
+const phoneNumber = ref(null);
+const otherPhoneNumber = ref(null);
 const email = ref('');
 const physicalAddress = ref('');
 const position = ref('');
@@ -123,14 +124,13 @@ const validateEmail = (email) => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailPattern.test(email);
 };
-const loadFromLocalStorage = () => {
-    const data = localStorage.getItem('userInfo');
-    return data ? JSON.parse(data) : null; // Parse JSON data when retrieving from local storage
-};
+// const loadFromLocalStorage = () => {
+//     const data = localStorage.getItem('userInfo');
+//     return data ? JSON.parse(data) : null; // Parse JSON data when retrieving from local storage
+// };
 const applicantStore = useApplicantStore();
 
 const getDesignations = async () => {
-  
     const url = `${baseURL}/designation`;
 
     try {
@@ -145,7 +145,6 @@ const getDesignations = async () => {
 };
 
 const getNationalities = async () => {
-  
     const url = `${baseURL}/nationality`;
 
     try {
@@ -243,7 +242,7 @@ onMounted(async () => {
 
 const addEducationQualificationLoading = ref(false);
 const createdEducationDetails = ref({});
-const addApplicantEducationQualification = async (applicantId, nextCallback) => {
+const addApplicantEducationQualification = async (applicantId) => {
     addEducationQualificationLoading.value = true;
     try {
         if (!applicantId) {
@@ -261,7 +260,7 @@ const addApplicantEducationQualification = async (applicantId, nextCallback) => 
             };
 
             const data = await postData(url, formData, addEducationQualificationLoading);
-        
+
             createdEducationDetails.value = data?.data;
             if (data?.status === 200 || data?.status === 201) {
                 qualificationError.value = '';
@@ -279,7 +278,7 @@ const addApplicantEducationQualification = async (applicantId, nextCallback) => 
                     qualificationSuccess.value = false;
                     qualificationSuccessMessage.value = '';
                 }, 1000);
-                nextCallback();
+                // nextCallback();
             } else {
                 addEducationQualificationLoading.value = false;
 
@@ -340,11 +339,15 @@ const resetForm = () => {
 // const navigateToAddQualification = () => {
 //     history.push('/employees/qualification/create');
 // };
+const exprienceData = ref({});
 const handleExperienceDetails = (data) => {
     applicantExperienceDetails.value = data;
+    if (data) {
+        exprienceData.value = { ...data };
+    }
 };
 
-const addApplicantExperience = async (applicantId, nextCallback) => {
+const addApplicantExperience = async (applicantId) => {
     addExperienceError.value = '';
 
     addExperienceLoading.value = true;
@@ -364,7 +367,7 @@ const addApplicantExperience = async (applicantId, nextCallback) => {
             responsibilities: applicantExperienceDetails?.value?.responsibilities,
             startDate: changeDateFormat(applicantExperienceDetails?.value?.startDate)
         };
-   
+
         const data = await postData(url, formData, addExperienceLoading);
 
         if (data?.status === 200 || data?.status === 201) {
@@ -381,7 +384,7 @@ const addApplicantExperience = async (applicantId, nextCallback) => {
                 successAddExperience.value = false;
                 successMessageAddExperience.value = '';
             }, 1000);
-            nextCallback();
+            // nextCallback();
         } else {
             addExperienceLoading.value = false;
             successAddExperience.value = false;
@@ -432,12 +435,12 @@ function validateDOB() {
 
 const uploadDocumentLoading = ref(false);
 
-const handleSubmitEducationQualification = async (nextCallback) => {
-    await addApplicantEducationQualification(createdApplicant?.value?.id, nextCallback);
+const handleSubmitEducationQualification = async () => {
+    await addApplicantEducationQualification(createdApplicant?.value?.id);
 };
 
 const addPersonalDetailsLoading = ref(false);
-const handlePersonalDetails = async (nextCallback) => {
+const handlePersonalDetails = async () => {
     addEmployeeError.value = '';
     addPersonalDetailsLoading.value = true;
     try {
@@ -493,16 +496,15 @@ const handlePersonalDetails = async (nextCallback) => {
             nationalityId: nationalityId?.value?.id
         };
 
-    
         const data = await postData(url, formData, addPersonalDetailsLoading);
-   
+
         if (!data?.data) {
             showError(data?.message || data?.error);
         }
         if (data?.status === 200 || data?.status === 201) {
             createdApplicant.value = data?.data;
 
-            nextCallback();
+            // nextCallback();
 
             successMessage.value = data?.message;
             applicantStore.setApplicantData(formData);
@@ -510,6 +512,10 @@ const handlePersonalDetails = async (nextCallback) => {
 
             success.value = true;
             showSuccess(data?.data?.message);
+            await handleSubmitEducationQualification();
+            await handleSubmitExperience();
+            await handleSubmitDocuments();
+            await applyJob();
 
             setTimeout(() => {
                 success.value = false;
@@ -531,11 +537,9 @@ const handlePersonalDetails = async (nextCallback) => {
     }
 };
 
-const handleSubmitExperience = async (nextCallback) => {
-
-
+const handleSubmitExperience = async () => {
     if (applicantExperienceDetails.value) {
-        await addApplicantExperience(createdApplicant?.value?.id, nextCallback);
+        await addApplicantExperience(createdApplicant?.value?.id);
     }
 };
 
@@ -599,7 +603,6 @@ const handleSubmitDocuments = async () => {
             showError(responseMessage.errorMessage);
         }
         uploadDocumentLoading.value = false;
-        activeStep.value = 0;
     } catch (error) {
         uploadDocumentLoading.value = false;
 
@@ -607,6 +610,62 @@ const handleSubmitDocuments = async () => {
         console.error('Error in handleSubmitDocuments:', error);
     } finally {
         uploadDocumentLoading.value = false;
+    }
+};
+
+const applyError = ref('');
+const changeCurrentDateFormat = (dateString) => {
+    const dateObject = new Date(dateString);
+
+    const year = dateObject.getFullYear();
+    const month = String(dateObject.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObject.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+};
+const applyJob = async () => {
+    applyError.value = '';
+
+    if (!route?.query?.jobPostId) {
+        console.log('no job selected');
+        return;
+    }
+    // const user = loadFromLocalStorage();
+
+    const currentDate = new Date();
+
+    const formData = {
+        applicantId: createdApplicant.value?.id,
+        applicationDate: changeCurrentDateFormat(currentDate),
+        applicationStatus: 'PENDING',
+        jobPostingId: route?.query?.jobPostId
+    };
+    const url = `${baseURL}/application/create`;
+    try {
+        const data = await postData(url, formData, loading);
+        if (data?.status === 200 || data?.status === 201) {
+            successMessage.value = data?.message;
+
+            // success.value = true;
+            showSuccess();
+            loading.value = false;
+            setTimeout(() => {
+                success.value = false;
+                successMessage.value = '';
+            }, 1000);
+            activeStep.value = 0;
+        } else {
+            success.value = false;
+            successMessage.value = '';
+            loading.value = false;
+            showError(data?.message ? data?.message : data?.error);
+
+            applyError.value = data?.message ? data?.message : data?.error;
+        }
+    } catch (err) {
+        showError('Failed');
+
+        console.log('error', err);
     }
 };
 
@@ -619,7 +678,7 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handlePersonalDetails(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <Message v-if="success" severity="success">{{ successMessage }}</Message>
                                 <Message v-if="addEmployeeError" severity="error">{{ addEmployeeError }}</Message>
 
@@ -674,7 +733,7 @@ const handleSubmitDocuments = async () => {
                                     <!-- <h5>Contact Information</h5> -->
                                     <div class="field col-12 md:col-4">
                                         <label for="phonenumber">Phone Number</label>
-                                        <InputText id="phonenumber" type="text" v-model="phoneNumber" />
+                                        <InputNumber v-model="phoneNumber" inputId="phoneNumber" :useGrouping="false" />
                                     </div>
 
                                     <div class="field col-12 md:col-4">
@@ -708,7 +767,7 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card p-fluid">
-                            <form @submit.prevent="handleSubmitEducationQualification(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <div class="field">
                                     <div class="flex items-center">
                                         <QualificationsForm
@@ -745,9 +804,9 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handleSubmitExperience(nextCallback)">
+                            <form @submit.prevent="nextCallback">
                                 <!-- Experience form fields here -->
-                                <EmployeeExperience @handleExperienceDetails="handleExperienceDetails" :maxJoiningDate="maxJoiningDate" />
+                                <EmployeeExperience @handleExperienceDetails="handleExperienceDetails" :maxJoiningDate="maxJoiningDate" :exprienceData="exprienceData" />
 
                                 <div class="flex pt-4 justify-content-between">
                                     <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="prevCallback" />
@@ -767,7 +826,7 @@ const handleSubmitDocuments = async () => {
                 <template #content="{ prevCallback, nextCallback }">
                     <div class="col-12">
                         <div class="card">
-                            <form @submit.prevent="handleSubmitDocuments(nextCallback)">
+                            <form @submit.prevent="handlePersonalDetails(nextCallback)">
                                 <!-- Documents form fields here -->
                                 <ApplicantDocUpload @onFileChangeAcademicDocs="onFileChangeAcademicDocs" @handleFileCoverSelected="handleFileCoverSelected" @handleFileResumeSelected="handleFileResumeSelected" />
 

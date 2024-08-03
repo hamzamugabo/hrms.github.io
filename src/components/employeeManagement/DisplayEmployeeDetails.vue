@@ -4,7 +4,7 @@ import UploadFiles from '@/components/reuseables/FileUploader.vue';
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
 import UpdateEmployeeDepartment from './UpdateEmployeeDepartment.vue';
 
-defineProps(['employeeInfor', 'dutyStation', 'nationality', 'department', 'success', 'successMessage', 'uploadProfileError', 'imageUrl', 'profileImageUrl', 'profileUploadloading']);
+defineProps(['employeeInfor','designation', 'dutyStation', 'nationality', 'department', 'success', 'successMessage', 'uploadProfileError', 'imageUrl', 'profileImageUrl', 'profileUploadloading']);
 const emit = defineEmits(['handleFileSelected']);
 const handleFileSelectedEmit = (file) => {
     emit('handleFileSelected', file);
@@ -98,7 +98,11 @@ const updateDepartmentVisible = ref(false);
                     </div>
                     <div class="col-12 md:col-4">
                         <p class="bioTitle">Position/Title</p>
-                        <p class="bioValue">John Doe</p>
+                        <p class="bioValue">{{designation}}</p>
+                    </div>
+                    <div class="col-12 md:col-4">
+                        <p class="bioTitle">Level</p>
+                        <p class="bioValue">{{employeeInfor?.employeeLevel}}</p>
                     </div>
                     <div class="col-12 md:col-4">
                         <p class="bioTitle">Department</p>

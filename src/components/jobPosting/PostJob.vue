@@ -1,32 +1,20 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import changeDateFormat from '@/components/reuseables/changeDateFormat';
-import { baseURL, postData } from '@/components/reuseables/FetchPostData';
+import { baseURL, postData, baseAUTHURL, fetchData } from '@/components/reuseables/FetchPostData';
 import SpinnerVue from '@/components/reuseables/Spinner.vue';
-import ScreeningCriteria from './ScreeningCriteria.vue';
+
+import { PostingType, employeeLevelsEnum } from '@/components/reuseables/enums.js';
+
 import { useToastPopup } from '@/components/reuseables/useToast.js';
 
 const { showError, showSuccess } = useToastPopup();
-const jobName = ref('');
-const jobDescription = ref('');
-const jobExperience = ref('');
 
-const applicationInstruction = ref('');
-const expirationDate = ref('');
 const loading = ref(false);
 const addJobError = ref('');
 
 const success = ref(false);
 const successMessage = ref('');
-const screeningCriteria = ref({});
-const successMessageAddScreening = ref('');
-const addScreeningError = ref('');
-const successAddScreening = ref(false);
-const platforms = ref('');
-const salaryRange = ref('');
-const companyInformation = ref('');
-// const platformLabel = ref('Platform to post jobs to');
-const qualifications = ref('');
 
 const changeCurrentDateFormat = (dateString) => {
     const dateObject = new Date(dateString);
@@ -37,54 +25,61 @@ const changeCurrentDateFormat = (dateString) => {
 
     return `${year}-${month}-${day}`;
 };
+const formData = ref({
+    additionalRequirements: '',
+    applicationMode: '',
+    competencies: '',
+    datePosted: changeCurrentDateFormat(new Date()),
+    dutyStation: '',
+    employeeLevel: { name: '', code: '' },
+    experience: '',
+    expirationDate: new Date(),
+    jobName: '',
+    jobQualifications: '',
+    keyPerformanceIndicators: '',
+    postingType: { name: 'INTERNAL', code: 'INTERNAL' },
+    purposeOfJob: '',
+    reportsTo: '',
+    responsibilities: ''
+});
 
 const submitForm = async () => {
     addJobError.value = '';
-    const currentDate = new Date();
-    const formFields = {
-        applicationProcess: applicationInstruction.value,
-        companyInformation: companyInformation?.value,
-        datePosted: changeCurrentDateFormat(currentDate),
-        expirationDate: changeDateFormat(expirationDate?.value),
-        jobDescription: jobDescription.value,
-        jobName: jobName.value,
-        jobQualifications: qualifications.value,
-        postingPlatform: platforms.value,
-        salaryRange: salaryRange?.value
-    };
-
-    // Perform form submission logic (e.g., send data to backend)
-    console.log('Form submitted:', formFields);
-    if (!jobName.value || !expirationDate.value) {
-        showError('Job Name or Expiration date cant be empty');
-        addJobError.value = 'Job Name or Expiration date cant be empty';
-        return;
-    }
+    // const currentDate = new Date();
 
     loading.value = true;
 
     try {
         const url = `${baseURL}/job-posting/create`;
 
-        // loading.value = false;
+        const payload = {
+            additionalRequirements: formData?.value?.additionalRequirements,
+            applicationMode: formData?.value?.applicationMode,
+            competencies: formData?.value?.competencies,
+            datePosted: formData?.value?.datePosted,
+            dutyStation: formData?.value?.dutyStation?.id,
+            employeeLevel: formData?.value?.employeeLevel?.name,
+            experience: formData?.value?.experience,
+            expirationDate: changeDateFormat(formData?.value?.expirationDate),
+            jobName: formData?.value?.jobName,
+            jobQualifications: formData?.value?.jobQualifications,
+            keyPerformanceIndicators: formData?.value?.keyPerformanceIndicators,
+            postingType: formData?.value?.postingType?.name,
+            purposeOfJob: formData?.value?.purposeOfJob,
+            reportsTo: formData?.value?.reportsTo,
+            responsibilities: formData?.value?.responsibilities
+        };
+        const data = await postData(url, payload, loading);
 
-        const data = await postData(url, formFields, loading);
-         
         if (data?.status === 200 || data?.status === 201) {
             successMessage.value = data?.message;
 
             // success.value = true;
-            showSuccess();
-            await createScreeningCriteria(data?.data?.id);
+            showSuccess(data?.message);
+            formData.value = {};
+            // await createScreeningCriteria(data?.data?.id);
             loading.value = false;
-            applicationInstruction.value = '';
-            companyInformation.value = '';
-            expirationDate.value = '';
-            jobDescription.value = '';
-            jobName.value = '';
-            qualifications.value = '';
-            platforms.value = '';
-            salaryRange.value = '';
+
             setTimeout(() => {
                 success.value = false;
                 successMessage.value = '';
@@ -103,59 +98,7 @@ const submitForm = async () => {
         showError('Failed');
     }
 };
-const handleScreeningCriteria = (data) => {
-    screeningCriteria.value = data;
-};
-const createScreeningCriteria = async (jobPostId) => {
-    addScreeningError.value = '';
-    loading.value = true;
-    try {
-        const url = `${baseURL}/application/screening-criteria/create/${jobPostId}`;
 
-        if (!screeningCriteria?.value) {
-            successAddScreening.value = true;
-            addScreeningError.value = 'Screening Criteria not added, you can add it through job details';
-            return;
-        }
-
-        const formData = {
-            communication: screeningCriteria?.value?.communication,
-            culturalFit: screeningCriteria?.value?.culturalFit,
-            experience: screeningCriteria?.value?.experience,
-            qualifications: screeningCriteria?.value?.qualifications,
-            specificSkills: screeningCriteria?.value?.specificSkills,
-            technicalSkills: screeningCriteria?.value?.technicalSkills
-        };
-
-        const data = await postData(url, formData, loading);
-
-        if (data?.status === 200 || data?.status === 201) {
-            successMessageAddScreening.value = data?.message;
-            // applicantStore.setapplicantData(formData);
-            loading.value = false;
-
-            // successAddScreening.value = true;
-            showSuccess();
-            loading.value = false;
-
-            setTimeout(() => {
-                successAddScreening.value = false;
-                successMessageAddScreening.value = '';
-            }, 1000);
-        } else {
-            successAddScreening.value = false;
-            successMessageAddScreening.value = '';
-            addScreeningError.value = data?.message ? data?.message : data?.error;
-            showError(data?.message ? data?.message : data?.error);
-        }
-    } catch (error) {
-        loading.value = false;
-        showError('Failed');
-
-        console.error('Login error:', error);
-    }
-};
-const expirationDateError = ref('');
 const minDate = ref(getMinDate());
 
 function getMinDate() {
@@ -163,94 +106,142 @@ function getMinDate() {
     today.setDate(today.getDate() + 2);
     return today;
 }
+const autoFilteredDutyStation = ref([]);
+const allStations = ref([]);
+const getStations = async () => {
+    // console.log('designation');
+    const url = `${baseAUTHURL}/duty-station`;
+
+    try {
+        const { data } = await fetchData(url);
+        allStations.value = data || [];
+
+        // Handle the fetched data here
+    } catch (error) {
+        // Handle errors here
+    }
+};
+
+const searchStations = (event) => {
+    if (!event.query.trim().length) {
+        autoFilteredDutyStation.value = allStations?.value?.length > 0 ? [...allStations.value] : [];
+    } else {
+        // Check if allDepartments.value is iterable and not null/undefined
+        if (Array.isArray(allStations.value)) {
+            autoFilteredDutyStation.value = allStations.value.filter((station) => {
+                return station.name.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+        } else {
+            autoFilteredDutyStation.value = [];
+        }
+    }
+};
+onMounted(() => {
+    getStations();
+});
 </script>
 
 <template>
     <form @submit.prevent="submitForm">
         <div class="grid">
-            <div class="col-12 md:col-12">
-                <div class="card">
-                    <Message v-if="success" severity="success">{{ successMessage }}</Message>
-
-                    <Message v-if="addJobError" severity="error">{{ addJobError }}</Message>
-                    <h5>Job details</h5>
+            <div class="card">
+                <div class="container">
                     <div class="p-fluid formgrid grid">
+                        <!-- Job Name -->
                         <div class="field col-12 md:col-4">
                             <label for="jobName">Job Name</label>
-                            <InputText required id="jobName" type="text" v-model="jobName" class="mb-30" />
+                            <InputText required id="jobName" type="text" v-model="formData.jobName" class="mb-30" />
                         </div>
+
+                        <!-- Purpose Of Job -->
+                        <div class="field col-12 md:col-4">
+                            <label for="purposeOfJob">Purpose Of Job</label>
+                            <InputText required id="purposeOfJob" type="text" v-model="formData.purposeOfJob" class="mb-30" />
+                        </div>
+
+                        <!-- Responsibilities -->
+                        <div class="field col-12 md:col-4">
+                            <label for="responsibilities">Responsibilities</label>
+                            <InputText required id="responsibilities" type="text" v-model="formData.responsibilities" class="mb-30" />
+                        </div>
+
+                        <!-- Key Performance Indicators -->
+                        <div class="field col-12 md:col-4">
+                            <label for="keyPerformanceIndicators">Key Performance Indicators</label>
+                            <InputText required id="keyPerformanceIndicators" type="text" v-model="formData.keyPerformanceIndicators" class="mb-30" />
+                        </div>
+
+                        <!-- Competencies -->
+                        <div class="field col-12 md:col-4">
+                            <label for="competencies">Competencies</label>
+                            <InputText required id="competencies" type="text" v-model="formData.competencies" class="mb-30" />
+                        </div>
+
+                        <!-- Job Qualifications -->
                         <div class="field col-12 md:col-4">
                             <label for="jobQualifications">Job Qualifications</label>
-                            <InputText required id="jobQualification" type="text" v-model="qualifications" class="mb-30" />
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <label for="jobDescription">Expiration Date</label>
-
-                            <Calendar :showIcon="true" :showButtonBar="true" v-model="expirationDate" :minDate="minDate"></Calendar>
-                            <small v-if="expirationDateError" class="p-error">{{ expirationDateError }}</small>
-                            <!-- <Textarea id="ecomments" rows="4" v-model="jobDescription" /> -->
+                            <InputText required id="jobQualifications" type="text" v-model="formData.jobQualifications" class="mb-30" />
                         </div>
 
+                        <!-- Experience -->
                         <div class="field col-12 md:col-4">
                             <label for="experience">Experience</label>
-                            <Textarea id="ecomments" rows="4" v-model="jobExperience" />
+                            <InputText required id="experience" type="text" v-model="formData.experience" class="mb-30" />
                         </div>
+
+                        <!-- Employee Level -->
                         <div class="field col-12 md:col-4">
-                            <label for="jobDescription">Job Description</label>
-                            <Textarea id="ecomments" rows="4" v-model="jobDescription" />
+                            <label for="employeeLevel">Employee Level</label>
+                            <Dropdown id="level" v-model="formData.employeeLevel" :options="employeeLevelsEnum" optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <!-- Duty Station -->
+                        <div class="field col-12 md:col-4">
+                            <label for="dutyStation">Duty Station</label>
+                            <AutoComplete placeholder="Search" id="station" :dropdown="true" :multiple="false" v-model="formData.dutyStation" :suggestions="autoFilteredDutyStation" @complete="searchStations($event)" field="name" />
+                            <p v-if="allStations?.length === 0" class="text-red-500">No duty station found.</p>
+                        </div>
+
+                        <!-- Reports To -->
+                        <div class="field col-12 md:col-4">
+                            <label for="reportsTo">Reports To</label>
+                            <InputText required id="reportsTo" type="text" v-model="formData.reportsTo" class="mb-30" />
+                        </div>
+
+                        <!-- Date Posted -->
+                        <!-- <div class="field col-12 md:col-4">
+                            <label for="datePosted">Date Posted</label>
+                            <InputText required id="datePosted" type="text" v-model="formData.datePosted" class="mb-30" />
+                        </div> -->
+
+                        <!-- Expiration Date -->
+                        <div class="field col-12 md:col-4">
+                            <label for="expirationDate">Expiration Date</label>
+                            <Calendar :showIcon="true" :showButtonBar="true" v-model="formData.expirationDate" :minDate="minDate"></Calendar>
+                        </div>
+
+                        <!-- Application Mode -->
+                        <div class="field col-12 md:col-4">
+                            <label for="applicationMode">Application Mode</label>
+                            <InputText required id="applicationMode" type="text" v-model="formData.applicationMode" class="mb-30" />
+                        </div>
+
+                        <!-- Posting Type -->
+                        <div class="field col-12 md:col-4">
+                            <label for="postingType">Posting Type</label>
+                            <Dropdown id="postingType" v-model="formData.postingType" :options="PostingType" optionLabel="name" placeholder="Select One"></Dropdown>
+                        </div>
+
+                        <!-- Additional Requirements -->
+                        <div class="field col-12 md:col-4">
+                            <label for="additionalRequirements">Additional Requirements</label>
+                            <InputText required id="additionalRequirements" type="text" v-model="formData.additionalRequirements" class="mb-30" />
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-12 md:col-6">
-                <div class="card p-fluid">
-                    <!-- <h5>Salary Range</h5> -->
-                    <div class="field">
-                        <label for="applicationInstruction"> Instructions on how candidates can apply </label>
-                        <Textarea id="applicationInstruction" rows="3" v-model="applicationInstruction" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 md:col-6">
-                <div class="card p-fluid">
-                    <!-- <h5>Company Information</h5> -->
-                    <div class="field">
-                        <label for="overview">Company Information</label>
-                        <Textarea id="overview" rows="3" v-model="companyInformation" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-12">
-                <div class="card">
-                    <!-- <h5>Application process details</h5> -->
-                    <div class="p-fluid formgrid grid">
-                        <div class="field col-12 md:col-6">
-                            <label for="overview">Salary Range</label>
-                            <!-- <InputText required id="salaryRange" type="text" v-model="salaryRange" class="mb-30" /> -->
-                            <InputNumber required v-model="salaryRange" inputId="integeronly" class="mb-30" />
-
-                        </div>
-                        <div class="field col-12 md:col-6">
-                            <label for="platform"> Posting Platform </label>
-
-                            <InputText required id="platform" type="text" v-model="platforms" class="mb-30" />
-                            <!-- <MultipleFormsGeneratorWithSingleInputs :qualifications="platforms" @remove="removePlatforms" @add="addPlatforms" :label="platformLabel" /> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card">
-                    <Message v-if="successAddScreening" severity="success">{{ successMessageAddScreening }}</Message>
-
-                    <Message v-if="addScreeningError" severity="error">{{ addScreeningError }}</Message>
-                    <h5>Screening Criteria</h5>
-                    <ScreeningCriteria @handleScreeningCriteria="handleScreeningCriteria" />
                 </div>
             </div>
         </div>
+
         <div style="display: flex; justify-content: center">
             <SpinnerVue :loading="loading" size="3rem" />
         </div>
@@ -259,6 +250,7 @@ function getMinDate() {
         </div>
     </form>
 </template>
+
 <style>
 .addFieldButton {
     background: #679670;

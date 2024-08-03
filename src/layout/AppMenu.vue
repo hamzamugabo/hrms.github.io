@@ -75,14 +75,14 @@ const model = ref([
             },
             {
                 label: 'Applications',
-                icon: 'pi pi-fw pi-list',
+                icon: 'pi pi-fw pi-file',
                 items: [{ label: 'Applications', icon: 'pi pi-fw pi-align-justify', to: '/applications' }]
             },
             {
                 label: 'Applicant',
                 icon: 'pi pi-fw pi-verified',
                 items: [
-                    { label: 'Add Applicant', icon: 'pi pi-fw pi-user-plus', to: '/applicant/create', roles: ['admin', 'manager'] },
+                    // { label: 'Add Applicant', icon: 'pi pi-fw pi-user-plus', to: '/applicant/create', roles: ['admin', 'manager'] },
                     // { label: 'Update Employee', icon: 'pi pi-fw pi-user-edit', to: '/update-employee', roles: ['admin', 'manager'] },
                     // { label: 'Show Employee', icon: 'pi pi-fw pi-id-card', to: '/employee', roles: ['admin', 'employee'] },
                     { label: 'Applicants', icon: 'pi pi-fw pi-id-card', to: '/applicants', roles: ['admin', 'employee'] }

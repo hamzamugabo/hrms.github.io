@@ -3,7 +3,7 @@ import loadFromLocalStorage from '@/components/reuseables/getUser.js';
 
 export const useEmployee = () => {
     // const baseURL = 'your_base_url_here';
-
+    // designationId
     const getEmployeeById = async (employeeId, employeeInfor, loading) => {
         if (!employeeId) {
             console.log('missing employee id');
@@ -19,7 +19,21 @@ export const useEmployee = () => {
             // Handle errors here
         }
     };
+    const getDesignationById = async (id, designation, loading) => {
+        if (!id) {
+            console.log('missing id');
+            return;
+        }
+        const url = `${baseURL}/designation/by-id/${id}`;
 
+        try {
+            const { data } = await fetchData(url, loading);
+            designation.value = data?.jobTitle;
+        } catch (error) {
+            console.error('Error fetching employee:', error);
+            // Handle errors here
+        }
+    };
     const getEmployeeDependants = async (employeeId, employeeDependants, loading) => {
         const url = `${baseURL}/employees/dependent/by-employeeId/${employeeId}`;
         if (!employeeId) {
@@ -59,7 +73,7 @@ export const useEmployee = () => {
 
         try {
             const { data } = await fetchData(url, loading);
-            console.log('employee experience', data)
+            console.log('employee experience', data);
             employeeExperience.value = data;
         } catch (error) {
             console.error('Error fetching employee experience:', error);
@@ -265,7 +279,6 @@ export const useEmployee = () => {
             if (response.ok) {
                 const data = await response.json();
                 if (data?.status === 200 || data?.status === 201) {
-                     
                     return data; // Return the data if successful
                 } else {
                     console.error('Invalid response:', data?.message);
@@ -350,6 +363,7 @@ export const useEmployee = () => {
         getEmployeeDutyStation,
         getDutyStationById,
         getEmployees,
-        getSupervisors
+        getSupervisors,
+        getDesignationById
     };
 };
